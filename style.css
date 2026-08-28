@@ -59,17 +59,6 @@ body {
 
 
 
-/** 背景粒子画布 */
-#particle-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    width: 100vw;
-    height: 100vh;
-    opacity: 0.7;
-}
-
 /** ---------------- 布局与主要容器 ---------------- */
 
 /** 应用主容器 */
@@ -736,42 +725,6 @@ body.light-theme .code-box {
     text-shadow: 0 0 3px rgba(255, 255, 255, 0.5), 0 0 8px var(--neon-violet);
 }
 
-/** 主菜单项 */
-#mainMenuPopup .menu-items-container button {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    width: 100%;
-    padding: 0.8rem 1.2rem;
-    font-size: 0.85rem;
-    color: #d1d5db;
-    text-align: left;
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/** 主菜单项悬浮效果 */
-#mainMenuPopup .menu-items-container button:hover {
-    color: #ffffff;
-    background: linear-gradient(90deg, rgba(34, 211, 238, 0.1), rgba(167, 139, 250, 0.15));
-}
-
-/** 主菜单项图标 */
-#mainMenuPopup .menu-items-container button i {
-    width: 1.2rem;
-    color: #9ca3af;
-    text-align: center;
-    transition: color 0.3s ease, text-shadow 0.3s ease;
-}
-
-/** 主菜单项图标悬浮效果 */
-#mainMenuPopup .menu-items-container button:hover i {
-    color: var(--neon-cyan);
-    text-shadow: 0 0 6px var(--neon-cyan);
-}
-
 /** ---------------- 文件与仓库列表 ---------------- */
 
 /** 文件与仓库列表容器 */
@@ -860,39 +813,11 @@ body.light-theme .code-box {
     opacity: 0;
 }
 
-#repoList .file-item .file-icon.has-cached-avatar > i.fa-github {
-    opacity: 0;
-}
-
-
-#repoList .file-item .file-icon.is-user-avatar-icon[data-avatar-url] {
-    width: 2rem;
-    height: 2rem;
-}
-
 #repoList .file-item .file-icon[data-avatar-url] .repo-avatar {
     width: 2rem;
     height: 2rem;
     border-radius: 0.4rem;
 }
-
-
-
-#repoList .file-item .file-icon.is-user-avatar-icon[data-avatar-url] {
-    width: 1.9rem;
-    height: 1.9rem;
-}
-
-#repoList .file-item .file-icon.is-user-avatar-icon[data-avatar-url] .repo-avatar {
-    width: 1.9rem;
-    height: 1.9rem;
-    border-radius: 50%;
-}
-
-
-
-
-
 
 /** 文件信息容器 */
 .file-info {
@@ -1125,8 +1050,7 @@ body.light-theme .code-box {
 /** ---------------- 缩略图加载状态 ---------------- */
 
 /** 缩略图错误图标和加载动画 */
-.thumbnail-error,
-.thumbnail-spinner {
+.thumbnail-error {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -1138,8 +1062,7 @@ body.light-theme .code-box {
 
 /** 缩略图状态切换 */
 .file-thumbnail-container.error .thumbnail-error,
-.file-thumbnail-container.loaded .file-thumbnail,
-.file-thumbnail-container.loading .thumbnail-spinner {
+.file-thumbnail-container.loaded .file-thumbnail {
     opacity: 1;
 }
 
@@ -1152,7 +1075,6 @@ body.light-theme .code-box {
 /** ---------------- 模态框与遮罩 ---------------- */
 
 /** 通用模态框遮罩 */
-#modalOverlay,
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -1179,15 +1101,6 @@ body.light-theme .code-box {
     overflow: hidden;
     border-radius: 0.4rem;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2), -1px -1px 3px rgba(75, 85, 99, 0.05);
-}
-
-/** 通用遮罩下的模态框内容区 */
-#modalOverlay .modal-content {
-    width: 100%;
-    max-width: 90vw;
-    min-height: unset;
-    max-height: unset;
-    padding: 0;
 }
 
 /** 模态框头部 */
@@ -1670,12 +1583,6 @@ body.light-theme .checkbox-container {
 #editorSearchPanel button:hover {
     color: #ffffff;
     background-color: rgba(255, 255, 255, 0.1);
-}
-
-/** 搜索激活时编辑器内容区域 */
-.editor-container.search-active #fileContent {
-    padding-top: 50px;
-    transition: padding-top 0.2s ease-out;
 }
 
 /** ---------------- 右键菜单 ---------------- */
@@ -3016,8 +2923,7 @@ input:checked + .slider:before {
 }
 
 /** 速率限制/应用状态详情 */
-.rate-limit-details p,
-.app-status-details p {
+.rate-limit-details p {
     margin: 0.2rem 0;
     font-size: 0.75rem;
     color: #d1d5db;
@@ -3082,17 +2988,9 @@ input:checked + .slider:before {
 .text-red-400 {
     color: #f87171 !important;
 }
-/** 文本颜色-绿 */
-.text-green-500 {
-    color: #22c55e !important;
-}
 /** 文本颜色-橙 */
 .text-orange-400 {
     color: #fb923c !important;
-}
-/** 文本颜色-灰 */
-.text-gray-400 {
-    color: #9ca3af !important;
 }
 
 /** 排序下拉菜单分割线 */
@@ -3348,33 +3246,10 @@ main.has-toolbar #pull-to-refresh {
 
 /** ---------------- 杂项与修复 ---------------- */
 
-/** 删除模态框利弊清单 */
-#deleteModal .modal-pro-con-list {
-    margin-top: 0.8rem;
-    padding-left: 0.5rem;
-    font-size: 0.75rem;
-    text-align: left;
-}
-#deleteModal .modal-pro-con-list p {
-    margin-bottom: 0.4rem;
-    line-height: 1.5;
-}
-#deleteModal .modal-pro-con-list strong {
-    font-weight: 600;
-    color: #e0e7ff;
-}
-#deleteModal .modal-pro-con-list .pros {
-    color: #22c55e;
-}
-#deleteModal .modal-pro-con-list .cons {
-    color: #f59e0b;
-}
-
 /** 通用悬浮背景色 */
 #closeEditModal:hover,
 #contextMenuItems a:hover,
 #mainMenuBtn:hover,
-#mainMenuPopup .menu-items-container button:hover,
 .custom-branch-select-option:hover {
     background-color: rgba(107, 114, 128, 0.06);
 }
@@ -3793,28 +3668,6 @@ body.light-theme #userName {
     text-shadow: none;
 }
 
-/** 主菜单项 */
-body.light-theme #mainMenuPopup .menu-items-container button {
-    color: #374151;
-}
-
-/** 主菜单项悬浮 */
-body.light-theme #mainMenuPopup .menu-items-container button:hover {
-    color: #111827;
-    background: #f3f4f6;
-}
-
-/** 主菜单项图标 */
-body.light-theme #mainMenuPopup .menu-items-container button i {
-    color: #6b7280;
-}
-
-/** 主菜单项图标悬浮 */
-body.light-theme #mainMenuPopup .menu-items-container button:hover i {
-    color: #4f46e5;
-    text-shadow: none;
-}
-
 /** 上传面板 */
 body.light-theme #uploadPanel {
     color: #1f2937;
@@ -4067,8 +3920,7 @@ body.light-theme .api-status-card h4 {
 }
 
 /** API状态面板详情文本 */
-body.light-theme .rate-limit-details p,
-body.light-theme .app-status-details p {
+body.light-theme .rate-limit-details p {
     color: #374151;
 }
 
@@ -4248,13 +4100,6 @@ transition: background-color 0.2s; / 添加平滑过渡 */
 body.light-theme #publishManagerModal .publish-item .btn-secondary:hover {
     background-color: #d1d5db;
 }
-
-/** 删除模态框利弊清单关键字 */
-body.light-theme #deleteModal .modal-pro-con-list strong {
-    color: #111827;
-}
-
-
 
 
 
@@ -4612,53 +4457,6 @@ body.light-theme #globalSearchInput {
     padding-left: 1rem !important;
 }
 
-.search-result-repo {
-    font-size: 0.65rem;
-    color: #a2a7c7;
-    margin-top: 0.2rem;
-}
-
-body.light-theme .search-result-repo {
-    color: #6b7280;
-}
-
-
-
-
-
-.repo-actions {
-    margin-left: auto;
-    padding-left: 0.5rem;
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-.star-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.1rem;
-    padding: 0.5rem;
-    border-radius: 50%;
-    color: #9ca3af;
-    transition: color 0.2s, transform 0.2s;
-}
-
-.star-btn:hover {
-    transform: scale(1.2);
-}
-
-.star-btn i.starred {
-    color: #facc15;
-    text-shadow: 0 0 8px rgba(250, 204, 21, 0.5);
-}
-
-body.light-theme .star-btn {
-    color: #6b7280;
-}
-
-
 .repo-name-header {
     display: flex;
     justify-content: space-between;
@@ -4914,60 +4712,10 @@ body.light-theme #usageGuideModal .publish-help-content code {
 
 
 
-/* --- 放在 style.css 文件中 --- */
-
-.releases-text-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem; /* 图标和文字的间距 */
-    padding: 0.2rem 0.6rem;
-    font-size: 0.7rem;
-    font-weight: 600;
-    border: 1px solid #4b5563;
-    color: #9ca3af;
-    background-color: transparent;
-    border-radius: 0.3rem;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.releases-text-btn:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: #6b7280;
-    color: #e0e7ff;
-}
-
-/* 亮色主题适配 */
-body.light-theme .releases-text-btn {
-    border-color: #d1d5db;
-    color: #6b7280;
-}
-
-body.light-theme .releases-text-btn:hover {
-    background-color: #f3f4f6;
-    border-color: #9ca3af;
-    color: #1f2937;
-}
-
-
-
-
 .search-result-path-list {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.search-result-path-grid {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: normal;
-    word-break: break-all;
-    line-height: 1.3;
-    max-height: calc(1.3 * 2em);
 }
 
 
@@ -5207,9 +4955,6 @@ body.light-theme #sideNavToggleBtn:hover {
 .file-item .fa-database {
     color: #1565C0 !important;
 }
-.file-item .fa-file-text {
-    color: #546E7A !important;
-}
 .file-item .fa-file-word {
     color: #2B579A !important;
 }
@@ -5227,19 +4972,6 @@ body.light-theme #sideNavToggleBtn:hover {
 }
 .file-item .fa-file-audio {
     color: #D81B60 !important;
-}
-.file-item .fa-light.fa-video {
-    color: #0097A7 !important;
-}
-.file-item .fa-file-archive {
-    color: #06a655 !important;
-}
-.file-item .fa-git {
-    color: #F05033 !important;
-}
-.file-item .fa-cog,
-.file-item .fa-cogs {
-    color: #616161 !important;
 }
 .file-item .fa-android {
     color: #A4C639 !important;
@@ -5354,8 +5086,6 @@ body.light-theme #cancelEdit:hover {
 #menuUsageGuide i { color: #60A5FA !important; } /* 使用指南: 导航蓝 */
 #menuSwitchAccount i { color: #4ADE80 !important; } /* 切换账号: 创建绿 */
 #menuLogout i { color: #F87171 !important; } /* 退出登录: 危险红 */
-
-#menuEffectsManager i { color: #4ADE80 !important; } /* 切换账号: 创建绿 */
 
 /* --- 5. 长按菜单图标 (新增) --- */
 [data-action="togglePin"] i, [data-action="viewUserRepos"] i { color: #FACC15 !important; } /* 置顶/用户仓库: 金黄色 */
@@ -5835,61 +5565,12 @@ body.light-theme .file-item.pinned-repo {
 
 
 /* 版本管理列表样式 */
-.manager-release-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    margin-bottom: 5px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
-    border: 1px solid transparent;
-}
-
-.manager-release-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.manager-release-tag {
-    font-weight: bold;
-    color: #e0e7ff;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
 .label-prerelease {
     font-size: 0.6rem;
     background: #f59e0b;
     color: #fff;
     padding: 1px 4px;
     border-radius: 3px;
-}
-
-.manager-release-date {
-    font-size: 0.7rem;
-    color: #9ca3af;
-    margin-top: 2px;
-}
-
-.manager-release-actions {
-    display: flex;
-    gap: 8px;
-}
-
-/* 亮色主题适配 */
-body.light-theme .manager-release-item {
-    background: #ffffff;
-    border-color: #e5e7eb;
-}
-body.light-theme .manager-release-tag {
-    color: #1f2937;
-}
-body.light-theme #createReleaseSection {
-    background: #f3f4f6 !important;
-    border-color: #e5e7eb !important;
 }
 
 
@@ -5973,82 +5654,6 @@ body.light-theme footer button::before {
     background: radial-gradient(circle, rgba(0, 0, 0, 0.05) 0%, transparent 70%);
 }
 
-
-.effect-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.8rem 1rem;
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    user-select: none;
-}
-
-.effect-item:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-}
-
-/* 激活/开启状态 */
-.effect-item.active {
-    background: linear-gradient(90deg, rgba(16, 185, 129, 0.25), rgba(6, 182, 212, 0.1));
-    border-color: #34d399;
-    box-shadow: 0 0 10px rgba(52, 211, 153, 0.1);
-}
-
-.effect-item .effect-name {
-    font-size: 0.9rem;
-    color: #e0e7ff;
-    font-weight: 500;
-}
-
-/* 开关指示器 */
-.effect-item .effect-toggle {
-    width: 36px;
-    height: 20px;
-    background-color: #4b5563;
-    border-radius: 20px;
-    position: relative;
-    transition: background-color 0.3s;
-}
-
-.effect-item .effect-toggle::after {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 16px;
-    height: 16px;
-    background-color: white;
-    border-radius: 50%;
-    transition: transform 0.3s;
-}
-
-.effect-item.active .effect-toggle {
-    background-color: #34d399;
-}
-
-.effect-item.active .effect-toggle::after {
-    transform: translateX(16px);
-}
-
-/* 亮色主题适配 */
-body.light-theme .effect-item {
-    background-color: #ffffff;
-    border-color: #e5e7eb;
-}
-body.light-theme .effect-item.active {
-    background-color: #ecfdf5;
-    border-color: #10b981;
-}
-body.light-theme .effect-item .effect-name {
-    color: #1f2937;
-}
-
-
-
 #nav-spectrum {
     position: absolute;
     bottom: 0; /* 贴底 */
@@ -6101,7 +5706,6 @@ body.light-theme #nav-spectrum {
 }
 
 /* 3. API 状态面板的文字 (可选) */
-.app-status-details, 
 .token-instructions {
     -webkit-user-select: text !important;
     user-select: text !important;
@@ -6686,11 +6290,6 @@ body.light-theme .ace_gutter-active-line {
     margin-bottom: 2px;
 }
 
-.honor-desc {
-    font-size: 0.7rem;
-    color: #94a3b8;
-}
-
 .honor-badge-icon {
     font-size: 1.2rem;
     opacity: 0.2;
@@ -6738,7 +6337,6 @@ body.light-theme .copy-hint { background: #f1f5f9; color: #64748b; }
 body.light-theme .honor-chip { background: #f8fafc; }
 body.light-theme .honor-chip:hover { background: #f1f5f9; }
 body.light-theme .honor-name { color: #334155; }
-body.light-theme .honor-desc { color: #64748b; }
 body.light-theme .honor-title::after { background: #e2e8f0; }
 
 
@@ -7014,14 +6612,6 @@ body.light-theme .btn-secondary-action:hover {
     -webkit-user-select: text !important;
     user-select: text !important;
     -webkit-touch-callout: default !important;
-}
-
-
-
-#refreshEffectsManagerBtn:hover,
-#refreshEffectsManagerBtn:active,
-#refreshEffectsManagerBtn:focus {
-    background-color: transparent !important;
 }
 
 
