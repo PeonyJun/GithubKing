@@ -1722,6 +1722,45 @@ body.light-theme #toast {
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2), -1px -1px 3px rgba(75, 85, 99, 0.05);
 }
 
+#uploadHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.1rem 0.15rem 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #d1d5db;
+}
+
+#uploadHeaderTitle {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#uploadToggleBtn {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 2px 6px;
+    font-size: 0.8rem;
+    line-height: 1;
+    border-radius: 0.2rem;
+}
+
+#uploadToggleBtn:hover {
+    color: #f3f4f6;
+}
+
+#uploadPanel.collapsed #uploadItems {
+    display: none;
+}
+
 #uploadItems {
     display: flex;
     flex-direction: column;
@@ -3140,6 +3179,18 @@ body.light-theme #uploadPanel {
     backdrop-filter: blur(10px);
     border-color: #e5e7eb;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme #uploadHeader {
+    color: #374151;
+}
+
+body.light-theme #uploadToggleBtn {
+    color: #6b7280;
+}
+
+body.light-theme #uploadToggleBtn:hover {
+    color: #111827;
 }
 
 body.light-theme .upload-size {

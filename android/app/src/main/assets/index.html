@@ -510,6 +510,12 @@
 </div>
 
 		<div id="uploadPanel" class="hidden">
+			<div id="uploadHeader">
+				<span id="uploadHeaderTitle">上传</span>
+				<button id="uploadToggleBtn" title="折叠/展开上传列表" aria-label="折叠上传列表">
+					<i class="fa fa-chevron-down"></i>
+				</button>
+			</div>
 			<div id="uploadItems" class="scmz">
 			</div>
 		</div>
@@ -6826,8 +6832,13 @@ function handleStartBatchUpload() {
     hidePreUploadModal();
     state.pendingUploadFiles = [];
 
+    const uploadHeaderTitle = document.getElementById('uploadHeaderTitle');
+    const uploadToggleBtn = document.getElementById('uploadToggleBtn');
+
     el.uploadPanel.classList.remove('hidden');
+    el.uploadPanel.classList.remove('collapsed');
     el.uploadItems.innerHTML = '';
+    if (uploadHeaderTitle) uploadHeaderTitle.textContent = `准备上传 ${filesToUpload.length} 个文件`;
 
     filesToUpload.forEach((file, index) => {
         let displayName = file.relativePath || file.webkitRelativePath || file.name;
@@ -6854,8 +6865,9 @@ function handleStartBatchUpload() {
 
     const runSequence = async (idx) => {
         if (idx >= total) {
+            if (uploadHeaderTitle) uploadHeaderTitle.textContent = `上传完成 (${total}/${total})`;
             setTimeout(() => el.uploadPanel.classList.add('hidden'), 1000);
-            showToast('所有文件上传完成', 'success');
+            showToast(`已上传 ${total} 个文件`, 'success');
 
             if (state.files) {
                 const patched = ConsistencyManager.apply(state.files);
@@ -6866,7 +6878,7 @@ function handleStartBatchUpload() {
             return;
         }
 
-        showToast(`正在上传 (${idx + 1}/${total}): ${filesToUpload[idx].name}`, 'loading', 0);
+        if (uploadHeaderTitle) uploadHeaderTitle.textContent = `正在上传 (${idx + 1}/${total}): ${filesToUpload[idx].name}`;
 
         try {
             if (state.currentView === 'assets_list') {
@@ -6880,6 +6892,14 @@ function handleStartBatchUpload() {
 
         await runSequence(idx + 1);
     };
+
+    if (uploadToggleBtn) {
+        uploadToggleBtn.onclick = (e) => {
+            e.stopPropagation();
+            const collapsed = el.uploadPanel.classList.toggle('collapsed');
+            uploadToggleBtn.querySelector('i').className = collapsed ? 'fa fa-chevron-up' : 'fa fa-chevron-down';
+        };
+    }
 
     runSequence(0);
 }
@@ -8926,7 +8946,6 @@ function initPullToRefresh() {
 
             try {
                 await Promise.race([handleRefresh(), timeoutPromise]);
-                showToast('刷新成功', 'success');
             } catch (error) {
                 let errorMsg = '刷新失败';
                 if (error.message === '请求超时') {
@@ -10496,7 +10515,6 @@ readmeHtml = marked.parse(rawMarkdown);
         try {
             await SimpleDB.del(CACHE_KEY);
             await showRepoOverview(repo);
-            showToast('刷新成功');
         } catch (err) {
             showToast('刷新失败', 'error');
         } finally {
@@ -11923,7 +11941,6 @@ if (selectAllEditorBtn) {
         if (window.aceEditorInstance) {
             window.aceEditorInstance.selectAll();
             window.aceEditorInstance.focus();
-            showToast('已全选所有内容');
         }
     };
 }
