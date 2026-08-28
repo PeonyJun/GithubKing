@@ -331,8 +331,6 @@
     
         <li><a href="javascript:void(0);" id="menuSwitchAccount"><i class="fa fa-exchange"></i>切换账号</a></li>
         
-        <li><a href="javascript:void(0);" id="ybp"><i class="fa-regular fa-lightbulb"></i>数据监控</a></li>
-        
         <li><a href="javascript:void(0);" id="menuUsageGuide"><i class="fa-regular fa-circle-question"></i>使用指南</a></li>
         <li><a href="javascript:void(0);" id="menuLogout"><i class="fa fa-sign-out"></i>退出登录</a></li>
     </ul>
@@ -569,120 +567,19 @@
             </div>
         </h3>
 
-        <!-- 代理列表区域 -->
-        <div class="proxy-list-container" id="proxyListContainer">
-            <div class="empty-state hidden" id="proxyListEmpty">
-                <i class="fa fa-plug"></i>
-                <p>暂无代理节点</p>
-                <span>点击右下角的 <i class="fa fa-plus-circle"></i> 添加，或从工具栏 <i class="fa fa-cloud-download"></i> 导入</span>
-            </div>
-            <!-- 代理项动态生成 -->
+        <!-- 代理前缀配置 -->
+        <div class="proxy-prefix-section">
+            <p class="proxy-prefix-label">代理前缀（用于加速 GitHub 下载与访问）</p>
+            <input id="proxyPrefixInput" type="url" placeholder="https://gh-proxy.org/" autocomplete="off">
         </div>
 
         <!-- 底部操作区 -->
         <div class="proxy-footer-actions">
-            <div class="proxy-footer-toolbar">
-                <button id="importBtn" class="btn-icon" title="从订阅链接导入并刷新">
-    <i class="fa fa-cloud-download"></i>
-    <span class="spinner-small hidden" id="importSpinner"></span>
-</button>
-                <button id="proxyTestAllBtn" class="btn-icon" title="全部测试延迟">
-                    <i class="fa-solid fa-bolt"></i>
-                    <span class="spinner-small hidden" id="proxyTestAllSpinner"></span>
-                </button>
-                <button id="proxyAutoSelectToggle" class="btn-icon" title="点击切换自动选择最低延迟代理">
-                    <i class="fa fa-magic"></i>
-                </button>
-                <button id="proxyClearAllBtn" class="btn-icon danger" title="清空所有代理">
-                    <i class="fa-regular fa-trash-can"></i>
-                </button>
-                <button id="proxyAddBtn" class="btn-icon" title="添加代理">
-            <i class="fa fa-plus"></i>
-        </button>
-            </div>
-            
-            
+            <button id="proxySaveBtn" class="btn btn-primary" style="width:100%;">保存设置</button>
         </div>
     </div>
 </div>
-		<!-- 添加/编辑代理弹窗 -->
-<div id="addEditProxyModal" class="modal-overlay hidden">
-    <div class="modal-form-container">
-        <h3 id="addEditProxyTitle">
-            <span class="modal-title-text">添加新代理</span>
-            <button class="btn-icon-sm" onclick="closeAddEditProxyModal()" title="关闭">
-                <i class="fa fa-times"></i>
-            </button>
-        </h3>
 
-        <input id="addEditProxyUrlInput" type="url" placeholder="请输入代理域名或URL" autocomplete="off">
-        
-        <div id="addEditProxyError" class="text-red-400" style="font-size: 0.75rem; margin-top: -0.4rem; margin-bottom: 0.4rem; display: none;">
-            
-        </div>
-
-      
-
-        
-        <div class="modal-buttons" style="margin-top:0.6rem;">
-            <button id="addEditProxyCancelBtn" class="btn btn-cancel">取消</button>
-            <button id="addEditProxySaveBtn" class="btn btn-primary" disabled>保存</button>
-        </div>
-    </div>
-</div>
-		<!-- 确认删除代理弹窗 -->
-		<div id="confirmDeleteProxyModal" class="modal-overlay hidden">
-			<div class="modal-form-container">
-				<h3 id="confirmDeleteProxyTitle">
-					<span class="modal-title-text">
-						确认删除
-					</span>
-					<button class="btn-icon-sm" onclick="hideConfirmDeleteProxyModal()" title="取消">
-						<i class="fa fa-times">
-						</i>
-					</button>
-				</h3>
-				<p id="confirmDeleteProxyMessage">
-				</p>
-				<div class="modal-buttons">
-					<button id="confirmDeleteProxyCancelBtn" class="btn btn-cancel">
-						取消
-					</button>
-					<button id="confirmDeleteProxyConfirmBtn" class="btn btn-danger">
-						确认删除
-					</button>
-				</div>
-			</div>
-		</div>
-		<!-- 确认清空代理弹窗 -->
-		<div id="confirmClearAllProxiesModal" class="modal-overlay hidden">
-			<div class="modal-form-container">
-				<h3>
-					<span class="modal-title-text">
-						确认清空所有代理
-					</span>
-					<button class="btn-icon-sm" onclick="hideConfirmClearAllProxiesModal()"
-					title="取消">
-						<i class="fa fa-times">
-						</i>
-					</button>
-				</h3>
-				<p>
-					这将删除所有代理
-				</p>
-				<div class="modal-buttons">
-					<button id="clearAllProxiesCancelBtn" class="btn btn-cancel">
-						取消
-					</button>
-					<button id="clearAllProxiesConfirmBtn" class="btn btn-danger">
-						确认清空
-					</button>
-				</div>
-			</div>
-		</div>
-		
-		
-		
 		<!-- 多选操作栏 -->
 		<div id="multi-select-bar">
 			<button class="action-btn cancel-btn" id="cancel-select-btn" title="取消">
@@ -709,35 +606,6 @@
 				</button>
 			</div>
 		</div>
-		<!-- API状态侧边栏 -->
-<div id="apiStatusOverlay" class="api-status-overlay hidden"></div>
-<div id="apiStatusPanel" class="api-status-panel">
-    <div class.api-status-header">
-
-    <!-- 头部操作按钮 -->
-    <div class="api-status-header-actions">
-        <h5>数据监控 仪表盘</h5>
-        <!-- 刷新按钮 -->
-        <button id="refreshApiStatusBtn" class="btn-icon-sm" title="刷新">
-            <i class="fa fa-refresh"></i>
-        </button>
-        <!-- 关闭按钮 -->
-        <button id="closeApiStatusPanel" class="btn-icon-sm" title="关闭">
-            <i class="fa fa-times"></i>
-        </button>
-    </div>
-</div>
-
-
-    <div id="apiStatusContent" class="api-status-content"> 
-        <!-- 内容动态生成 -->
-        <div class="loading-spinner" style="height: auto; padding: 2rem 0;">
-            <div class="spinner">
-            </div>
-        </div>
-    </div>
-    
-</div>
 		<!-- 右键菜单设置弹窗 -->
 <div id="contextMenuSettingsModal" class="modal-overlay hidden">
     <div class="modal-form-container">
@@ -1064,8 +932,7 @@
                     <br>- <b>批量删除：</b> 一次性删除多个文件/文件夹。
                     <br>- <b>批量下载：</b> 将选中的多个文件打包成一个 ZIP 下载。
                 </li>
-                <li><b>智能代理：</b> 导入代理源后，系统会<b>自动并发测速</b>，并静默切换到当前网络下延迟最低的节点，加速图片加载与下载。</li>
-                <li><b>API 仪表盘：</b> 侧边栏“数据监控”，实时显示 Core/Search 额度使用情况及重置时间。</li>
+                <li><b>代理加速：</b> 在代理设置中配置代理前缀（默认 https://gh-proxy.org/），可加速图片加载与文件下载，并支持复制代理链接分享。</li>
                 <li><b>多账号管理：</b> 登录页或侧边栏可添加多个 Token，一键无缝切换账号。</li>
             </ul>
 
@@ -1330,7 +1197,6 @@ let modalLastTapTime = 0;
 let modalLastTappedRepoId = null;
 let currentFetchController = null;
 let isContextMenuClosing = false;
-const PROXY_TEST_URL = 'https://raw.githubusercontent.com/rjdsq/github-king/main/代理/代理.txt';
 const IMAGE_EXTS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'ico', 'bmp', 'svg'];
 const VIDEO_EXTS = ['mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv'];
 const AUDIO_EXTS = ['mp3', 'wav', 'ogg', 'flac', 'm4a'];
@@ -1635,11 +1501,8 @@ const state = {
     
     
     originalContent: '',
-    proxies: JSON.parse(localStorage.getItem('proxies') || '[]'),
-    activeProxyIndex: parseInt(localStorage.getItem('active_proxy_index') || '0'),
     proxyGlobalEnable: JSON.parse(localStorage.getItem('proxy_global_enable') || 'true'),
-    autoSelectProxy: JSON.parse(localStorage.getItem('proxy_auto_select') || 'false'),
-    editingProxyIndex: null,
+    proxyPrefix: localStorage.getItem('proxy_prefix') || 'https://gh-proxy.org/',
     user: null,
     fileCache: new Map(),
     viewMode: localStorage.getItem('view_mode') || 'grid',
@@ -1688,12 +1551,6 @@ const state = {
 
 
 const recentlySavedCache = new Map();
-
-if (state.proxies.length === 0) {
-    state.activeProxyIndex = -1;
-} else if (state.activeProxyIndex < 0 || state.activeProxyIndex >= state.proxies.length) {
-    state.activeProxyIndex = 0;
-}
 
 
 initializeActiveToken(); 
@@ -1753,9 +1610,8 @@ main: document.querySelector('main'),
     fileList: document.getElementById('fileList'),
     repoList: document.getElementById('repoList'),
     pathNav: document.getElementById('pathNav'),
-    pathNavContainer: document.getElementById('pathNavContainer'),
-    ybp: document.getElementById('ybp'),
-    branchSwitcherContainer: document.getElementById('branchSwitcherContainer'),
+     pathNavContainer: document.getElementById('pathNavContainer'),
+     branchSwitcherContainer: document.getElementById('branchSwitcherContainer'),
     backBtn: document.getElementById('backBtn'),
     newFolderBtn: document.getElementById('newFolderBtn'),
     uploadBtn: document.getElementById('uploadBtn'),
@@ -1791,7 +1647,6 @@ setAsSiteConfirmBtn: document.getElementById('setAsSiteConfirmBtn'),
     repoDetailsModal: document.getElementById('repoDetailsModal'),
     menuLogout: document.getElementById('menuLogout'),
     menuProxySettings: document.getElementById('menuProxySettings'),
-    proxyTestAllBoltIcon: document.querySelector('#proxyTestAllBtn > i'),
     
     menuBatchPublishSites: document.getElementById('menuBatchPublishSites'),
     newFileBtn: document.getElementById('newFileBtn'),
@@ -1831,31 +1686,11 @@ menuUsageGuide: document.getElementById('menuUsageGuide'),
     viewToggleBtn: document.getElementById('viewToggleBtn'),
     proxyQuickToggle: document.getElementById('proxyQuickToggle'),
     proxySettingsModal: document.getElementById('proxySettingsModal'),
-    proxyAutoSelectToggle: document.getElementById('proxyAutoSelectToggle'),
     userName: document.getElementById('userName'),
-    importBtn: document.getElementById('importBtn'),
     proxyGlobalEnableToggle: document.getElementById('proxyGlobalEnableToggle'),
-    proxyAddBtn: document.getElementById('proxyAddBtn'),
-    proxyListContainer: document.getElementById('proxyListContainer'),
-    proxyListEmpty: document.getElementById('proxyListEmpty'),
-    proxyTestAllBtn: document.getElementById('proxyTestAllBtn'),
-    proxyTestAllSpinner: document.getElementById('proxyTestAllSpinner'),
-    proxyClearAllBtn: document.getElementById('proxyClearAllBtn'),
     proxyCancelSettingsBtn: document.getElementById('proxyCancelSettingsBtn'),
-    addEditProxyModal: document.getElementById('addEditProxyModal'),
-    addEditProxyTitle: document.getElementById('addEditProxyTitle'),
-    addEditProxyUrlInput: document.getElementById('addEditProxyUrlInput'),
-    addEditProxyError: document.getElementById('addEditProxyError'),
-    addEditProxySaveBtn: document.getElementById('addEditProxySaveBtn'),
-    confirmDeleteProxyModal: document.getElementById('confirmDeleteProxyModal'),
-    confirmDeleteProxyTitle: document.getElementById('confirmDeleteProxyTitle'),
-        importSpinner: document.getElementById('importSpinner'),
-    confirmDeleteProxyMessage: document.getElementById('confirmDeleteProxyMessage'),
-    confirmDeleteProxyCancelBtn: document.getElementById('confirmDeleteProxyCancelBtn'),
-    confirmDeleteProxyConfirmBtn: document.getElementById('confirmDeleteProxyConfirmBtn'),
-    confirmClearAllProxiesModal: document.getElementById('confirmClearAllProxiesModal'),
-    clearAllProxiesCancelBtn: document.getElementById('clearAllProxiesCancelBtn'),
-    clearAllProxiesConfirmBtn: document.getElementById('clearAllProxiesConfirmBtn'),
+    proxySaveBtn: document.getElementById('proxySaveBtn'),
+    proxyPrefixInput: document.getElementById('proxyPrefixInput'),
     renameModal: document.getElementById('renameModal'),
     renameTitle: document.getElementById('renameTitle'),
     renameInput: document.getElementById('renameInput'),
@@ -1908,13 +1743,8 @@ menuUsageGuide: document.getElementById('menuUsageGuide'),
     contextMenuSettingsModal: document.getElementById('contextMenuSettingsModal'),
     contextMenuSettingsCloseBtn: document.getElementById('contextMenuSettingsCloseBtn'),
     contextMenuSettingsContent: document.getElementById('contextMenuSettingsContent'),
-    currentRepo: document.getElementById('currentRepo'),
-    apiStatusPanel: document.getElementById('apiStatusPanel'),
-    apiStatusOverlay: document.getElementById('apiStatusOverlay'),
-    apiStatusContent: document.getElementById('apiStatusContent'),
-    closeApiStatusPanel: document.getElementById('closeApiStatusPanel'),
-    refreshApiStatusBtn: document.getElementById('refreshApiStatusBtn'),
-    revertEditBtn: document.getElementById('revertEditBtn'),
+     currentRepo: document.getElementById('currentRepo'),
+     revertEditBtn: document.getElementById('revertEditBtn'),
     editorScaleHint: document.getElementById('editorScaleHint'),
     searchInFileBtn: document.getElementById('searchInFileBtn'),
 editorSearchPanel: document.getElementById('editorSearchPanel'),
@@ -2455,27 +2285,14 @@ function escapeHtml(unsafe) {
         .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
-function getDomainFromUrl(url) {
-    try {
-        const urlObj = new URL(url.startsWith('http') ? url : `https://${url}`);
-        return urlObj.hostname;
-    } catch (e) {
-        return '';
-    }
-}
-
 function getProxiedUrl(originalUrl) {
     try {
         if (!originalUrl || !originalUrl.startsWith('http')) return originalUrl;
         
-        const enable = state.proxyGlobalEnable;
-        if (!enable) return originalUrl;
+        if (!state.proxyGlobalEnable) return originalUrl;
 
-        const proxies = state.proxies;
-        const index = state.activeProxyIndex;
-
-        if (proxies.length > 0 && index >= 0 && index < proxies.length) {
-            let proxyUrl = proxies[index].url;
+        if (state.proxyPrefix) {
+            let proxyUrl = state.proxyPrefix.trim();
             if (proxyUrl) {
                 if (!proxyUrl.endsWith('/')) proxyUrl += '/';
                 return proxyUrl + originalUrl;
@@ -2735,8 +2552,7 @@ function updateFileListViewMode() {
 
 function updateAllProxySwitchUI() {
     const isEnabled = !!state.proxyGlobalEnable;
-    const currentProxy = state.proxies[state.activeProxyIndex];
-    const title = isEnabled && currentProxy ? `代理已开启 (${currentProxy.url})` : '代理已关闭';
+    const title = isEnabled ? `代理已开启 (${state.proxyPrefix || ''})` : '代理已关闭';
     if (el.proxyQuickToggle) {
         el.proxyQuickToggle.classList.toggle('active', isEnabled);
         el.proxyQuickToggle.title = title;
@@ -2748,10 +2564,6 @@ function updateAllProxySwitchUI() {
             label.title = isEnabled ? '点击关闭全局代理' : '点击开启全局代理';
         }
     }
-}
-
-function updateProxyUI() {
-    updateAllProxySwitchUI();
 }
 
 function preloadRepoImages() {
@@ -2811,27 +2623,6 @@ function preloadRepoImages() {
         }
     };
     runPreload();
-}
-
-function setActiveProxy(index, showNotification = true) {
-    if (index < 0 || index >= state.proxies.length) return;
-    
-    const previousIndex = state.activeProxyIndex;
-    state.proxyGlobalEnable = true;
-    state.activeProxyIndex = index;
-    
-    saveProxyConfig();
-    renderProxyList();
-    
-    if (showNotification && previousIndex !== index) {
-        showToast(`已切换全局代理`);
-    }
-
-    if (state.currentRepo) {
-        state.shouldAnimateList = false;
-        renderFileList();
-        preloadRepoImages();
-    }
 }
 
 async function setProxyGlobalState(isEnabled, shouldRefreshFiles = false) {
@@ -5558,10 +5349,9 @@ async function downloadReleaseAsset(asset) {
 
     let downloadUrl = asset.browser_download_url;
 
-    if (state.proxyGlobalEnable && state.proxies.length > 0 && state.activeProxyIndex !== -1) {
-        const activeProxy = state.proxies[state.activeProxyIndex];
-        if (activeProxy && activeProxy.url && activeProxy.type === 'prefix') {
-            let proxyBase = activeProxy.url;
+    if (state.proxyGlobalEnable && state.proxyPrefix) {
+        let proxyBase = state.proxyPrefix.trim();
+        if (proxyBase) {
             if (!proxyBase.endsWith('/')) {
                 proxyBase += '/';
             }
@@ -5687,14 +5477,8 @@ function copyProxyLink(file) {
     const rawUrl = file.download_url || 
                    file.html_url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
 
-    const activeProxy = (state.proxies && state.activeProxyIndex >= 0 && state.activeProxyIndex < state.proxies.length) 
-                        ? state.proxies[state.activeProxyIndex] 
-                        : null;
-
-    const isProxyEffective = state.proxyGlobalEnable && activeProxy && activeProxy.url;
-
-    if (isProxyEffective) {
-        let proxyBase = activeProxy.url.trim();
+    if (state.proxyGlobalEnable && state.proxyPrefix) {
+        let proxyBase = state.proxyPrefix.trim();
         if (!proxyBase.endsWith('/')) {
             proxyBase += '/';
         }
@@ -8228,589 +8012,33 @@ function goUp() {
     history.back();
 }
 
+function openProxySettingsModal() {
+    if (el.proxyPrefixInput) {
+        el.proxyPrefixInput.value = state.proxyPrefix || '';
+    }
+    if (el.proxyGlobalEnableToggle) {
+        el.proxyGlobalEnableToggle.checked = !!state.proxyGlobalEnable;
+    }
+    el.proxySettingsModal.classList.remove('hidden');
+    uiStateStack.push(closeProxySettingsModal);
+}
+
 function closeProxySettingsModal() {
     el.proxySettingsModal.classList.add('hidden');
     const index = uiStateStack.indexOf(closeProxySettingsModal);
     if (index > -1) uiStateStack.splice(index, 1);
 }
 
-function openProxySettingsModal() {
-    updateProxySettingsUI();
-    renderProxyList();
-    el.proxySettingsModal.classList.remove('hidden');
-    uiStateStack.push(closeProxySettingsModal);
-}
-
-function updateProxySettingsUI() {
-    updateProxyUI();
-    const isAutoSelectEnabled = !!state.autoSelectProxy;
-    el.proxyAutoSelectToggle.classList.toggle('active', isAutoSelectEnabled);
-    el.proxyAutoSelectToggle.title = isAutoSelectEnabled ? '自动优选代理已开启' : '自动优选代理已关闭';
-}
-
-async function testProxyEnhanced(proxyUrl) {
-    const TIMEOUT_MS = 5000;
-    const ROUNDS = 3;
-    
-    if (!proxyUrl) return { ok: false, ms: null };
-
-    let baseUrl = proxyUrl;
-    if (!baseUrl.endsWith('/')) baseUrl += '/';
-    const targetUrl = baseUrl + PROXY_TEST_URL;
-
-    const latencies = [];
-
-    for (let i = 0; i < ROUNDS; i++) {
-        const start = performance.now();
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
-        
-        try {
-            const cacheBuster = (targetUrl.includes('?') ? '&' : '?') + `_t=${Date.now()}_${i}`;
-            const res = await fetch(targetUrl + cacheBuster, { 
-                method: 'GET', 
-                cache: 'no-store', 
-                signal: controller.signal 
-            });
-            
-            clearTimeout(timeoutId);
-            
-            if (res.ok) {
-                await res.text();
-                latencies.push(performance.now() - start);
-            }
-        } catch (e) {
-            clearTimeout(timeoutId);
-        }
+function saveProxySettings() {
+    let prefix = (el.proxyPrefixInput && el.proxyPrefixInput.value.trim()) || '';
+    if (prefix && !/^https?:\/\//i.test(prefix)) {
+        prefix = 'https://' + prefix;
     }
-
-    if (latencies.length === 0) {
-        return { ok: false, ms: null, err: '连接失败' };
-    }
-
-    const average = latencies.reduce((a, b) => a + b, 0) / latencies.length;
-    return { ok: true, ms: Math.round(average), err: null };
-}
-
-function renderProxyList() {
-    const container = el.proxyListContainer;
-    container.innerHTML = '';
-    if (state.proxies.length === 0) {
-        el.proxyListEmpty.classList.remove('hidden');
-        el.proxyTestAllBtn.disabled = true;
-        el.proxyClearAllBtn.disabled = true;
-        el.proxyAutoSelectToggle.disabled = true;
-    } else {
-        el.proxyListEmpty.classList.add('hidden');
-        el.proxyTestAllBtn.disabled = false;
-        el.proxyClearAllBtn.disabled = false;
-        el.proxyAutoSelectToggle.disabled = false;
-    }
-
-    const sortedProxies = [...state.proxies].sort((a, b) => {
-        const getPriority = (proxy) => {
-            if (proxy.status === 'ok') return 1;
-            if (proxy.status === 'fail') return 3;
-            return 2;
-        };
-
-        const priorityA = getPriority(a);
-        const priorityB = getPriority(b);
-
-        if (priorityA !== priorityB) {
-            return priorityA - priorityB;
-        }
-
-        if (priorityA === 1) {
-            return (a.latency ?? Infinity) - (b.latency ?? Infinity);
-        }
-
-        return 0;
-    });
-
-    sortedProxies.forEach((proxy) => {
-        const index = state.proxies.indexOf(proxy);
-        const proxyItem = document.createElement('div');
-        proxyItem.className = 'proxy-item';
-        if (index === state.activeProxyIndex) proxyItem.classList.add('active');
-        
-        let statusClass = 'gray', latencyText = '未测试', typeText = '';
-        if (proxy.type === 'raw_domain_replace') {
-            typeText = '类型：替换域名';
-        } else if (proxy.type === 'prefix') {
-            typeText = '类型：添加前缀';
-        }
-
-        if (proxy.status === 'testing') {
-            latencyText = `<span class="spinner-small"></span>`;
-        } else if (proxy.status === 'ok') {
-            latencyText = `${proxy.latency} ms`;
-            if (proxy.latency <= 500) statusClass = 'green';
-            else if (proxy.latency <= 2000) statusClass = 'yellow';
-            else statusClass = 'red';
-        } else if (proxy.status === 'fail') {
-            statusClass = 'red';
-            latencyText = '失败';
-        }
-        
-        proxyItem.innerHTML = `
-            <div class="proxy-identity">
-                <span class="status-dot ${statusClass}"></span>
-                <div class="proxy-url-details">
-                    <span class="proxy-url" title="${proxy.url || ''}">${getDomainFromUrl(proxy.url) || '无效URL'}</span>
-                    ${typeText ? `<span class="proxy-type-label">${typeText}</span>` : ''}
-                </div>
-            </div>
-            <div class="proxy-status-actions">
-                <span class="latency-text ${statusClass}">${latencyText}</span>
-                <div class="proxy-actions">
-                    <button class="btn-icon-sm edit-proxy-btn" data-index="${index}" title="编辑"><i class="fa fa-pencil"></i></button>
-                    <button class="btn-icon-sm delete-proxy-btn danger" data-index="${index}" title="删除"><i class="fa-regular fa-trash-can"></i></button>
-                </div>
-            </div>
-        `;
-        proxyItem.addEventListener('click', (e) => {
-            if (e.target.closest('.edit-proxy-btn, .delete-proxy-btn')) return;
-            if (index === state.activeProxyIndex) return;
-            setActiveProxy(index);
-        });
-        container.appendChild(proxyItem);
-    });
-
-    container.querySelectorAll('.edit-proxy-btn').forEach(button => {
-        button.onclick = (e) => { e.stopPropagation(); openAddEditProxyModal(parseInt(e.currentTarget.dataset.index)); };
-    });
-    container.querySelectorAll('.delete-proxy-btn').forEach(button => {
-        button.onclick = (e) => { e.stopPropagation(); showConfirmDeleteProxyModal(parseInt(e.currentTarget.dataset.index)); };
-    });
-    saveProxyConfig();
-}
-
-function saveProxyConfig() {
-    localStorage.setItem('proxies', JSON.stringify(state.proxies));
-    localStorage.setItem('active_proxy_index', JSON.stringify(state.activeProxyIndex));
-    localStorage.setItem('proxy_global_enable', JSON.stringify(state.proxyGlobalEnable));
-    updateProxyUI();
-}
-
-function openAddEditProxyModal(index = null) {
-    state.editingProxyIndex = index;
-    const modal = el.addEditProxyModal;
-    const titleTextSpan = el.addEditProxyTitle.querySelector('.modal-title-text');
-    const urlInput = el.addEditProxyUrlInput;
-    const saveBtn = el.addEditProxySaveBtn;
-    const cancelBtn = document.getElementById('addEditProxyCancelBtn');
-    urlInput.value = '';
-    el.addEditProxyError.style.display = 'none';
-    if (index !== null && state.proxies[index]) {
-        const proxy = state.proxies[index];
-        titleTextSpan.textContent = '编辑代理';
-        urlInput.value = proxy.url;
-        urlInput.placeholder = '修改代理地址';
-    } else {
-        titleTextSpan.textContent = '添加新代理';
-        urlInput.placeholder = '例如：https://ghproxy.net/';
-    }
-    cancelBtn.onclick = closeAddEditProxyModal;
-    saveBtn.onclick = null; 
-    modal.classList.remove('hidden');
-    validateAddEditProxyInput();
-    uiStateStack.push(closeAddEditProxyModal);
-}
-
-function closeAddEditProxyModal() {
-    el.addEditProxyModal.classList.add('hidden');
-    state.editingProxyIndex = null;
-    el.addEditProxySaveBtn.disabled = false;
-    el.addEditProxySaveBtn.classList.remove('btn-processing');
-    el.addEditProxySaveBtn.innerHTML = '保存';
-    const index = uiStateStack.indexOf(closeAddEditProxyModal);
-    if (index > -1) uiStateStack.splice(index, 1);
-}
-
-function validateAddEditProxyInput() {
-    const url = el.addEditProxyUrlInput.value.trim();
-    const saveBtn = el.addEditProxySaveBtn;
-    let fullUrl = url;
-    if (url && !/^https?:\/\//i.test(fullUrl)) fullUrl = 'https://' + fullUrl;
-    const isDuplicate = state.proxies.some((proxy, index) => {
-        if (state.editingProxyIndex !== null && index === state.editingProxyIndex) return false;
-        let existingUrl = proxy.url;
-        if (!/^https?:\/\//i.test(existingUrl)) existingUrl = 'https://' + existingUrl;
-        return existingUrl === fullUrl;
-    });
-    if (!url) {
-        saveBtn.disabled = true;
-        saveBtn.onclick = null;
-    } else if (isDuplicate) {
-        saveBtn.disabled = true;
-        saveBtn.onclick = () => { showToast('该代理已存在'); };
-    } else {
-        saveBtn.disabled = false;
-        saveBtn.onclick = handleSaveProxy;
-    }
-    return !isDuplicate && !!url;
-}
-
-async function handleSaveProxy() {
-    let url = el.addEditProxyUrlInput.value.trim();
-    if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
-    const isEditing = state.editingProxyIndex !== null;
-    let indexToTest;
-    if (isEditing) {
-        indexToTest = state.editingProxyIndex;
-        const proxyToEdit = state.proxies[indexToTest];
-        proxyToEdit.url = url;
-        proxyToEdit.status = 'testing';
-        proxyToEdit.latency = null;
-        proxyToEdit.err = null;
-        proxyToEdit.type = null;
-        showToast('代理已更新，正在重新测试...');
-    } else {
-        const newProxy = { url: url, status: 'testing', latency: null, err: null, type: null };
-        state.proxies.unshift(newProxy); 
-        indexToTest = 0;
-        showToast('代理已添加，正在后台测试...');
-    }
-    closeAddEditProxyModal();
-    renderProxyList();
-    const proxyToTest = state.proxies[indexToTest];
-    if (!proxyToTest) return;
-    const result = await testProxyEnhanced(proxyToTest.url);
-    proxyToTest.latency = result.ms;
-    proxyToTest.status = result.ok ? 'ok' : 'fail';
-    proxyToTest.err = result.err;
-    proxyToTest.type = result.type;
-    renderProxyList();
-}
-
-function showConfirmDeleteProxyModal(index) {
-    const proxy = state.proxies[index];
-    el.confirmDeleteProxyTitle.querySelector('.modal-title-text').textContent = '确认删除代理';
-    el.confirmDeleteProxyMessage.innerHTML = `确定要删除代理 <strong>"${escapeHtml(proxy.url)}"</strong> 吗？此操作不可撤销。`;
-    el.confirmDeleteProxyModal.classList.remove('hidden');
-    el.confirmDeleteProxyConfirmBtn.onclick = null;
-    el.confirmDeleteProxyCancelBtn.onclick = null;
-    el.confirmDeleteProxyConfirmBtn.onclick = async () => {
-        el.confirmDeleteProxyConfirmBtn.disabled = true;
-        el.confirmDeleteProxyConfirmBtn.classList.add('btn-processing');
-        el.confirmDeleteProxyConfirmBtn.innerHTML = `删除中 <span class="spinner-small"></span>`;
-        try {
-            await deleteProxy(index);
-            hideConfirmDeleteProxyModal();
-        } finally {
-            el.confirmDeleteProxyConfirmBtn.disabled = false;
-            el.confirmDeleteProxyConfirmBtn.classList.remove('btn-processing');
-            el.confirmDeleteProxyConfirmBtn.innerHTML = '确认删除';
-        }
-    };
-    el.confirmDeleteProxyCancelBtn.onclick = hideConfirmDeleteProxyModal;
-    uiStateStack.push(hideConfirmDeleteProxyModal);
-}
-
-function hideConfirmDeleteProxyModal() {
-    el.confirmDeleteProxyModal.classList.add('hidden');
-    const index = uiStateStack.indexOf(hideConfirmDeleteProxyModal);
-    if (index > -1) uiStateStack.splice(index, 1);
-}
-
-function showConfirmClearAllProxiesModal() {
-    el.confirmClearAllProxiesModal.classList.remove('hidden');
-    el.clearAllProxiesConfirmBtn.disabled = false;
-    el.clearAllProxiesConfirmBtn.innerHTML = '确认清空';
-    uiStateStack.push(hideConfirmClearAllProxiesModal);
-}
-
-function hideConfirmClearAllProxiesModal() {
-    el.confirmClearAllProxiesModal.classList.add('hidden');
-    const index = uiStateStack.indexOf(hideConfirmClearAllProxiesModal);
-    if (index > -1) uiStateStack.splice(index, 1);
-}
-
-async function clearAllProxiesConfirmed() {
-    el.clearAllProxiesConfirmBtn.disabled = true;
-    el.clearAllProxiesConfirmBtn.classList.add('btn-processing');
-    el.clearAllProxiesConfirmBtn.innerHTML = `清空中 <span class="spinner-small"></span>`;
-    state.proxies = [];
-    state.activeProxyIndex = -1;
-    showToast('所有代理已清空');
-    hideConfirmClearAllProxiesModal();
-    renderProxyList();
-    el.clearAllProxiesConfirmBtn.disabled = false;
-    el.clearAllProxiesConfirmBtn.classList.remove('btn-processing');
-    el.clearAllProxiesConfirmBtn.innerHTML = '确认清空';
-}
-
-async function deleteProxy(index) {
-    state.proxies.splice(index, 1);
-    if (state.activeProxyIndex === index) {
-        state.activeProxyIndex = state.proxies.length > 0 ? 0 : -1;
-    } else if (state.activeProxyIndex > index) {
-        state.activeProxyIndex--;
-    }
-    showToast('代理已删除');
-    renderProxyList();
-}
-
-
-
-
-
-async function testAllProxies(showInitialToast = true) {
-    if (state.proxies.length === 0) {
-        if (showInitialToast) showToast('没有代理可供测试', 'info');
-        return;
-    }
-    el.proxyTestAllBtn.disabled = true;
-    el.proxyTestAllSpinner.classList.remove('hidden');
-    el.proxyTestAllBoltIcon.classList.add('hidden');
-
-    if (showInitialToast) {
-        showToast(`开始测试 ${state.proxies.length} 个代理...`);
-    }
-
-    state.proxies.forEach(proxy => {
-        proxy.status = 'testing';
-        proxy.latency = null;
-        proxy.err = null;
-        proxy.type = null;
-    });
-    renderProxyList();
-
-
-//修改同时测试的代理数量
-    const BATCH_SIZE = 30;
-    for (let i = 0; i < state.proxies.length; i += BATCH_SIZE) {
-        const batch = state.proxies.slice(i, i + BATCH_SIZE);
-        const testPromises = batch.map(async (proxy) => {
-            try {
-                const result = await testProxyEnhanced(proxy.url);
-                proxy.latency = result.ms;
-                proxy.status = result.ok ? 'ok' : 'fail';
-                proxy.err = result.err;
-                proxy.type = result.type;
-            } catch (error) {
-                proxy.status = 'fail';
-                proxy.err = '测试异常';
-            }
-        });
-        await Promise.all(testPromises);
-        renderProxyList();
-    }
-
-    showToast('所有代理测试完成！');
-    el.proxyTestAllBtn.disabled = false;
-    el.proxyTestAllBoltIcon.classList.remove('hidden');
-    el.proxyTestAllSpinner.classList.add('hidden');
-}
-
-
-
-
-
-async function importProxiesFromUrl() {
-    const importButton = el.importBtn;
-    const importIcon = importButton.querySelector('i');
-    const importSpinner = el.importSpinner;
-
-    importButton.disabled = true;
-    if (importIcon) importIcon.classList.add('hidden');
-    if (importSpinner) importSpinner.classList.remove('hidden');
-    
-    showToast('正在获取云端节点...', 'info');
-
-    try {
-        const PROXY_PREFIXES = [
-            'https://gh.927223.xyz/',
-            'https://ghproxy.net/',
-            'https://ghfast.top/',
-            'https://tvv.tw/'
-        ];
-        
-        const timestamp = `?t=${Date.now()}`;
-        const urlsToTry = [
-            ...PROXY_PREFIXES.map(prefix => prefix + PROXY_TEST_URL + timestamp),
-            PROXY_TEST_URL + timestamp 
-        ];
-
-        let responseText = null;
-        let success = false;
-
-        for (const url of urlsToTry) {
-            try {
-                const response = await fetch(url, { cache: 'no-store' });
-                if (response.ok) {
-                    responseText = await response.text();
-                    success = true;
-                    break; 
-                }
-            } catch (error) {
-                continue;
-            }
-        }
-
-        if (!success) throw new Error('无法连接到节点源');
-        
-        const urls = responseText.split('\n').map(url => url.trim()).filter(url => url && url.length > 5);
-        
-        if (urls.length > 0) {
-            let addedCount = 0;
-            urls.forEach(u => {
-                const cleanU = u.replace(/\/$/, '');
-                const exists = state.proxies.some(p => p.url && p.url.replace(/\/$/, '') === cleanU);
-                if (!exists) {
-                    state.proxies.push({ url: u, status: null, latency: null });
-                    addedCount++;
-                }
-            });
-
-            if (addedCount > 0) {
-                if (state.activeProxyIndex === -1) {
-                    state.activeProxyIndex = Math.floor(Math.random() * state.proxies.length);
-                }
-                saveProxyConfig();
-                renderProxyList();
-                showToast(`已更新 ${addedCount} 个节点`);
-                findAndSetBestProxy(true);
-            } else {
-                showToast('节点列表已是最新');
-            }
-        }
-
-    } catch (error) {
-        showToast(`更新失败: ${error.message}`, 'error');
-    } finally {
-        importButton.disabled = false;
-        if (importIcon) importIcon.classList.remove('hidden');
-        if (importSpinner) importSpinner.classList.add('hidden');
-    }
-}
-
-
-function initProxySystem() {
-    state.activeProxyIndex = parseInt(localStorage.getItem('active_proxy_index') || '-1');
-    state.proxyGlobalEnable = JSON.parse(localStorage.getItem('proxy_global_enable') || 'true');
-    state.autoSelectProxy = JSON.parse(localStorage.getItem('proxy_auto_select') || 'true');
-
-    if (state.proxies.length === 0) {
-        importProxiesFromUrl();
-    } else {
-        if (state.activeProxyIndex === -1 || state.activeProxyIndex >= state.proxies.length) {
-            state.activeProxyIndex = Math.floor(Math.random() * state.proxies.length);
-            saveProxyConfig();
-        }
-
-        const lastCheck = parseInt(localStorage.getItem('last_proxy_check_time') || '0');
-        const now = Date.now();
-        const ONE_DAY = 24 * 60 * 60 * 1000;
-
-        if (now - lastCheck > ONE_DAY) {
-            findAndSetBestProxy(true);
-        } else {
-            const current = state.proxies[state.activeProxyIndex];
-            if (current) {
-                testProxyEnhanced(current.url).then(res => {
-                    if (!res.ok) {
-                        findAndSetBestProxy(true);
-                    }
-                });
-            }
-        }
-    }
-    updateProxyUI();
-}
-
-
-
-
-
-
-async function findAndSetBestProxy(isSilent = false) {
-    if (state.proxies.length === 0) {
-        if (!isSilent) importProxiesFromUrl();
-        return;
-    }
-
-    if (!isSilent) {
-        el.proxyTestAllBtn.disabled = true;
-        const icon = el.proxyTestAllBtn.querySelector('i');
-        if(icon) icon.className = 'fa fa-spinner fa-spin';
-        showToast(`开始测速 (共${state.proxies.length}个节点)...`);
-    }
-
-    const BATCH_SIZE = 4;
-    const allProxies = state.proxies;
-    
-    for (let i = 0; i < allProxies.length; i += BATCH_SIZE) {
-        const batch = allProxies.slice(i, i + BATCH_SIZE);
-        
-        const batchPromises = batch.map(async (proxy) => {
-            proxy.status = 'testing';
-            const result = await testProxyEnhanced(proxy.url);
-            proxy.latency = result.ms;
-            proxy.status = result.ok ? 'ok' : 'fail';
-            proxy.err = result.err;
-            return proxy;
-        });
-        
-        await Promise.all(batchPromises);
-        
-        if (!el.proxySettingsModal.classList.contains('hidden')) {
-            renderProxyList();
-        }
-    }
-
-    const validProxies = state.proxies.filter(p => p.status === 'ok' && p.latency !== null);
-    
-    if (validProxies.length > 0) {
-        validProxies.sort((a, b) => a.latency - b.latency);
-        const bestProxy = validProxies[0];
-        const bestIndex = state.proxies.indexOf(bestProxy);
-
-        if (bestIndex !== -1) {
-            const currentProxy = state.proxies[state.activeProxyIndex];
-            
-            const isCurrentInvalid = !currentProxy || currentProxy.status !== 'ok' || currentProxy.latency > 1500;
-            
-            if (state.autoSelectProxy || isCurrentInvalid) {
-                if (state.activeProxyIndex !== bestIndex) {
-                    setActiveProxy(bestIndex, !isSilent);
-                }
-            }
-        }
-    } else {
-        if (!isSilent) showToast('所有节点均无法连接', 'error');
-    }
-
-    localStorage.setItem('last_proxy_check_time', Date.now().toString());
-    saveProxyConfig();
-
-    if (!isSilent) {
-        el.proxyTestAllBtn.disabled = false;
-        const icon = el.proxyTestAllBtn.querySelector('i');
-        if(icon) icon.className = 'fa-solid fa-bolt';
-    }
-}
-
-
-
-
-
-
-
-async function handleRefreshApiStatus() {
-    const refreshBtn = el.refreshApiStatusBtn;
-    const icon = refreshBtn.querySelector('i');
-    refreshBtn.disabled = true;
-    icon.classList.add('fa-spin-custom');
-    try {
-        await fetchAndRenderApiStatus();
-    } catch (error) {
-        console.error("手动刷新API状态时出错:", error);
-    } finally {
-        refreshBtn.disabled = false;
-        icon.classList.remove('fa-spin-custom');
-    }
+    state.proxyPrefix = prefix;
+    localStorage.setItem('proxy_prefix', prefix);
+    updateAllProxySwitchUI();
+    showToast('代理前缀已保存');
+    closeProxySettingsModal();
 }
 
 const closeMultiSelect = () => toggleMultiSelectMode(false);
@@ -9101,29 +8329,14 @@ function downloadRepoAsZip(repo) {
     let zipUrl = zipRaw;
     let viaProxy = false;
 
-    if (state.proxyGlobalEnable && state.proxies.length > 0 && state.activeProxyIndex !== -1) {
-        const activeProxy = state.proxies[state.activeProxyIndex];
-        if (activeProxy && activeProxy.url && activeProxy.type) {
-            if (activeProxy.type === 'prefix') {
-                let proxyBase = activeProxy.url;
-                if (!proxyBase.endsWith('/')) {
-                    proxyBase += '/';
-                }
-                zipUrl = proxyBase + zipRaw;
-                viaProxy = true;
-            } else if (activeProxy.type === 'raw_domain_replace') {
-                try {
-                    const proxyDomain = getDomainFromUrl(activeProxy.url);
-                    if (proxyDomain) {
-                        const originalUrl = new URL(zipRaw);
-                        originalUrl.hostname = proxyDomain;
-                        zipUrl = originalUrl.toString();
-                        viaProxy = true;
-                    }
-                } catch (e) {
-                    console.error(e);
-                }
+    if (state.proxyGlobalEnable && state.proxyPrefix) {
+        let proxyBase = state.proxyPrefix.trim();
+        if (proxyBase) {
+            if (!proxyBase.endsWith('/')) {
+                proxyBase += '/';
             }
+            zipUrl = proxyBase + zipRaw;
+            viaProxy = true;
         }
     }
 
@@ -9656,132 +8869,6 @@ function showCreateRepoModal() {
     uiStateStack.push(hideCreateRepoModal);
 }
 
-function hideApiStatusPanel() {
-    el.apiStatusOverlay.classList.remove('open');
-    el.apiStatusPanel.classList.remove('open');
-    setTimeout(() => {
-        el.apiStatusOverlay.classList.add('hidden');
-    }, 300);
-    const index = uiStateStack.indexOf(hideApiStatusPanel);
-    if (index > -1) uiStateStack.splice(index, 1);
-}
-
-function showApiStatusPanel() {
-    el.apiStatusOverlay.classList.remove('hidden');
-    setTimeout(() => {
-        el.apiStatusOverlay.classList.add('open');
-        el.apiStatusPanel.classList.add('open');
-    }, 10);
-    fetchAndRenderApiStatus();
-    uiStateStack.push(hideApiStatusPanel);
-}
-
-async function fetchAndRenderApiStatus() {
-    const contentEl = document.getElementById('apiStatusContent');
-    contentEl.innerHTML = `<div class="loading-spinner" style="height: auto; padding: 2rem 0;"><div class="spinner"></div></div>`;
-    
-    try {
-        const res = await fetch('https://api.github.com/rate_limit', {
-            headers: { Authorization: `token ${state.token}`, 'User-Agent': 'Mozilla/5.0' },
-            cache: 'no-store'
-        });
-        
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        
-        const data = await res.json();
-        const resources = data.resources;
-        let html = '';
-
-        const generateCard = (key, name, icon) => {
-            const item = resources[key];
-            if (!item) return '';
-            
-            const limit = item.limit;
-            const used = item.used;
-            const remaining = item.remaining;
-            const resetDate = new Date(item.reset * 1000);
-            const resetTimeStr = resetDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            
-            const percentUsed = limit > 0 ? (used / limit) * 100 : 0;
-            const percentRemaining = 100 - percentUsed;
-            
-            let statusClass = 'status-good';
-            let progressClass = 'progress-green';
-            let iconColor = '#10b981';
-
-            if (percentRemaining < 5) {
-                statusClass = 'status-critical';
-                progressClass = 'progress-red';
-                iconColor = '#ef4444';
-            } else if (percentRemaining < 25) {
-                statusClass = 'status-warning';
-                progressClass = 'progress-yellow';
-                iconColor = '#f59e0b';
-            }
-
-            let refreshText = '';
-            if (key === 'core') refreshText = '重置周期: 1小时';
-            if (key === 'search') refreshText = '重置周期: 1分钟';
-
-            return `
-            <div class="api-status-card ${statusClass}">
-                <h4>
-                    <i class="fa ${icon}" style="color: ${iconColor};"></i>
-                    ${name} API
-                </h4>
-                <div class="rate-limit-details">
-                    <p>总额度: <span>${limit}</span></p>
-                    <p>已使用: <span>${used}</span></p>
-                    <p>剩余可用: <span class="highlight-value" style="font-size: 1.1em;">${remaining}</span></p>
-                </div>
-                <div class="rate-limit-progress-bar">
-                    <div class="${progressClass}" style="width: ${percentUsed}%;"></div>
-                </div>
-                <div class="rate-limit-details" style="margin-top: 4px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05);">
-                    <p>${refreshText} <span class="refresh-badge">${resetTimeStr} 重置</span></p>
-                </div>
-            </div>`;
-        };
-
-        html += generateCard('core', '核心 (Core)', 'fa-cube');
-        html += generateCard('search', '搜索 (Search)', 'fa-search');
-        html += generateCard('graphql', 'GraphQL', 'fa-project-diagram');
-
-        const scopesHeader = res.headers.get('x-oauth-scopes');
-        let scopesHtml = '';
-        if (scopesHeader) {
-            const scopes = scopesHeader.split(', ');
-            const badges = scopes.map(s => `<span class="token-scope">${s}</span>`).join('');
-            scopesHtml = `
-                <div class="api-status-card">
-                    <h4><i class="fa fa-shield-alt"></i> Token 权限范围</h4>
-                    <div class="token-scopes">${badges}</div>
-                </div>
-            `;
-        } else {
-            scopesHtml = `
-                <div class="api-status-card status-warning">
-                    <h4><i class="fa fa-shield-alt"></i> Token 权限</h4>
-                    <p style="font-size: 0.8rem; color: #94a3b8;">
-                        无法获取具体权限（可能是细粒度 Token），请确保拥有 repo 相关权限。
-                    </p>
-                </div>
-            `;
-        }
-
-        html += scopesHtml;
-        contentEl.innerHTML = html;
-
-    } catch (error) {
-        contentEl.innerHTML = `
-            <div class="api-status-card status-critical">
-                <h4><i class="fa fa-exclamation-triangle"></i> 数据获取失败</h4>
-                <p style="color: #f87171; font-size: 0.85rem;">${error.message}</p>
-                <button onclick="handleRefreshApiStatus()" class="btn btn-secondary btn-sm" style="margin-top:10px; width:100%;">重试</button>
-            </div>
-        `;
-    }
-}
 
 function toggleEditorSearch(show) {
     const { editorSearchPanel, editorSearchInput } = el;
@@ -11881,10 +10968,6 @@ el.currentRepo.addEventListener('click', () => {
     }
 });
 
-el.ybp.onclick = () => {
-    closeSideNav();
-    showApiStatusPanel();
-};
 if (el.menuThemeToggle) {
     el.menuThemeToggle.onclick = () => {
         themeManager.toggle();
@@ -12243,16 +11326,6 @@ el.accountTokenInput.addEventListener('input', validateAccountForm);
     el.proxyGlobalEnableToggle.addEventListener('change', (e) => {
         setProxyGlobalState(e.target.checked, true);
     });
-    el.refreshApiStatusBtn.addEventListener('click', handleRefreshApiStatus);
-    el.ybp.onclick = () => {
-    closeSideNav();
-    showApiStatusPanel();
-};
-    el.closeApiStatusPanel.addEventListener('click', hideApiStatusPanel);
-    el.apiStatusOverlay.addEventListener('click', hideApiStatusPanel);
-    
-    
-    el.importBtn.addEventListener('click', importProxiesFromUrl);
     el.newFolderBtn.onclick = function() {
         if (!state.currentRepo) {
             showCreateRepoModal();
@@ -12328,16 +11401,6 @@ el.authBtn.addEventListener('click', async () => {
         setTimeout(async () => {
             showApp();
             showToast('欢迎回来！');
-
-            if (state.proxies.length === 0) {
-                findAndSetBestProxy();
-            } else if (state.autoSelectProxy) {
-                findAndSetBestProxy();
-            } else {
-                state.activeProxyIndex = parseInt(localStorage.getItem('active_proxy_index') || '0');
-                state.proxyGlobalEnable = JSON.parse(localStorage.getItem('proxy_global_enable') || 'true');
-                saveProxyConfig();
-            }
 
             btn.disabled = false;
             btnText.textContent = '登录';
@@ -12567,24 +11630,7 @@ el.menuBatchPublishSites.onclick = () => {
     });
 }
     el.proxyCancelSettingsBtn.addEventListener('click', closeProxySettingsModal);
-        el.proxyAutoSelectToggle.addEventListener('click', async () => {
-    state.autoSelectProxy = !state.autoSelectProxy;
-    localStorage.setItem('proxy_auto_select', JSON.stringify(state.autoSelectProxy));
-    updateProxySettingsUI();
-
-    if (state.autoSelectProxy) {
-        await findAndSetBestProxy(true);
-    } else {
-        showToast('已关闭自动优选');
-    }
-});
-    el.proxyAddBtn.addEventListener('click', () => openAddEditProxyModal());
-    el.proxyTestAllBtn.addEventListener('click', testAllProxies);
-    el.proxyClearAllBtn.addEventListener('click', showConfirmClearAllProxiesModal);
-    el.addEditProxyUrlInput.addEventListener('input', validateAddEditProxyInput);
-    el.confirmDeleteProxyCancelBtn.addEventListener('click', hideConfirmDeleteProxyModal);
-    el.clearAllProxiesCancelBtn.addEventListener('click', hideConfirmClearAllProxiesModal);
-    el.clearAllProxiesConfirmBtn.addEventListener('click', clearAllProxiesConfirmed);
+    el.proxySaveBtn.addEventListener('click', saveProxySettings);
     el.renameInput.oninput = function() {
         el.renameConfirm.disabled = !el.renameInput.value.trim() || el.renameInput.value.trim() === state.selectedFile?.name;
     };
@@ -13665,9 +12711,7 @@ async function init() {
             state.myRepos = [...state.repos];
             
             setTimeout(() => {
-    initProxySystem(); 
-    
-    checkServerInfo();
+    updateAllProxySwitchUI();
 
     setTimeout(() => {
         startBackgroundPreloading();
@@ -13677,7 +12721,6 @@ async function init() {
         });
     } else {
         showAuth();
-        setTimeout(checkServerInfo, 1500);
     }
     
     
@@ -13825,261 +12868,6 @@ document.addEventListener('DOMContentLoaded', function() {
         updatePaginationUI();
     });
 });
-
-
-
-
-
-const SmartUpdater = {
-    configUrl: 'https://raw.githubusercontent.com/rjdsq/github-king/main/远程/远程更新.json',
-    proxyPrefixes: [
-        'https://gh.927223.xyz/',
-        'https://ghproxy.net/',
-        'https://ghfast.top/',
-        'https://tvv.tw/'
-    ],
-
-    async check() {
-        const timestamp = `?t=${Date.now()}`;
-        const urls = [
-            ...this.proxyPrefixes.map(p => p + this.configUrl + timestamp),
-            this.configUrl + timestamp 
-        ];
-
-        try {
-            const data = await this.smartFetch(urls);
-            if (data) {
-                this.handleData(data);
-            }
-        } catch (e) {
-            console.warn('Update check failed completely.');
-        }
-    },
-
-    smartFetch(urls) {
-        return new Promise((resolve, reject) => {
-            let failedCount = 0;
-            const total = urls.length;
-            let resolved = false;
-
-            urls.forEach(url => {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000); 
-
-                fetch(url, { cache: 'no-store', signal: controller.signal })
-                    .then(res => {
-                        if (!res.ok) throw new Error('Status ' + res.status);
-                        return res.json();
-                    })
-                    .then(data => {
-                        if (!resolved) {
-                            resolved = true;
-                            clearTimeout(timeoutId);
-                            resolve(data);
-                        }
-                    })
-                    .catch(() => {
-                        failedCount++;
-                        if (failedCount === total && !resolved) {
-                            reject(new Error('All mirrors failed'));
-                        }
-                    })
-                    .finally(() => clearTimeout(timeoutId));
-            });
-        });
-    },
-
-    handleData(info) {
-        if (info.版本 && this.isNewer(info.版本, CURRENT_VERSION)) {
-            this.renderUpdateModal(info);
-        }
-        if (info.公告开关 === '开' && info.公告) {
-            this.renderAnnouncementModal(info);
-        }
-    },
-
-    isNewer(remote, local) {
-        const r = remote.split('.').map(Number);
-        const l = local.split('.').map(Number);
-        for (let i = 0; i < Math.max(r.length, l.length); i++) {
-            const rv = r[i] || 0;
-            const lv = l[i] || 0;
-            if (rv > lv) return true;
-            if (rv < lv) return false;
-        }
-        return false;
-    },
-
-    createModalBase(id, isForced = false) {
-        if (document.getElementById(id)) return null;
-        const overlay = document.createElement('div');
-        overlay.id = id;
-        overlay.className = 'modern-modal-overlay';
-        
-        const close = () => {
-            if (isForced) {
-                overlay.style.display = 'flex';
-                return;
-            }
-            overlay.style.opacity = '0';
-            const card = overlay.querySelector('.modern-card');
-            if(card) card.style.transform = 'scale(0.95) translateY(10px)';
-            setTimeout(() => overlay.remove(), 300);
-        };
-
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay && !overlay.dataset.forced) close();
-        });
-
-        if (isForced) {
-            const observer = new MutationObserver((mutations) => {
-                if (!document.body.contains(overlay)) {
-                    document.body.appendChild(overlay);
-                }
-            });
-            observer.observe(document.body, { childList: true });
-        }
-
-        return { overlay, close };
-    },
-
-    renderUpdateModal(info) {
-        const base = this.createModalBase('updateModal', info.强制更新 === '开');
-        if (!base) return;
-
-        const isForced = info.强制更新 === '开';
-        if (isForced) base.overlay.dataset.forced = 'true';
-
-        base.overlay.innerHTML = `
-            <div class="modern-card">
-                <div class="modern-header">
-                    <div class="header-icon-wrapper update-icon">
-                        <i class="fa fa-rocket"></i>
-                    </div>
-                    <div class="header-text">
-                        <div class="header-title">发现新版本</div>
-                        <div class="header-subtitle">
-                            <span class="version-badge">v${info.版本}</span>
-                            <span>当前: v${CURRENT_VERSION}</span>
-                        </div>
-                    </div>
-                    ${!isForced ? `<button class="modern-close-btn"><i class="fa fa-times"></i></button>` : ''}
-                </div>
-                <div class="modern-content">
-                    <div class="content-block">${(info.更新日志 || '').replace(/\n/g, '<br>')}</div>
-                </div>
-                <div class="modern-footer">
-                    <button class="modern-btn btn-secondary-action copy-link-btn">
-                        <i class="fa fa-link"></i> 复制链接
-                    </button>
-                    <button class="modern-btn btn-primary-action download-btn">
-                        <i class="fa fa-cloud-download"></i> 立即更新
-                    </button>
-                </div>
-            </div>
-        `;
-
-        document.body.appendChild(base.overlay);
-
-        if (!isForced) {
-            base.overlay.querySelector('.modern-close-btn').onclick = base.close;
-        }
-
-        base.overlay.querySelector('.download-btn').onclick = () => {
-            window.open(info.下载地址, '_blank');
-        };
-
-        base.overlay.querySelector('.copy-link-btn').onclick = () => {
-            navigator.clipboard.writeText(info.下载地址).then(() => {
-                if (window.showToast) showToast('下载链接已复制');
-            });
-        };
-    },
-
-    renderAnnouncementModal(info) {
-        const isForcedAnnounce = info.强制公告 === '开';
-        const base = this.createModalBase('announcementModal', isForcedAnnounce);
-        
-        if (!base) {
-            if (isForcedAnnounce) {
-                const existing = document.getElementById('announcementModal');
-                if (existing) existing.style.display = 'flex';
-            }
-            return;
-        }
-
-        if (isForcedAnnounce) base.overlay.dataset.forced = 'true';
-
-        const hasLink = info.公告链接 && info.公告链接.trim();
-        const hasCopy = info.公告复制内容 && info.公告复制内容.trim();
-        const copyText = info.公告复制按钮文本 || '复制';
-        const linkText = info.公告链接按钮文本 || '查看详情';
-
-        let buttonsHtml = '';
-        if (hasCopy) {
-            buttonsHtml += `<button class="modern-btn btn-secondary-action copy-announce-btn"><i class="fa fa-copy"></i> ${copyText}</button>`;
-        }
-        if (hasLink) {
-            buttonsHtml += `<button class="modern-btn btn-primary-action link-announce-btn"><i class="fa fa-external-link"></i> ${linkText}</button>`;
-        }
-
-        base.overlay.innerHTML = `
-            <div class="modern-card" style="border-top: 4px solid #f59e0b;">
-                <div class="modern-header">
-                    <div class="header-icon-wrapper announce-icon">
-                        <i class="fa fa-bullhorn"></i>
-                    </div>
-                    <div class="header-text">
-                        <div class="header-title">公告通知</div>
-                        <div class="header-subtitle">System Announcement</div>
-                    </div>
-                    ${!isForcedAnnounce ? `<button class="modern-close-btn"><i class="fa fa-times"></i></button>` : ''}
-                </div>
-                <div class="modern-content">
-                    <div class="content-block" style="background:rgba(245, 158, 11, 0.1); border-color:rgba(245, 158, 11, 0.2); color:#fcd34d;">${(info.公告 || '').replace(/\n/g, '<br>')}</div>
-                </div>
-                ${buttonsHtml ? `<div class="modern-footer">${buttonsHtml}</div>` : ''}
-            </div>
-        `;
-
-        document.body.appendChild(base.overlay);
-        
-        if (!isForcedAnnounce) {
-            base.overlay.querySelector('.modern-close-btn').onclick = base.close;
-        }
-
-        if (hasLink) {
-            base.overlay.querySelector('.link-announce-btn').onclick = () => window.open(info.公告链接, '_blank');
-        }
-        if (hasCopy) {
-            base.overlay.querySelector('.copy-announce-btn').onclick = () => {
-                navigator.clipboard.writeText(info.公告复制内容).then(() => {
-                    if (window.showToast) showToast('内容已复制');
-                });
-            };
-        }
-    }
-};
-
-window.checkServerInfo = () => SmartUpdater.check();
-
-
-
-
-
-function isNewerVersion(remoteVersion, localVersion) {
-    const remoteParts = remoteVersion.split('.').map(Number);
-    const localParts = localVersion.split('.').map(Number);
-    const len = Math.max(remoteParts.length, localParts.length);
-    for (let i = 0; i < len; i++) {
-        const remote = remoteParts[i] || 0;
-        const local = localParts[i] || 0;
-        if (remote > local) return true;
-        if (remote < local) return false;
-    }
-    return false;
-}
-
 
 
 
