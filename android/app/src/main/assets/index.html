@@ -235,10 +235,6 @@
 								<i class="fa fa-spinner fa-spin"></i>
 							</div>
 						</div>
-						<div id="saveNotification">
-							<i class="fa fa-check"></i>
-							已保存
-						</div>
 						<textarea id="fileContent"></textarea>
 					</div>
 
@@ -1107,6 +1103,7 @@ let modalLastTapTime = 0;
 let modalLastTappedRepoId = null;
 let currentFetchController = null;
 let isContextMenuClosing = false;
+let lastRenderedFilePath = null;
 const IMAGE_EXTS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'ico', 'bmp', 'svg'];
 const VIDEO_EXTS = ['mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv'];
 const AUDIO_EXTS = ['mp3', 'wav', 'ogg', 'flac', 'm4a'];
@@ -1651,7 +1648,6 @@ main: document.querySelector('main'),
     saveEdit: document.getElementById('saveEdit'),
     editStatus: document.getElementById('editStatus'),
     editorOverlay: document.getElementById('editorOverlay'),
-    saveNotification: document.getElementById('saveNotification'),
     setAsSiteModal: document.getElementById('setAsSiteModal'),
 setAsSiteCloseBtn: document.getElementById('setAsSiteCloseBtn'),
 setAsSiteCancelBtn: document.getElementById('setAsSiteCancelBtn'),
@@ -2121,6 +2117,10 @@ function showAddEditAccountModal(accountId = null) {
 
     el.addEditAccountError.style.display = 'none';
     saveBtn.disabled = true;
+    const saveSpan = saveBtn.querySelector('span');
+    if (saveSpan) saveSpan.textContent = '保存';
+    const saveSpinner = saveBtn.querySelector('i');
+    if (saveSpinner) saveSpinner.classList.add('hidden');
 
     if (accountId) {
 
@@ -2178,8 +2178,8 @@ async function handleSaveAccount() {
             }
 
             renderAccountList();
+            spinner.classList.add('hidden');
             closeAddEditAccountModal();
-            showToast('账号信息已更新');
 
         } else {
 
@@ -2197,15 +2197,16 @@ async function handleSaveAccount() {
             state.accounts.push(newAccount);
             saveAccounts();
             renderAccountList();
+            spinner.classList.add('hidden');
             closeAddEditAccountModal();
-            showToast(`账号 "${githubUsername}" 添加成功`);
         }
     } catch (error) {
         el.addEditAccountError.textContent = error.message;
         el.addEditAccountError.style.display = 'block';
-    } finally {
         saveBtn.disabled = false;
         spinner.classList.add('hidden');
+        const span = saveBtn.querySelector('span');
+        if (span) span.textContent = '保存失败';
     }
 }
 
@@ -2435,7 +2436,6 @@ function renderAccountList() {
         const selectedToken = state.accounts.find(acc => acc.id === account.id).token;
         if (selectedToken) {
             el.tokenInput.value = selectedToken;
-            showToast(`已选择账号: ${account.name}，正在自动登录...`);
             closeAccountManagerModal();
             el.authBtn.click();
         }
@@ -2462,7 +2462,6 @@ function renderAccountList() {
                 }
                 saveAccounts();
                 renderAccountList();
-                showToast('账号已删除');
             });
         });
 
@@ -2474,7 +2473,6 @@ async function switchAccount(accountId) {
     closeAccountManagerModal();
     hideMainMenuPopup();
     el.mainLoader.classList.remove('hidden');
-    showToast('正在切换账号...');
 
     setActiveAccount(accountId);
 
@@ -2620,7 +2618,6 @@ async function setProxyGlobalState(isEnabled, shouldRefreshFiles = false) {
     state.proxyGlobalEnable = isEnabled;
     localStorage.setItem('proxy_global_enable', JSON.stringify(isEnabled));
     updateAllProxySwitchUI();
-    showToast(isEnabled ? '全局代理已开启' : '全局代理已关闭');
 
     if (shouldRefreshFiles && state.currentRepo && !el.fileList.classList.contains('hidden')) {
         renderFileList();
@@ -2747,11 +2744,6 @@ function hideToast() {
             toastTimer = null;
         }
     }
-}
-
-function showSaveNotification() {
-    el.saveNotification.classList.add('show');
-    setTimeout(() => el.saveNotification.classList.remove('show'), 3000);
 }
 
 async function fetchUserInfo() {
@@ -3462,10 +3454,7 @@ async function createRelease() {
             throw new Error(err.message || '发布失败');
         }
 
-        showToast('版本发布成功！', 'success');
-
         hideReleaseManagerModal();
-
         if (state.currentView === 'releases_list' && state.viewingReleasesForRepo === repoFullName) {
             fetchAndDisplayReleases(repoFullName, false);
         }
@@ -3489,7 +3478,6 @@ async function deleteReleaseInMainView(releaseId, repoFullName) {
 
         if (!res.ok && res.status !== 404) throw new Error('删除失败');
 
-        showToast('版本已删除');
         hideDeleteModal();
         fetchAndDisplayReleases(repoFullName, false);
 
@@ -4082,7 +4070,10 @@ async function fetchFiles(forceRefresh = false, showLoader = true) {
             files = ConsistencyManager.apply(files);
             state.files = files;
             applyFiltersAndSort();
-            renderFileList();
+            const hasRenderedItems = !!el.fileList.querySelector('.file-item') && lastRenderedFilePath === state.currentPath;
+            if (!hasRenderedItems || !areFileListsEqual(state.displayFiles, files)) {
+                renderFileList();
+            }
             hasRenderedCache = true;
         } else {
 
@@ -4094,7 +4085,10 @@ async function fetchFiles(forceRefresh = false, showLoader = true) {
 
                     state.fileCache.set(cacheKey, files);
                     applyFiltersAndSort();
-                    renderFileList();
+                    const hasRenderedItems = !!el.fileList.querySelector('.file-item') && lastRenderedFilePath === state.currentPath;
+                    if (!hasRenderedItems || !areFileListsEqual(state.displayFiles, files)) {
+                        renderFileList();
+                    }
                     hasRenderedCache = true;
                 } else if (state.repoTreeCache) {
 
@@ -4102,7 +4096,10 @@ async function fetchFiles(forceRefresh = false, showLoader = true) {
                     if (localFiles) {
                         state.files = ConsistencyManager.apply(localFiles);
                         applyFiltersAndSort();
-                        renderFileList();
+                        const hasRenderedItems = !!el.fileList.querySelector('.file-item') && lastRenderedFilePath === state.currentPath;
+                        if (!hasRenderedItems || !areFileListsEqual(state.displayFiles, state.files)) {
+                            renderFileList();
+                        }
                         hasRenderedCache = true;
                     }
                 }
@@ -4175,8 +4172,9 @@ async function fetchFilesFromNetwork(isInitialLoad = false, pathForFetch, isSile
 
             if (state.files) {
                 const patchedFiles = ConsistencyManager.apply(state.files);
-                if (JSON.stringify(patchedFiles) !== JSON.stringify(state.files)) {
-                    state.files = patchedFiles;
+                const changed = JSON.stringify(patchedFiles) !== JSON.stringify(state.files);
+                state.files = patchedFiles;
+                if (changed || lastRenderedFilePath !== state.currentPath) {
                     applyFiltersAndSort();
                     renderFileList();
                 }
@@ -4272,6 +4270,7 @@ let fileListObserver = null;
 
 function renderFileList() {
     if (!state.loadedImageMap) state.loadedImageMap = new Map();
+    lastRenderedFilePath = state.currentPath;
     const list = (state.displayFiles && state.displayFiles.length >= 0) ? state.displayFiles : state.files;
     el.fileList.innerHTML = '';
     if (!list || list.length === 0) {
@@ -5025,7 +5024,6 @@ async function performSmartSilentUpdate(file, currentEditorContent) {
                 const cacheKey = `file_content_${data.sha}`;
                 if (window.SimpleDB) await SimpleDB.set(cacheKey, cloudContent);
 
-                showToast('已同步云端最新内容', 'success');
             } else {
 
                 showToast('云端有新版本，因您已编辑而未自动覆盖', 'warning');
@@ -5222,7 +5220,6 @@ async function saveEditedFile() {
         });
 
         checkContentChanges();
-        showToast('已保存');
 
     } catch (e) {
         showToast('保存失败: ' + e.message, 'error');
@@ -5998,7 +5995,7 @@ async function handleContextMenuAction(action, oldFileObject) {
             break;
 
         case 'delete':
-            showDeleteModal(currentFile);
+            showDeleteModal(currentFile, false, '确认删除', null, null, '确认删除', 'btn-danger', null, '已删除', '删除失败');
             break;
 
         case 'multiSelect':
@@ -6070,10 +6067,8 @@ async function handleRepoContextMenuAction(action, repo) {
 
             if (index > -1) {
                 pinnedRepos.splice(index, 1);
-                showToast(`仓库 "${repo.name}" 已取消置顶`);
             } else {
                 pinnedRepos.push(repoId);
-                showToast(`仓库 "${repo.name}" 已置顶`);
             }
 
             localStorage.setItem('pinned_repos', JSON.stringify(pinnedRepos));
@@ -6101,8 +6096,6 @@ async function handleRepoContextMenuAction(action, repo) {
                             throw new Error(`操作失败 (HTTP ${res.status})`);
                         }
 
-                        showToast(`已取消关注 "${escapeHtml(repo.name)}"`);
-
                         state.starredRepos = state.starredRepos.filter(r => r.id !== repo.id);
                         localStorage.setItem('cached_starred_repos', JSON.stringify(state.starredRepos));
                         renderRepoList(state.starredRepos);
@@ -6112,7 +6105,9 @@ async function handleRepoContextMenuAction(action, repo) {
                     }
                 },
                 '确认取消',
-                'btn-danger'
+                'btn-danger',
+                undefined,
+                '已取消关注'
             );
             break;
 
@@ -6175,14 +6170,12 @@ async function handleRepoContextMenuAction(action, repo) {
                         throw new Error((await res.json()).message || '删除失败');
                     }
 
-                    showToast(`仓库 "${repo.name}" 已成功删除`);
-
                     await fetchRepos(true, true);
 
                 } catch (e) {
                     showToast(`删除失败: ${e.message}`, 'error');
                 }
-            });
+            }, '确认删除', 'btn-danger', null, '已删除', '删除失败');
             break;
     }
 }
@@ -6215,7 +6208,6 @@ async function batchUnpublishSites() {
     renderPublishManagerLists();
 
     el.batchUnpublishAllBtn.classList.remove('btn-processing');
-    showToast(`批量取消发布完成！共处理 ${successCount} 个。`, 'success');
 }
 
 async function batchPublishSites() {
@@ -6249,7 +6241,6 @@ async function batchPublishSites() {
     renderPublishManagerLists();
 
     el.batchPublishAllBtn.classList.remove('btn-processing');
-    showToast(`批量发布完成！成功 ${successCount} 个，失败 ${failCount} 个。`, 'success');
 }
 
 function findNextAvailableBackupName() {
@@ -6528,7 +6519,7 @@ async function showPublishBranchSelectorModal(repo, publishType) {
                 buttonInManager.disabled = true;
             }
             const result = await publishProjectSite(repoToProcess, branchToUse);
-            showToast(result.message, result.success ? 'success' : 'error');
+            if (!result.success) showToast(result.message, 'error');
             if (result.success) {
                 const repoInState = state.repos.find(r => r.id === repoToProcess.id);
                 if (repoInState) repoInState.has_pages = true;
@@ -6627,7 +6618,6 @@ async function showPublishBranchSelectorModal(repo, publishType) {
                         throw new Error('配置网站失败，请稍后在GitHub官网手动开启Pages');
                     }
 
-                    showToast('主站发布成功！', 'success');
                     await delay(2000);
                     finalError = null;
                     break;
@@ -6710,7 +6700,6 @@ window.__nativeFolderFileContent = function(token, i, base64, err) {
         window.__nativeReadNextFolderFile();
     } else {
         renderPreUploadList();
-        if (typeof showToast === 'function') showToast('已添加 ' + seq.index + ' 个文件到上传列表');
     }
 };
 
@@ -6757,8 +6746,6 @@ async function uploadReleaseAssets(files) {
                 }
                 throw new Error(`HTTP ${res.status}`);
             }
-
-            showToast(`${file.name} 上传成功!`, 'success');
         } catch (e) {
             console.error(e);
             showToast(`上传 ${file.name} 失败: ${e.message}`, 'error');
@@ -6867,7 +6854,6 @@ function handleStartBatchUpload() {
         if (idx >= total) {
             if (uploadHeaderTitle) uploadHeaderTitle.textContent = `上传完成 (${total}/${total})`;
             setTimeout(() => el.uploadPanel.classList.add('hidden'), 1000);
-            showToast(`已上传 ${total} 个文件`, 'success');
 
             if (state.files) {
                 const patched = ConsistencyManager.apply(state.files);
@@ -7209,17 +7195,15 @@ function showUnpublishMainSiteModal(repo) {
             });
             if (!res.ok) throw new Error((await res.json()).message || '重命名失败');
 
-            showToast('主网站已成功下线');
             hideRenameModal();
             await fetchRepos(true, false);
             renderPublishManagerLists();
 
         } catch (e) {
             showToast(`操作失败: ${e.message}`, 'error');
-        } finally {
             this.disabled = false;
             this.classList.remove('btn-processing');
-            this.innerHTML = '确认';
+            this.innerHTML = '下线失败';
         }
     };
 
@@ -7234,6 +7218,8 @@ function showRenameModal(item) {
     el.renameWarn.style.display = 'none';
     el.renameInput.value = isRepo ? item.name : item.name;
     el.renameConfirm.disabled = true;
+    el.renameConfirm.classList.remove('btn-processing', 'btn-success-result');
+    el.renameConfirm.innerHTML = '确认';
     el.renameModal.classList.remove('hidden');
 
     if (isRepo) {
@@ -7282,16 +7268,14 @@ function showRenameModal(item) {
                 });
                 if (!res.ok) throw new Error((await res.json()).message || '修改失败');
 
-                showToast('保存成功');
                 hideRenameModal();
                 await fetchRepos(true, true);
             } catch (e) {
                 showToast(`修改失败: ${e.message}`, 'error');
-            } finally {
                 if (document.body.contains(this)) {
                     this.disabled = false;
                     this.classList.remove('btn-processing');
-                    this.innerHTML = '确认';
+                    this.innerHTML = '修改失败';
                 }
             }
         };
@@ -7320,9 +7304,8 @@ function showRenameModal(item) {
                         body: JSON.stringify({ new_name: newName })
                     });
                     if (!res.ok) throw new Error('重命名分支失败');
-                    hideRenameModal();
                     hideCreateBranchModal();
-                    showToast('分支重命名成功');
+                    hideRenameModal();
                     if (state.currentRepo === item.repo.full_name) {
                         await fetchBranches(item.repo);
                     }
@@ -7385,16 +7368,15 @@ function showRenameModal(item) {
                         });
                     }
 
+                    this.classList.remove('btn-processing');
                     hideRenameModal();
-                    showToast('重命名成功');
                 }
             } catch (e) {
                 showToast(`失败: ${e.message}`, 'error');
-            } finally {
                 if (document.body.contains(this)) {
                     this.disabled = false;
                     this.classList.remove('btn-processing');
-                    this.innerHTML = '确认';
+                    this.innerHTML = '重命名失败';
                 }
             }
         };
@@ -7412,6 +7394,8 @@ function showCreateFolderModal() {
     el.createFolderInput.value = '';
     el.createFolderModal.classList.remove('hidden');
     el.createFolderConfirm.disabled = true;
+    el.createFolderConfirm.classList.remove('btn-processing', 'btn-success-result');
+    el.createFolderConfirm.innerHTML = '确认';
 
     el.createFolderConfirm.onclick = async function() {
         const name = el.createFolderInput.value.trim();
@@ -7451,15 +7435,13 @@ function showCreateFolderModal() {
                 parentPath: state.currentPath
             });
 
-            showToast(`已创建文件夹: ${name}`);
             hideCreateFolderModal();
 
         } catch (e) {
-            showToast(`失败: ${e.message}`);
-        } finally {
+            showToast(`失败: ${e.message}`, 'error');
             if(el.createFolderConfirm) {
                 el.createFolderConfirm.classList.remove('btn-processing');
-                el.createFolderConfirm.innerHTML = '确认';
+                el.createFolderConfirm.innerHTML = '创建失败';
                 el.createFolderConfirm.disabled = !el.createFolderInput.value.trim();
             }
         }
@@ -7471,7 +7453,6 @@ function hideCreateFileModal() {
     el.createFileModal.classList.add('hidden');
     removeFromStack(hideCreateFileModal);
 }
-
 function showCreateFileModal() {
     if (!state.currentRepo) {
         showToast('请先选择仓库');
@@ -7481,6 +7462,8 @@ function showCreateFileModal() {
     el.createFileContentInput.value = '';
     el.createFileModal.classList.remove('hidden');
     el.createFileConfirm.disabled = true;
+    el.createFileConfirm.classList.remove('btn-processing', 'btn-success-result');
+    el.createFileConfirm.innerHTML = '确认';
 
     el.createFileConfirm.onclick = async function() {
         const name = el.createFileNameInput.value.trim();
@@ -7514,16 +7497,14 @@ function showCreateFileModal() {
                 parentPath: state.currentPath
             });
 
-            showToast(`已创建文件: ${name}`);
             hideCreateFileModal();
 
         } catch (e) {
-            showToast(`失败: ${e.message}`);
-        } finally {
+            showToast(`失败: ${e.message}`, 'error');
             if(el.createFileConfirm) {
                 el.createFileConfirm.disabled = false;
                 el.createFileConfirm.classList.remove('btn-processing');
-                el.createFileConfirm.innerHTML = '确认';
+                el.createFileConfirm.innerHTML = '创建失败';
             }
         }
     };
@@ -7538,6 +7519,8 @@ function hideCreateBranchModal() {
 async function showCreateBranchModal(repo) {
     el.createBranchNameInput.value = '';
     el.createBranchConfirm.disabled = true;
+    el.createBranchConfirm.classList.remove('btn-processing', 'btn-success-result');
+    el.createBranchConfirm.innerHTML = '创建分支';
     el.createBranchModal.classList.remove('hidden');
     el.createBranchNameInput.oninput = () => {
         el.createBranchConfirm.disabled = !el.createBranchNameInput.value.trim();
@@ -7650,32 +7633,33 @@ async function showCreateBranchModal(repo) {
 
     el.createBranchModal.style.pointerEvents = 'none';
 
-    showDeleteModal(
-        null,
-        false,
-        '确认删除分支',
-        `确定要删除分支 "${branchToDelete}" 吗？此操作不可撤销`,
-        async () => {
-            try {
-                const res = await fetch(`https://api.github.com/repos/${repo.full_name}/git/refs/heads/${branchToDelete}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `token ${state.token}` }
-                });
-                if (!res.ok) throw new Error((await res.json()).message || '删除分支失败');
-                showToast(`分支 &nbsp;${branchToDelete}已成功删除,请等待服务器刷新`);
-                if (state.currentRepo === repo.full_name) {
-                    await fetchBranches(repo);
+        showDeleteModal(
+            null,
+            false,
+            '确认删除分支',
+            `确定要删除分支 "${branchToDelete}" 吗？此操作不可撤销`,
+            async () => {
+                try {
+                    const res = await fetch(`https://api.github.com/repos/${repo.full_name}/git/refs/heads/${branchToDelete}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `token ${state.token}` }
+                    });
+                    if (!res.ok) throw new Error((await res.json()).message || '删除分支失败');
+                    if (state.currentRepo === repo.full_name) {
+                        await fetchBranches(repo);
+                    }
+                } catch (e) {
+                    showToast(`删除失败: ${e.message}`, 'error');
+                } finally {
+                    restoreInteractivity();
                 }
-            } catch (e) {
-                showToast(`删除失败: ${e.message}`);
-            } finally {
-                restoreInteractivity();
-            }
-        },
-        '确认删除',
-        'btn-danger',
-        restoreInteractivity
-    );
+            },
+            '确认删除',
+            'btn-danger',
+            restoreInteractivity,
+            '已删除',
+            '删除失败'
+        );
 };
 
     el.createBranchConfirm.onclick = async function() {
@@ -7692,7 +7676,6 @@ async function showCreateBranchModal(repo) {
                 body: JSON.stringify({ ref: `refs/heads/${newBranchName}`, sha: sourceBranchSha })
             });
             if (!res.ok) throw new Error((await res.json()).message || '创建分支失败');
-            showToast(`分支 &nbsp;${newBranchName}创建成功,请等待服务器刷新`);
             hideCreateBranchModal();
             await fetchRepos(true);
             if (state.currentRepo === repo.full_name) {
@@ -7700,11 +7683,10 @@ async function showCreateBranchModal(repo) {
                 renderBranchSwitcher();
             }
         } catch (e) {
-            showToast(`创建失败: ${e.message}`);
-        } finally {
+            showToast(`创建失败: ${e.message}`, 'error');
             this.disabled = false;
             this.classList.remove('btn-processing');
-            this.innerHTML = '创建分支';
+            this.innerHTML = '创建失败';
         }
     };
     uiStateStack.push(hideCreateBranchModal);
@@ -7733,6 +7715,8 @@ function showRenameRepoModal(repo) {
     el.renameInput.value = repo.name;
     privateCheckbox.checked = !repo.private;
     el.renameConfirm.disabled = true;
+    el.renameConfirm.classList.remove('btn-processing', 'btn-success-result');
+    el.renameConfirm.innerHTML = '确认';
 
     descTextarea.addEventListener('input', function() {
         autoGrow(this);
@@ -7788,16 +7772,14 @@ function showRenameRepoModal(repo) {
             });
             if (!res.ok) throw new Error((await res.json()).message || '修改失败');
             state.shouldAnimateList = true;
-            showToast(`保存成功`);
 
             hideRenameModal();
             await fetchRepos(true, true);
         } catch (e) {
             showToast(`修改失败: ${e.message}`, 'error');
-        } finally {
             this.disabled = false;
             this.classList.remove('btn-processing');
-            this.innerHTML = '确认';
+            this.innerHTML = '修改失败';
         }
     };
 
@@ -7822,7 +7804,7 @@ function hideDeleteModal() {
     removeFromStack(hideDeleteModal);
 }
 
-function showDeleteModal(item, isDir = false, title, description, onConfirm, confirmButtonText = '确认删除', confirmButtonClass = 'btn-danger', onCancel) {
+function showDeleteModal(item, isDir = false, title, description, onConfirm, confirmButtonText = '确认删除', confirmButtonClass = 'btn-danger', onCancel, confirmSuccessText = '已删除', confirmFailText = '操作失败') {
     el.deleteTitle.querySelector('.modal-title-text').textContent = title || '确认操作';
     if (item) {
         isDir = item.type === 'dir';
@@ -7834,6 +7816,7 @@ function showDeleteModal(item, isDir = false, title, description, onConfirm, con
 
     el.deleteConfirm.textContent = confirmButtonText;
     el.deleteConfirm.className = `btn ${confirmButtonClass}`;
+    el.deleteConfirm.disabled = false;
 
     el.deleteModal.classList.remove('hidden');
 
@@ -7847,17 +7830,15 @@ function showDeleteModal(item, isDir = false, title, description, onConfirm, con
                 await onConfirm();
             } else if (item) {
                 await deleteSingleItem(item);
-                showToast(`"${escapeHtml(item.name)}" 已删除`);
                 state.shouldAnimateList = true;
                 fetchFiles(true);
             }
-        } catch (error) {
-            showToast(`操作失败: ${error.message}`);
-        } finally {
             hideDeleteModal();
+        } catch (error) {
+            showToast(`操作失败: ${error.message}`, 'error');
             confirmBtn.disabled = false;
             confirmBtn.classList.remove('btn-processing');
-            confirmBtn.innerHTML = confirmButtonText;
+            confirmBtn.innerHTML = confirmFailText;
         }
     };
 
@@ -7899,7 +7880,6 @@ function saveProxySettings() {
     state.proxyPrefix = prefix;
     localStorage.setItem('proxy_prefix', prefix);
     updateAllProxySwitchUI();
-    showToast('代理前缀已保存');
     closeProxySettingsModal();
 }
 
@@ -8119,7 +8099,7 @@ let allFilesToDownload = [];
 
         triggerNativeDownload(content, fileName);
 
-        showToast('打包完成，请查看分享或下载', 'success');
+        
 
     } catch (e) {
         showToast(`操作失败: ${e.message}`, 'error');
@@ -8168,7 +8148,7 @@ const zip = new JSZip();
 
         triggerNativeDownload(content, fileName);
 
-        showToast('打包完成，请查看分享或下载', 'success');
+        
 
     } catch (e) {
         showToast(`下载失败: ${e.message}`, 'error');
@@ -8435,10 +8415,6 @@ function initMediaPreview() {
                 this.audio = new Audio();
                 this.audio.crossOrigin = 'anonymous';
 
-                this.audio.addEventListener('ended', () => {
-                    showToast(`播放结束: ${this.currentName}`);
-                });
-
                 this.audio.addEventListener('error', (e) => {
 
                     if (!this.audio.src || this.audio.src === window.location.href) return;
@@ -8464,15 +8440,9 @@ function initMediaPreview() {
 
             if (this.currentUrl === url && this.audio.src) {
                 if (this.audio.paused) {
-                    this.audio.play().then(() => {
-
-                        if (this.activeRequestId === requestId) {
-                            showToast(`继续播放: ${name}`);
-                        }
-                    }).catch(() => {});
+                    this.audio.play().catch(() => {});
                 } else {
                     this.audio.pause();
-                    showToast(`已暂停: ${name}`);
                 }
                 return;
             }
@@ -8606,6 +8576,8 @@ function showCreateRepoModal() {
     el.repoNameError.style.display = 'none';
     el.createRepoModal.classList.remove('hidden');
     el.createRepoConfirm.disabled = true;
+    el.createRepoConfirm.classList.remove('btn-processing', 'btn-success-result');
+    el.createRepoConfirm.innerHTML = '创建仓库';
     function validateRepoName(name) {
         if (/[\u4e00-\u9fa5]/.test(name)) return '仓库名称不能包含中文字符';
         if (name.length > 100) return '仓库名称不能超过100个字符';
@@ -8658,22 +8630,14 @@ function showCreateRepoModal() {
                 throw new Error(errData.message || '创建仓库失败');
             }
 
-            showToast(`仓库 "${name}" 创建成功`, 'success');
             hideCreateRepoModal();
             await fetchRepos(true, true);
 
         } catch (e) {
             showToast(`创建失败: ${e.message}`, 'error');
-        } finally {
-            if (el.createRepoModal.classList.contains('hidden')) {
-                this.innerHTML = '创建仓库';
-                this.classList.remove('btn-processing');
-                this.disabled = false;
-            } else {
-                this.disabled = false;
-                this.classList.remove('btn-processing');
-                this.innerHTML = '创建仓库';
-            }
+            this.disabled = false;
+            this.classList.remove('btn-processing');
+            this.innerHTML = '创建失败';
         }
     };
     uiStateStack.push(hideCreateRepoModal);
@@ -9157,13 +9121,13 @@ function renderPublishManagerLists() {
                                 showDeleteModal(null, false, '确认取消发布', `确定要取消发布 "${repo.name}" 吗？`, async () => {
                                     btn.textContent = '处理中...'; btn.disabled = true;
                                     const res = await unpublishSite(repo);
-                                    showToast(res.message, res.success ? 'success' : 'error');
+                                    if(!res.success) showToast(res.message, 'error');
                                     if(res.success) {
                                         const r = state.repos.find(x => x.id === repo.id);
                                         if(r) r.has_pages = false;
                                         renderPublishManagerLists();
                                     }
-                                }, '确认取消', 'btn-danger');
+                                }, '确认取消', 'btn-danger', undefined, '已取消发布');
                             };
                         } else {
                             btn.dataset.repoFullname = repo.full_name;
@@ -10099,6 +10063,8 @@ function showForkRepoModal(repo) {
     originInfo.textContent = `复刻 ${repo.full_name} 仓库到自己名下`;
     nameInput.value = repo.name;
     confirmBtn.disabled = true;
+    confirmBtn.classList.remove('btn-processing', 'btn-success-result');
+    confirmBtn.innerHTML = '确认复刻';
     errorDiv.style.display = 'none';
 
     modal.classList.remove('hidden');
@@ -10148,7 +10114,6 @@ function hideForkRepoModal() {
 async function forkRepository(originalRepo, newName, button) {
     button.disabled = true;
     button.innerHTML = '<span>复刻中</span><i class="fa fa-spinner fa-spin"></i>';
-    showToast(`正在复刻仓库 ${originalRepo.full_name}...`);
 
     try {
         const res = await fetch(`https://api.github.com/repos/${originalRepo.full_name}/forks`, {
@@ -10162,8 +10127,8 @@ async function forkRepository(originalRepo, newName, button) {
         });
 
         if (res.status === 202) {
+            button.classList.remove('btn-processing');
             hideForkRepoModal();
-            showToast('复刻请求已发送！仓库正在后台创建，请稍后刷新您的仓库列表。', 'success', 3000);
             setTimeout(() => {
                 fetchRepos(true);
             }, 5000);
@@ -10173,9 +10138,8 @@ async function forkRepository(originalRepo, newName, button) {
         }
     } catch (error) {
         showToast(`复刻失败: ${error.message}`, 'error');
-    } finally {
         button.disabled = false;
-        button.innerHTML = '确认复刻';
+        button.innerHTML = '复刻失败';
     }
 }
 
@@ -10546,11 +10510,9 @@ readmeHtml = marked.parse(rawMarkdown);
                 if (isCurrentlyStarred) {
                     await unstarRepository(repo.full_name);
                     state.starredRepos = state.starredRepos.filter(r => r.full_name !== repo.full_name);
-                    showToast('已取消关注');
                 } else {
                     await starRepository(repo.full_name);
                     state.starredRepos.unshift(repo);
-                    showToast('已关注仓库');
                 }
                 updateBtnStyle();
                 renderRepoList();
@@ -10803,6 +10765,10 @@ async function showCustomDomainModal(repoFullName) {
     el.customDomainRepoName.textContent = `为仓库 "${repoName}" 设置域名`;
     el.customDomainInput.value = '';
     el.customDomainSaveBtn.disabled = true;
+    const saveSpan = el.customDomainSaveBtn.querySelector('span');
+    if (saveSpan) saveSpan.textContent = '确认';
+    const saveSpinner = el.customDomainSaveBtn.querySelector('i');
+    if (saveSpinner) saveSpinner.classList.add('hidden');
     el.customDomainError.style.display = 'none';
     el.customDomainModal.classList.remove('hidden');
     uiStateStack.push(hideCustomDomainModal);
@@ -10896,13 +10862,14 @@ async function handleSaveCustomDomain() {
             } catch (e) {}
         }
 
-        showToast(`仓库 ${repoName} 的域名已配置为 ${domain}`);
         hideCustomDomainModal();
         renderPublishManagerLists();
 
     } catch (error) {
         el.customDomainError.textContent = `错误: ${error.message}`;
         el.customDomainError.style.display = 'block';
+        const failSpan = saveBtn.querySelector('span');
+        if (failSpan) failSpan.textContent = '保存失败';
     } finally {
         saveBtn.disabled = false;
         spinner.classList.add('hidden');
@@ -10919,12 +10886,13 @@ function showRemoveCustomDomainConfirmation(repo) {
             await handleRemoveCustomDomain(repo);
         },
         '确认取消',
-        'btn-danger'
+        'btn-danger',
+        undefined,
+        '已取消绑定'
     );
 }
 
 async function handleRemoveCustomDomain(repo) {
-    showToast('正在取消域名绑定...');
     try {
         const [owner, repoName] = repo.full_name.split('/');
         const url = `https://api.github.com/repos/${owner}/${repoName}/contents/CNAME`;
@@ -10975,7 +10943,6 @@ async function handleRemoveCustomDomain(repo) {
             await SimpleDB.set(CACHE_KEY, cachedDomains);
         } catch (e) {}
 
-        showToast(`仓库 "${repo.name}" 的自定义域名已成功取消绑定`);
         renderPublishManagerLists();
 
     } catch (error) {
@@ -11030,7 +10997,6 @@ el.authBtn.addEventListener('click', async () => {
     btn.classList.remove('success', 'error');
     el.tokenInput.classList.remove('error');
     if (!token) {
-        showToast('请输入GitHub访问令牌');
         el.tokenInput.classList.add('error');
         btn.classList.add('error');
         return;
@@ -11071,7 +11037,6 @@ el.authBtn.addEventListener('click', async () => {
             state.accounts.push(newAccount);
             saveAccounts();
             existingAccount = newAccount;
-            showToast('新账号已自动保存');
         }
 
         setActiveAccount(existingAccount.id);
@@ -11088,7 +11053,6 @@ el.authBtn.addEventListener('click', async () => {
 
         setTimeout(async () => {
             showApp();
-            showToast('欢迎回来！');
 
             btn.disabled = false;
             btnText.textContent = '登录';
@@ -11149,15 +11113,13 @@ el.authBtn.addEventListener('click', async () => {
         else if (fileCount > 0) desc += ` (共 ${fileCount} 个文件)`;
         else if (dirCount > 0) desc += ` (共 ${dirCount} 个文件夹)`;
         showDeleteModal(null, false, '确认批量删除', desc, async function() {
-            showToast(`开始删除 ${selectedFiles.length} 个项目...`);
             for (const item of selectedFiles) {
                 await deleteSingleItem(item);
             }
-            showToast('批量删除完成！');
             toggleMultiSelectMode(false);
             state.shouldAnimateList = true;
             fetchFiles(true);
-        });
+        }, '确认删除', 'btn-danger', null, '已删除', '删除失败');
     });
     function handleInteractionToCloseMenu(e) {
         if (!el.contextMenu.classList.contains('hidden') && !el.contextMenu.contains(e.target)) {
@@ -11374,7 +11336,6 @@ el.menuBatchPublishSites.onclick = () => {
             if (isCurrentlyStarred) {
                 await unstarRepository(repoFullName);
                 state.starredRepos = state.starredRepos.filter(r => r.full_name !== repoFullName);
-                showToast(`已取消关注 ${repoFullName}`);
             } else {
                 await starRepository(repoFullName);
                 const repoInfoRes = await fetch(`https://api.github.com/repos/${repoFullName}`, {
@@ -11383,7 +11344,6 @@ el.menuBatchPublishSites.onclick = () => {
                 if (repoInfoRes.ok) {
                     state.starredRepos.unshift(await repoInfoRes.json());
                 }
-                showToast(`已关注 ${repoFullName}`);
             }
             const isNowStarred = !isCurrentlyStarred;
             starButton.textContent = isNowStarred ? '取消关注' : '关注';

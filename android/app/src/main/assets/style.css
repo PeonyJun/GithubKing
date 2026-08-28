@@ -1371,26 +1371,6 @@ body.light-theme .checkbox-container {
     pointer-events: auto;
 }
 
-#saveNotification {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    z-index: 5;
-    padding: 3px 6px;
-    font-size: 12px;
-    color: #fff;
-    background-color: rgba(15, 81, 50, 0.9);
-    border-radius: 3px;
-    opacity: 0;
-    transform: translateY(-8px);
-    transition: opacity 0.3s, transform 0.3s;
-}
-
-#saveNotification.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
 #closeEditModal,
 #toggleMaximizeModal,
 #revertEditBtn,
