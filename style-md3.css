@@ -1,0 +1,1221 @@
+/* ============================================================
+   Material Design 3 视觉覆盖层
+   - 保留 style.css 全部类名与 HTML/JS 结构
+   - 通过追加覆盖 + 图标 ligature 映射实现 MD3 原生观感
+   - 本地托管 Material Symbols Rounded 字体
+   ============================================================ */
+
+@font-face {
+    font-family: 'Material Symbols Rounded';
+    font-style: normal;
+    font-weight: 100 700;
+    font-display: block;
+    src: url('./fonts/material-symbols-rounded.woff2') format('woff2');
+}
+
+/* ---------- MD3 Design Tokens ---------- */
+:root {
+    /* Dark scheme (default) */
+    --md-primary: #D0BCFF;
+    --md-on-primary: #381E72;
+    --md-primary-container: #4F378B;
+    --md-on-primary-container: #EADDFF;
+    --md-secondary: #CCC2DC;
+    --md-on-secondary: #332D41;
+    --md-secondary-container: #4A4458;
+    --md-on-secondary-container: #E8DEF8;
+    --md-tertiary: #EFB8C8;
+    --md-on-tertiary: #492532;
+    --md-tertiary-container: #633B48;
+    --md-on-tertiary-container: #FFD8E4;
+    --md-error: #F2B8B5;
+    --md-on-error: #601410;
+    --md-error-container: #8C1D18;
+    --md-on-error-container: #F9DEDC;
+    --md-background: #141218;
+    --md-on-background: #E6E0E9;
+    --md-surface: #141218;
+    --md-on-surface: #E6E0E9;
+    --md-surface-variant: #49454F;
+    --md-on-surface-variant: #CAC4D0;
+    --md-outline: #938F99;
+    --md-outline-variant: #49454F;
+    --md-surface-container-lowest: #0F0D13;
+    --md-surface-container-low: #1D1B20;
+    --md-surface-container: #211F26;
+    --md-surface-container-high: #2B2930;
+    --md-surface-container-highest: #36343B;
+    --md-surface-tint: #D0BCFF;
+    --md-scrim: #000000;
+
+    /* State layer (dark) */
+    --md-state-hover: rgba(230, 224, 233, 0.08);
+    --md-state-focus: rgba(230, 224, 233, 0.12);
+    --md-state-pressed: rgba(230, 224, 233, 0.12);
+    --md-state-dragged: rgba(230, 224, 233, 0.16);
+
+    /* Shape */
+    --md-shape-none: 0px;
+    --md-shape-extra-small: 4px;
+    --md-shape-small: 8px;
+    --md-shape-medium: 12px;
+    --md-shape-large: 16px;
+    --md-shape-extra-large: 28px;
+    --md-shape-full: 9999px;
+
+    /* Elevation */
+    --md-elevation-1: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+    --md-elevation-2: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+    --md-elevation-3: 0 4px 8px 3px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.3);
+    --md-elevation-4: 0 6px 10px 4px rgba(0, 0, 0, 0.15), 0 2px 3px rgba(0, 0, 0, 0.3);
+
+    /* Type scale */
+    --md-font-display: 'Roboto', system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    --md-title-large: 22px/28px;
+    --md-title-medium: 16px/24px;
+    --md-title-small: 14px/20px;
+    --md-body-large: 16px/24px;
+    --md-body-medium: 14px/20px;
+    --md-body-small: 12px/16px;
+    --md-label-large: 14px/20px;
+    --md-label-medium: 12px/16px;
+    --md-label-small: 11px/16px;
+
+    /* Motion */
+    --md-motion-easing: cubic-bezier(0.2, 0, 0, 1);
+}
+
+body.light-theme {
+    /* Light scheme */
+    --md-primary: #6750A4;
+    --md-on-primary: #FFFFFF;
+    --md-primary-container: #EADDFF;
+    --md-on-primary-container: #21005D;
+    --md-secondary: #625B71;
+    --md-on-secondary: #FFFFFF;
+    --md-secondary-container: #E8DEF8;
+    --md-on-secondary-container: #1D192B;
+    --md-tertiary: #7D5260;
+    --md-on-tertiary: #FFFFFF;
+    --md-tertiary-container: #FFD8E4;
+    --md-on-tertiary-container: #31111D;
+    --md-error: #B3261E;
+    --md-on-error: #FFFFFF;
+    --md-error-container: #F9DEDC;
+    --md-on-error-container: #410E0B;
+    --md-background: #FEF7FF;
+    --md-on-background: #1D1B20;
+    --md-surface: #FEF7FF;
+    --md-on-surface: #1D1B20;
+    --md-surface-variant: #E7E0EC;
+    --md-on-surface-variant: #49454F;
+    --md-outline: #79747E;
+    --md-outline-variant: #CAC4D0;
+    --md-surface-container-lowest: #FFFFFF;
+    --md-surface-container-low: #F7F2FA;
+    --md-surface-container: #F3EDF7;
+    --md-surface-container-high: #ECE6F0;
+    --md-surface-container-highest: #E6E0E9;
+    --md-surface-tint: #6750A4;
+    --md-scrim: #000000;
+
+    --md-state-hover: rgba(29, 27, 32, 0.08);
+    --md-state-focus: rgba(29, 27, 32, 0.12);
+    --md-state-pressed: rgba(29, 27, 32, 0.12);
+    --md-state-dragged: rgba(29, 27, 32, 0.16);
+}
+
+html.light-theme-loading body {
+    background: var(--md-surface) !important;
+    color: var(--md-on-surface) !important;
+}
+
+/* ---------- 全局基础覆盖 ---------- */
+body {
+    font-family: var(--md-font-display);
+    color: var(--md-on-surface);
+    background: var(--md-surface);
+    transition: background-color 0.3s var(--md-motion-easing), color 0.3s var(--md-motion-easing);
+}
+
+html.light-theme-loading body {
+    background: var(--md-surface) !important;
+    color: var(--md-on-surface) !important;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--md-outline-variant);
+    border-radius: var(--md-shape-full);
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* ============================================================
+   组件覆盖
+   ============================================================ */
+
+/* ---------- App Bar ---------- */
+header {
+    background: var(--md-surface-container);
+    border-bottom: 1px solid var(--md-outline-variant);
+    box-shadow: none;
+    padding: 0.5rem 0.8rem;
+    height: 64px;
+}
+
+body.light-theme header {
+    background: var(--md-surface-container);
+    border-bottom-color: var(--md-outline-variant);
+}
+
+header .header-left h1,
+#currentRepo {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--md-on-surface);
+    letter-spacing: 0;
+}
+
+body.light-theme header .header-left h1,
+body.light-theme #currentRepo {
+    color: var(--md-on-surface);
+}
+
+/* ---------- 通用图标字体（用于 ::before 映射，图标统一放这里） ---------- */
+.md3-icon {
+    font-family: 'Material Symbols Rounded';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: 'liga';
+}
+
+/* 图标按钮 */
+.btn-icon,
+#globalSearchToggleBtn,
+#viewStarredBtn,
+#sideNavToggleBtn,
+#searchToggleBtn,
+#sortToggleBtn,
+#viewToggleBtn {
+    color: var(--md-on-surface-variant);
+    border-radius: var(--md-shape-full);
+    transition: background-color 0.15s var(--md-motion-easing), color 0.15s var(--md-motion-easing);
+}
+
+.btn-icon:hover:not(:disabled),
+#globalSearchToggleBtn:hover,
+#viewStarredBtn:hover,
+#sideNavToggleBtn:hover,
+#searchToggleBtn:hover,
+#sortToggleBtn:hover,
+#viewToggleBtn:hover {
+    background-color: var(--md-state-hover);
+    color: var(--md-on-surface);
+}
+
+.btn-icon:active:not(:disabled),
+#globalSearchToggleBtn:active,
+#viewStarredBtn:active {
+    background-color: var(--md-state-pressed);
+}
+
+/* ---------- 按钮 (Filled / Tonal / Text) ---------- */
+.btn {
+    min-height: 40px;
+    padding: 0.5rem 1.5rem;
+    font-size: var(--md-label-large);
+    font-weight: 500;
+    letter-spacing: 0.1px;
+    border-radius: var(--md-shape-full);
+    background: var(--md-primary);
+    color: var(--md-on-primary);
+    box-shadow: var(--md-elevation-1);
+    transition: background-color 0.15s var(--md-motion-easing), box-shadow 0.15s var(--md-motion-easing), transform 0.05s var(--md-motion-easing);
+}
+
+.btn:hover:not(:disabled) {
+    box-shadow: var(--md-elevation-2);
+    background: var(--md-primary);
+}
+
+.btn:active:not(:disabled) {
+    transform: scale(0.97);
+    box-shadow: var(--md-elevation-1);
+    background: var(--md-primary);
+}
+
+.btn-secondary {
+    background: var(--md-secondary-container);
+    color: var(--md-on-secondary-container);
+    border-radius: var(--md-shape-full);
+    min-height: 40px;
+    padding: 0.5rem 1.5rem;
+    font-size: var(--md-label-large);
+    font-weight: 500;
+    letter-spacing: 0.1px;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: var(--md-secondary-container);
+}
+
+.btn-icon-sm {
+    color: var(--md-on-surface-variant);
+    border-radius: var(--md-shape-full);
+}
+
+.btn-icon-sm:hover:not(:disabled) {
+    background-color: var(--md-state-hover);
+    color: var(--md-on-surface);
+}
+
+#saveEdit {
+    color: var(--md-primary);
+}
+
+#saveEdit:hover {
+    background-color: var(--md-state-hover);
+    color: var(--md-primary);
+}
+
+#proxyQuickToggle {
+    color: var(--md-on-surface-variant);
+}
+
+/* 页脚 FAB 式按钮 */
+
+/* ---------- 模态框 (MD3 Dialog) ---------- */
+.modal-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 800;
+    padding: 1rem;
+}
+
+.modal-overlay .modal-form-container,
+.modal-overlay .modal-content {
+    background: var(--md-surface-container-high);
+    border: none;
+    border-radius: var(--md-shape-extra-large);
+    box-shadow: var(--md-elevation-3);
+    max-width: 400px;
+    width: 100%;
+}
+
+.modal-form-container {
+    background: var(--md-surface-container-high);
+    border: none;
+    border-radius: var(--md-shape-extra-large);
+    box-shadow: var(--md-elevation-3);
+    padding: 1.5rem;
+    transform: scale(1);
+    opacity: 1;
+    animation: md3DialogIn 0.2s var(--md-motion-easing) forwards;
+}
+
+@keyframes md3DialogIn {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-form-container h3,
+.modal-form-container .modal-title-text {
+    font-size: var(--md-title-large);
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--md-on-surface);
+    border-bottom-color: var(--md-outline-variant);
+    padding-bottom: 0.75rem;
+}
+
+.modal-form-container p {
+    font-size: var(--md-body-medium);
+    color: var(--md-on-surface-variant);
+    line-height: 1.5;
+}
+
+.modal-form-container input,
+.modal-form-container textarea,
+.modal-form-container select {
+    background: var(--md-surface);
+    color: var(--md-on-surface);
+    border: 1px solid var(--md-outline);
+    border-radius: var(--md-shape-extra-small);
+    padding: 0.75rem 1rem;
+    font-size: var(--md-body-medium);
+    transition: border-color 0.15s var(--md-motion-easing), box-shadow 0.15s var(--md-motion-easing);
+}
+
+.modal-form-container input:focus,
+.modal-form-container textarea:focus,
+.modal-form-container select:focus {
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 1px var(--md-primary);
+    background: var(--md-surface);
+}
+
+.modal-form-container input::placeholder,
+.modal-form-container textarea::placeholder {
+    color: var(--md-on-surface-variant);
+}
+
+.modal-header {
+    background: var(--md-surface-container-high);
+    padding: 1rem 1.5rem;
+}
+
+.modal-header h5 {
+    font-size: var(--md-title-medium);
+    font-weight: 500;
+    color: var(--md-on-surface);
+}
+
+.modal-footer {
+    background: var(--md-surface-container-high);
+    padding: 0.75rem 1.5rem 1rem;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.modal-footer button {
+    color: var(--md-primary);
+    font-weight: 500;
+    font-size: var(--md-label-large);
+    letter-spacing: 0.1px;
+    min-height: 40px;
+    padding: 0 0.75rem;
+    border-radius: var(--md-shape-full);
+    transition: background-color 0.15s var(--md-motion-easing);
+}
+
+.modal-footer button:hover {
+    background-color: var(--md-state-hover);
+}
+
+body.light-theme .modal-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+body.light-theme .modal-overlay .modal-form-container,
+body.light-theme .modal-overlay .modal-content {
+    background: var(--md-surface-container-high);
+}
+
+/* ---------- 下拉菜单 (MD3 Menu) ---------- */
+.custom-dropdown,
+#contextMenu {
+    background: var(--md-surface-container);
+    border: none;
+    border-radius: var(--md-shape-medium);
+    box-shadow: var(--md-elevation-2);
+    min-width: 200px;
+    padding: 0.5rem 0;
+}
+
+.dropdown-item {
+    padding: 0.75rem 1.25rem;
+    font-size: var(--md-body-medium);
+    color: var(--md-on-surface);
+    text-align: left;
+    transition: background-color 0.15s var(--md-motion-easing);
+}
+
+.dropdown-item:hover {
+    background-color: var(--md-state-hover);
+}
+
+.dropdown-item.selected {
+    color: var(--md-primary);
+    background-color: var(--md-secondary-container);
+    font-weight: 500;
+}
+
+.dropdown-divider {
+    background: var(--md-outline-variant);
+}
+
+/* ---------- 列表项 (MD3 List) ---------- */
+.file-item {
+    background: var(--md-surface-container-low);
+    border: none;
+    border-radius: var(--md-shape-medium);
+    margin-bottom: 0.25rem;
+    padding: 0.5rem 1rem;
+    transition: background-color 0.15s var(--md-motion-easing), transform 0.05s var(--md-motion-easing);
+}
+
+.file-item:hover {
+    background-color: var(--md-surface-container-high);
+}
+
+.file-item:active {
+    background-color: var(--md-state-pressed);
+}
+
+.file-icon {
+    border-radius: var(--md-shape-small);
+    background: var(--md-secondary-container);
+}
+
+.file-icon i {
+    color: var(--md-on-secondary-container);
+}
+
+body.light-theme .file-item {
+    background: var(--md-surface-container-low);
+}
+
+body.light-theme .file-item:hover {
+    background: var(--md-surface-container-high);
+}
+
+/* ---------- 输入框（通用） ---------- */
+#tokenInput,
+#globalSearchInput,
+#searchInput {
+    background: var(--md-surface);
+    color: var(--md-on-surface);
+    border: 1px solid var(--md-outline);
+    border-radius: var(--md-shape-extra-small);
+    padding: 0.6rem 1rem;
+    font-size: var(--md-body-medium);
+    transition: border-color 0.15s var(--md-motion-easing), box-shadow 0.15s var(--md-motion-easing);
+}
+
+#tokenInput:focus,
+#globalSearchInput:focus,
+#searchInput:focus {
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 1px var(--md-primary);
+}
+
+#tokenInput::placeholder,
+#globalSearchInput::placeholder,
+#searchInput::placeholder {
+    color: var(--md-on-surface-variant);
+}
+
+/* ---------- Toast (MD3 Snackbar) ---------- */
+#toast {
+    background: var(--md-surface-container-highest);
+    color: var(--md-on-surface);
+    border: none;
+    border-radius: var(--md-shape-small);
+    box-shadow: var(--md-elevation-3);
+    bottom: 5.5rem;
+    padding: 12px 20px;
+    font-size: var(--md-body-medium);
+}
+
+#toast.toast-success i {
+    color: var(--md-primary);
+    filter: none;
+}
+
+#toast.toast-error i {
+    color: var(--md-error);
+    filter: none;
+}
+
+#toast.toast-info i {
+    color: var(--md-primary);
+    filter: none;
+}
+
+/* ---------- Footer (MD3 Navigation Bar / Bottom App Bar) ---------- */
+footer {
+    background: var(--md-surface-container);
+    border-top: 1px solid var(--md-outline-variant);
+    height: 56px;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+body.light-theme footer {
+    background: var(--md-surface-container);
+    border-top-color: var(--md-outline-variant);
+}
+
+footer button i {
+    font-size: 24px;
+    color: var(--md-on-surface-variant);
+}
+
+footer button.active i,
+footer button:hover i {
+    color: var(--md-on-secondary-container);
+}
+
+footer button::before {
+    display: none;
+}
+
+/* ---------- SideNav 改为 MD3 抽屉式导航（保留 open 类逻辑） ---------- */
+#sideNav {
+    width: 300px;
+    background: var(--md-surface-container);
+    padding: 0.5rem;
+    box-shadow: var(--md-elevation-2);
+    border-right: none;
+}
+
+body.light-theme #sideNav {
+    background: var(--md-surface-container);
+    border-right: none;
+}
+
+#sideNav .user-profile-header {
+    border-bottom-color: var(--md-outline-variant);
+}
+
+#sideNav li a {
+    left: 0;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.25rem;
+    border-radius: var(--md-shape-full);
+    color: var(--md-on-surface-variant);
+    font-size: var(--md-body-medium);
+    justify-content: flex-start;
+    text-align: left;
+    transition: background-color 0.15s var(--md-motion-easing);
+}
+
+#sideNav li a:hover,
+#sideNav li a.active {
+    color: var(--md-on-surface);
+    background-color: var(--md-secondary-container);
+}
+
+#sideNav li a i {
+    color: inherit;
+}
+
+body.light-theme #sideNav li a {
+    color: var(--md-on-surface-variant);
+}
+
+body.light-theme #sideNav li a:hover,
+body.light-theme #sideNav li a.active {
+    color: var(--md-on-surface);
+}
+
+body.light-theme #sideNav .user-profile-header,
+body.light-theme #sideNav .side-nav-bottom {
+    border-color: var(--md-outline-variant);
+}
+
+#sideNavToggleBtn {
+    color: var(--md-on-surface-variant);
+    border-radius: var(--md-shape-full);
+}
+
+#sideNavToggleBtn:hover {
+    background-color: var(--md-state-hover);
+}
+
+body.light-theme #sideNavToggleBtn {
+    color: var(--md-on-surface-variant);
+}
+
+/* ---------- 空状态 ---------- */
+.empty-state i {
+    color: var(--md-outline);
+    font-size: 3rem;
+}
+
+.empty-state p {
+    color: var(--md-on-surface-variant);
+    font-size: var(--md-body-medium);
+}
+
+/* ---------- 主加载遮罩 ---------- */
+.loading-overlay {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(1px);
+}
+
+.spinner {
+    border-radius: 50%;
+}
+
+/* ---------- toolbar ---------- */
+#toolbar {
+    border-bottom-color: var(--md-outline-variant);
+    background: var(--md-surface);
+}
+
+body.light-theme #toolbar {
+    background: var(--md-surface);
+}
+
+/* ============================================================
+   图标映射：Font Awesome → Material Symbols Rounded
+   通过 ::before 覆盖实现，HTML/JS 零改动
+   ============================================================ */
+[class*="fa-"].fa::before,
+[class*="fa-"].fa-solid::before,
+[class*="fa-"].fa-regular::before {
+    font-family: 'Material Symbols Rounded' !important;
+    font-weight: normal !important;
+    font-style: normal !important;
+    font-size: inherit;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: 'liga';
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+}
+
+/* 品牌图标保留 Font Awesome 品牌字体 */
+.fa-brands::before {
+    font-family: 'Font Awesome 6 Brands' !important;
+    font-weight: 400 !important;
+}
+
+/* 逐个图标映射 */
+.fa-search::before { content: 'search'; }
+.fa-star::before { content: 'star'; }
+.fa-times::before { content: 'close'; }
+.fa-spinner::before { content: 'progress_activity'; }
+.fa-file-code::before { content: 'code'; }
+.fa-link::before { content: 'link'; }
+.fa-file-image::before { content: 'image'; }
+.fa-pencil::before { content: 'edit'; }
+.fa-file-video::before { content: 'movie'; }
+.fa-chevron-down::before { content: 'expand_more'; }
+.fa-chevron-up::before { content: 'expand_less'; }
+.fa-file-zipper::before { content: 'folder_zip'; }
+.fa-file-audio::before { content: 'music_note'; }
+.fa-check::before { content: 'check'; }
+.fa-arrow-up::before { content: 'arrow_upward'; }
+.fa-trash::before { content: 'delete'; }
+.fa-trash-can::before { content: 'delete'; }
+.fa-repeat::before { content: 'replay'; }
+.fa-font::before { content: 'format_size'; }
+.fa-folder-open::before { content: 'folder_open'; }
+.fa-folder::before { content: 'folder'; }
+.fa-code-fork::before { content: 'call_split'; }
+.fa-circle-down::before { content: 'download'; }
+.fa-arrow-left::before { content: 'arrow_back'; }
+.fa-file-word::before { content: 'description'; }
+.fa-file-lines::before { content: 'description'; }
+.fa-file-excel::before { content: 'table_chart'; }
+.fa-file::before { content: 'description'; }
+.fa-eye::before { content: 'visibility'; }
+.fa-expand::before { content: 'open_in_full'; }
+.fa-code::before { content: 'code'; }
+.fa-circle-question::before { content: 'help'; }
+.fa-circle-check::before { content: 'check_circle'; }
+.fa-arrow-right::before { content: 'arrow_forward'; }
+.fa-wand-magic-sparkles::before { content: 'auto_awesome'; }
+.fa-up-down::before { content: 'swap_vert'; }
+.fa-thumbtack::before { content: 'push_pin'; }
+.fa-user-group::before { content: 'group'; }
+.fa-tags::before { content: 'sell'; }
+.fa-globe::before { content: 'language'; }
+.fa-sign-out::before { content: 'logout'; }
+.fa-exchange::before { content: 'swap_horiz'; }
+.fa-heart::before { content: 'favorite'; }
+.fa-align-justify::before { content: 'list'; }
+.fa-exclamation-circle::before { content: 'error'; }
+.fa-plus-circle::before { content: 'add_circle'; }
+.fa-plus::before { content: 'add'; }
+.fa-key::before { content: 'key'; }
+.fa-question-circle::before { content: 'help'; }
+.fa-refresh::before { content: 'refresh'; }
+.fa-undo::before { content: 'undo'; }
+.fa-arrow-down-a-z::before { content: 'sort_by_alpha'; }
+.fa-arrow-down-z-a::before { content: 'sort_by_alpha'; }
+.fa-arrow-down-wide-short::before { content: 'sort'; }
+.fa-arrow-down-short-wide::before { content: 'sort'; }
+.fa-cloud::before { content: 'cloud'; }
+.fa-cloud-upload::before { content: 'cloud_upload'; }
+.fa-download::before { content: 'download'; }
+.fa-edit::before { content: 'edit'; }
+.fa-compress::before { content: 'close_fullscreen'; }
+.fa-file-pdf::before { content: 'picture_as_pdf'; }
+.fa-file-powerpoint::before { content: 'slideshow'; }
+.fa-clipboard-list::before { content: 'checklist'; }
+.fa-clock::before { content: 'schedule'; }
+.fa-circle-info::before { content: 'info'; }
+.fa-circle-xmark::before { content: 'cancel'; }
+.fa-square-check::before { content: 'check_box'; }
+.fa-square-minus::before { content: 'indeterminate_check_box'; }
+.fa-check-double::before { content: 'done_all'; }
+.fa-terminal::before { content: 'terminal'; }
+.fa-toolbox::before { content: 'handyman'; }
+.fa-compass::before { content: 'explore'; }
+.fa-bolt::before { content: 'bolt'; }
+.fa-database::before { content: 'database'; }
+.fa-crown::before { content: 'workspace_premium'; }
+.fa-sitemap::before { content: 'account_tree'; }
+.fa-house::before { content: 'home'; }
+.fa-layer-group::before { content: 'layers'; }
+.fa-moon::before { content: 'dark_mode'; }
+.fa-gear::before { content: 'settings'; }
+.fa-gears::before { content: 'settings'; }
+.fa-hand-pointer::before { content: 'touch_app'; }
+.fa-power-off::before { content: 'power_settings_new'; }
+.fa-user::before { content: 'account_circle'; }
+.fa-arrows-up-down::before { content: 'swap_vert'; }
+.fa-arrow-up-from-bracket::before { content: 'upload'; }
+.fa-book-open::before { content: 'menu_book'; }
+.fa-chart-bar::before { content: 'bar_chart'; }
+.fa-th-large::before { content: 'grid_view'; }
+.fa-triangle-exclamation::before { content: 'warning'; }
+
+/* spinner 旋转动画保持 */
+.fa-spin {
+    animation: fa-spin 1.2s linear infinite;
+}
+
+@keyframes fa-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ---------- SideNav → 顶栏 MD3 Menu（非侧边栏） ---------- */
+#sideNav {
+    position: fixed;
+    top: 72px;
+    right: 10px;
+    left: auto;
+    z-index: 950;
+    width: 280px;
+    max-width: calc(100vw - 24px);
+    max-height: calc(100vh - 88px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    background: var(--md-surface-container);
+    padding: 0.5rem;
+    border-radius: var(--md-shape-large);
+    box-shadow: var(--md-elevation-3);
+    text-align: left;
+    transform: translateY(-10px) scale(0.98);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.18s var(--md-motion-easing), transform 0.18s var(--md-motion-easing), visibility 0s linear 0.18s;
+}
+
+#sideNav.open {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.18s var(--md-motion-easing), transform 0.18s var(--md-motion-easing), visibility 0s linear 0s;
+}
+
+body.light-theme #sideNav {
+    background: var(--md-surface-container);
+}
+
+#sideNav .user-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--md-outline-variant);
+    text-align: left;
+}
+
+#sideNav .user-profile-header #userName {
+    font-size: var(--md-body-medium);
+    font-weight: 500;
+    color: var(--md-on-surface);
+    text-align: left;
+}
+
+#sideNav ul {
+    text-align: left;
+}
+
+#sideNav li a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 1rem;
+    margin-bottom: 0.25rem;
+    border-radius: var(--md-shape-full);
+    color: var(--md-on-surface-variant);
+    font-size: var(--md-body-medium);
+    font-weight: 500;
+    text-align: left;
+    text-decoration: none;
+    background: transparent;
+    transition: background-color 0.15s var(--md-motion-easing), color 0.15s var(--md-motion-easing);
+}
+
+#sideNav li a:hover,
+#sideNav li a.active {
+    color: var(--md-on-surface);
+    background: var(--md-secondary-container);
+}
+
+#sideNav li a i {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    font-size: 20px;
+    color: inherit;
+}
+
+body.light-theme #sideNav li a {
+    color: var(--md-on-surface-variant);
+}
+
+body.light-theme #sideNav li a:hover,
+body.light-theme #sideNav li a.active {
+    color: var(--md-on-surface);
+    background: var(--md-secondary-container);
+}
+
+body.light-theme #sideNav .user-profile-header,
+body.light-theme #sideNav .side-nav-bottom {
+    border-color: var(--md-outline-variant);
+}
+
+#sideNav .side-nav-main {
+    flex-grow: 1;
+}
+
+#sideNav .side-nav-bottom {
+    padding-top: 0.5rem;
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--md-outline-variant);
+}
+
+/* mainOverlay 仍用于点击关闭 */
+#mainOverlay {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+/* ---------- Auth 登录页 (MD3) ---------- */
+body.light-theme #authScreen,
+#authScreen {
+    background: var(--md-surface);
+    background-image: none;
+}
+
+#authScreen::before {
+    display: none;
+}
+
+.auth-header {
+    text-align: center;
+}
+
+.auth-header i {
+    font-size: 3rem;
+    color: var(--md-primary);
+    margin-bottom: 1rem;
+    filter: none;
+}
+
+body.light-theme .auth-header i {
+    color: var(--md-primary);
+    filter: none;
+}
+
+.auth-header h1 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--md-on-surface);
+    letter-spacing: 0;
+    text-shadow: none;
+    font-family: var(--md-font-display);
+}
+
+body.light-theme .auth-header h1 {
+    color: var(--md-on-surface);
+    text-shadow: none;
+}
+
+.auth-header p {
+    font-size: 0.8rem;
+    color: var(--md-on-surface-variant);
+    letter-spacing: 0.05em;
+    text-transform: none;
+}
+
+body.light-theme .auth-header p {
+    color: var(--md-on-surface-variant);
+}
+
+.auth-form {
+    background: var(--md-surface-container-high);
+    border: none;
+    border-radius: var(--md-shape-extra-large);
+    box-shadow: var(--md-elevation-3);
+    padding: 2rem 1.8rem;
+    backdrop-filter: none;
+}
+
+body.light-theme .auth-form {
+    background: var(--md-surface-container-high);
+    border: none;
+    box-shadow: var(--md-elevation-3);
+}
+
+#tokenInput {
+    color: var(--md-on-surface);
+    border-bottom: none;
+    background: var(--md-surface);
+    border: 1px solid var(--md-outline);
+    border-radius: var(--md-shape-extra-small);
+    padding: 0.8rem 1rem;
+    font-size: var(--md-body-medium);
+    transition: border-color 0.15s var(--md-motion-easing), box-shadow 0.15s var(--md-motion-easing);
+}
+
+#tokenInput:focus {
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 1px var(--md-primary);
+    background: var(--md-surface);
+}
+
+#tokenInput::placeholder {
+    color: var(--md-on-surface-variant);
+}
+
+body.light-theme #tokenInput {
+    color: var(--md-on-surface);
+    border-bottom: none;
+    background: var(--md-surface);
+    border-color: var(--md-outline);
+}
+
+body.light-theme #tokenInput:focus {
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 1px var(--md-primary);
+}
+
+#authBtn,
+.auth-button {
+    min-height: 48px;
+    border-radius: var(--md-shape-full);
+    font-size: var(--md-label-large);
+    font-weight: 500;
+    letter-spacing: 0.1px;
+}
+
+#authBtn {
+    background: var(--md-primary);
+    color: var(--md-on-primary);
+    box-shadow: var(--md-elevation-1);
+    border: none;
+}
+
+#authBtn:hover {
+    background: var(--md-primary);
+    box-shadow: var(--md-elevation-2);
+}
+
+body.light-theme #authBtn {
+    background: var(--md-primary);
+    color: var(--md-on-primary);
+    border: none;
+}
+
+body.light-theme #authBtn:hover {
+    background: var(--md-primary);
+}
+
+.auth-button {
+    background: var(--md-secondary-container);
+    color: var(--md-on-secondary-container);
+    border: none;
+}
+
+body.light-theme .auth-button {
+    background: var(--md-secondary-container);
+    color: var(--md-on-secondary-container);
+    border: none;
+}
+
+.text-btn {
+    color: var(--md-primary);
+    font-size: var(--md-body-medium);
+    text-decoration: none;
+}
+
+body.light-theme .text-btn {
+    color: var(--md-primary);
+}
+
+/* ---------- 更多按钮变体 ---------- */
+.btn-primary {
+    background: var(--md-primary);
+    color: var(--md-on-primary);
+    border: none;
+    box-shadow: var(--md-elevation-1);
+    min-height: 40px;
+    border-radius: var(--md-shape-full);
+    font-size: var(--md-label-large);
+    font-weight: 500;
+    letter-spacing: 0.1px;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--md-primary);
+    box-shadow: var(--md-elevation-2);
+}
+
+.btn-danger {
+    background: var(--md-error);
+    color: var(--md-on-error);
+    border: none;
+    box-shadow: var(--md-elevation-1);
+    min-height: 40px;
+    border-radius: var(--md-shape-full);
+    font-size: var(--md-label-large);
+    font-weight: 500;
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: var(--md-error);
+}
+
+.btn-cancel {
+    background: transparent;
+    color: var(--md-primary);
+    border: none;
+    min-height: 40px;
+    border-radius: var(--md-shape-full);
+    font-size: var(--md-label-large);
+    font-weight: 500;
+}
+
+.btn-cancel:hover:not(:disabled) {
+    background: var(--md-state-hover);
+}
+
+/* Tabs (MD3 Tab) */
+.btn-tab {
+    background: transparent;
+    color: var(--md-on-surface-variant);
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    font-size: var(--md-label-large);
+    font-weight: 500;
+    letter-spacing: 0;
+    min-height: 44px;
+    padding: 0 1rem;
+}
+
+.btn-tab.active {
+    color: var(--md-primary);
+    border-bottom-color: var(--md-primary);
+    background: transparent;
+}
+
+/* Chips / Badges */
+.chip-cyan,
+.chip-gold,
+.chip-pink,
+.badge,
+.author-tag {
+    border-radius: var(--md-shape-small);
+    font-size: var(--md-label-small);
+    font-weight: 500;
+    letter-spacing: 0;
+    padding: 0.25rem 0.75rem;
+}
+
+/* ---------- 仓库列表卡片 ---------- */
+#repoList .file-item {
+    background: var(--md-surface-container-low);
+    border: none;
+    border-radius: var(--md-shape-medium);
+}
+
+#repoList .file-item:hover {
+    background: var(--md-surface-container-high);
+}
+
+.repo-badges .badge {
+    background: var(--md-secondary-container);
+    color: var(--md-on-secondary-container);
+}
+
+/* ---------- 编辑页 (MD3 Editor 布局) ---------- */
+#editModal .modal-content {
+    background: var(--md-surface-container-low);
+    border-radius: var(--md-shape-large);
+    max-width: none;
+    height: 90vh;
+}
+
+#editModal .modal-header {
+    background: var(--md-surface-container);
+}
+
+#editModal .modal-footer {
+    background: var(--md-surface-container);
+}
+
+/* ---------- 下拉选择容器 ---------- */
+.custom-select-container select,
+.custom-branch-select-wrapper select,
+select {
+    background: var(--md-surface);
+    color: var(--md-on-surface);
+    border: 1px solid var(--md-outline);
+    border-radius: var(--md-shape-extra-small);
+    padding: 0.5rem 0.75rem;
+    font-size: var(--md-body-medium);
+}
+
+select:focus {
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 1px var(--md-primary);
+}
+
+/* ---------- 修复 style.css 中 !important 的颜色冲突 ---------- */
+body #sideNavToggleBtn i,
+#sideNavToggleBtn i {
+    color: var(--md-on-surface-variant) !important;
+}
+
+body.light-theme #sideNavToggleBtn i {
+    color: var(--md-on-surface-variant) !important;
+}
+
+body .modal-header button i,
+.modal-header button i {
+    color: var(--md-on-surface-variant) !important;
+}
+
+body.light-theme .modal-header button i {
+    color: var(--md-on-surface-variant) !important;
+}
