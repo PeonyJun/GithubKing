@@ -4048,16 +4048,13 @@ async function navigateToRepo(repoData, branch, path = '', updateHistory = true)
                 renderFileList();
                 loadedFromCache = true;
                 updatePaginationUI();
-                return;
             }
         }
     } catch (e) {}
-    if (!loadedFromCache) {
-        fetchFiles(false, false);
-        if (!state.repoTreeCache) {
-            loadRecursiveRepoTree();
-        }
+    if (!loadedFromCache && !state.repoTreeCache) {
+        loadRecursiveRepoTree();
     }
+    fetchFiles(false, false);
     updatePaginationUI();
 }
 
@@ -8776,6 +8773,7 @@ async function handleRefresh() {
 
     if (targetListEl === el.fileList) {
         await fetchFiles(true, false);
+        loadRecursiveRepoTree();
         return;
     }
 

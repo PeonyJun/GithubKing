@@ -2660,8 +2660,15 @@ input:checked + .slider:before {
     transition: opacity 0.3s ease;
 }
 
+#pull-to-refresh.visible,
+#pull-to-refresh.ready,
 #pull-to-refresh.refreshing {
     opacity: 1;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 main.has-toolbar #pull-to-refresh {
