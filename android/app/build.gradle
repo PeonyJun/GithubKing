@@ -1,0 +1,56 @@
+plugins {
+    id 'com.android.application'
+}
+
+def signingProps = new Properties()
+def signingFile = rootProject.file('signing.properties')
+if (signingFile.exists()) {
+    signingProps.load(new FileInputStream(signingFile))
+}
+
+android {
+    namespace 'com.peonyking.gitapp'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.peonyking.gitapp"
+        minSdk 29
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    signingConfigs {
+        release {
+            storeFile rootProject.file(signingProps['storeFile'])
+            storePassword signingProps['storePassword']
+            keyAlias signingProps['keyAlias']
+            keyPassword signingProps['keyPassword']
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/DEPENDENCIES', 'META-INF/LICENSE*', 'META-INF/NOTICE*']
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.11.0'
+    implementation 'androidx.documentfile:documentfile:1.0.1'
+}
