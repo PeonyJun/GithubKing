@@ -1078,6 +1078,7 @@
 
 <script>
 
+
 let currentManagingRepo = null;
 let imageObserver = null;
 const CURRENT_VERSION = "3.9";
@@ -1336,6 +1337,122 @@ const SimpleDB = {
         }
     }
 };
+
+const CacheManager = {
+    memory: new Map(),
+
+    _fullKey(key) {
+        return key;
+    },
+
+    async getCached(key, { maxAge = 0, memory = false } = {}) {
+        if (memory && this.memory.has(key)) {
+            const rec = this.memory.get(key);
+            if (maxAge > 0 && Date.now() - rec.savedAt > maxAge) {
+                this.memory.delete(key);
+            } else {
+                return rec.value;
+            }
+        }
+        try {
+            const record = await SimpleDB.get(key);
+            if (record) {
+                if (maxAge > 0 && record._savedAt && Date.now() - record._savedAt > maxAge) {
+                    return null;
+                }
+                if (memory) this.memory.set(key, { value: record.value, savedAt: Date.now() });
+                return record.value;
+            }
+        } catch (e) {}
+        return null;
+    },
+
+    async setCached(key, value, { memory = false } = {}) {
+        try {
+            const record = { ...value, _savedAt: Date.now() };
+            await SimpleDB.set(key, record);
+        } catch (e) {}
+        if (memory) this.memory.set(key, { value: value, savedAt: Date.now() });
+    },
+
+    async invalidate(key) {
+        this.memory.delete(key);
+        try { await SimpleDB.del(key); } catch (e) {}
+    },
+
+    async invalidatePrefix(prefix) {
+        const keys = await SimpleDB.keys();
+        for (const k of keys) {
+            if (k && k.startsWith(prefix)) {
+                this.memory.delete(k);
+                await SimpleDB.del(k);
+            }
+        }
+    }
+};
+
+const FetchHelper = {
+    async fetchJson(url, { headers = {}, cacheBuster = false, timeoutMs = 0 } = {}) {
+        const finalUrl = cacheBuster
+            ? (url + (url.includes('?') ? '&' : '?') + `_t=${Date.now()}`)
+            : url;
+        const options = { headers: { ...headers }, cache: 'no-store' };
+        if (timeoutMs > 0) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), timeoutMs);
+            options.signal = controller.signal;
+            try {
+                const res = await fetch(finalUrl, options);
+                clearTimeout(timer);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return await res.json();
+            } catch (e) {
+                clearTimeout(timer);
+                throw e;
+            }
+        }
+        const res = await fetch(finalUrl, options);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+    },
+
+    async fetchWithEtag(url, { headers = {}, etag = null } = {}) {
+        const reqHeaders = { ...headers };
+        if (etag) reqHeaders['If-None-Match'] = etag;
+        const res = await fetch(url, {
+            headers: reqHeaders,
+            cache: 'no-store'
+        });
+        if (res.status === 304) {
+            return { status: 304, body: null, etag: etag };
+        }
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const body = await res.json();
+        return { status: 200, body: body, etag: res.headers.get('ETag') };
+    },
+
+    async fetchText(url, { headers = {}, cacheBuster = true, timeoutMs = 10000 } = {}) {
+        const finalUrl = cacheBuster
+            ? (url + (url.includes('?') ? '&' : '?') + `_t=${Date.now()}`)
+            : url;
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+            const res = await fetch(finalUrl, {
+                headers: { ...headers },
+                cache: 'no-store',
+                signal: controller.signal
+            });
+            clearTimeout(timer);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return await res.text();
+        } catch (e) {
+            clearTimeout(timer);
+            throw e;
+        }
+    }
+};
+
 
 const state = {
 
@@ -12341,6 +12458,30 @@ async function unzipFile(file) {
         'btn-primary'
     );
 }
+
+const LibraryLoader = {
+    loaded: {},
+    load: function(url, globalName) {
+        if (this.loaded[url]) return Promise.resolve(window[globalName]);
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = url;
+            script.onload = () => {
+                this.loaded[url] = true;
+                resolve(window[globalName]);
+            };
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    }
+};
+
+const LIBS = {
+    JSZIP: 'https://cdn.bootcdn.net/ajax/libs/jszip/3.10.1/jszip.min.js',
+    MARKED: 'https://cdn.bootcdn.net/ajax/libs/marked/9.1.2/marked.min.js'
+};
+
+
 
 </script>
 
