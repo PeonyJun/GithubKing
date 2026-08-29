@@ -4856,3 +4856,418 @@ body.light-theme .honor-chip:hover { background: #f1f5f9; }
 body.light-theme .honor-name { color: #334155; }
 body.light-theme .honor-title::after { background: #e2e8f0; }
 
+
+/* ===== Code Editor Modal ===== */
+.code-editor-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: #0f111a;
+    display: flex;
+    flex-direction: column;
+    font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.code-editor-modal.hidden {
+    display: none;
+}
+
+.code-editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding: 0.5rem 0.8rem;
+    background: #171a26;
+    border-bottom: 1px solid #2a2f45;
+    color: #e2e8f0;
+    flex-shrink: 0;
+}
+
+.code-editor-file {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    flex: 1;
+    color: #7dd3fc;
+}
+
+.code-editor-filename {
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.code-editor-path {
+    font-size: 0.75rem;
+    color: #64748b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 40%;
+}
+
+.code-editor-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+}
+
+.ce-btn {
+    background: #232838;
+    border: 1px solid #2f3650;
+    color: #cbd5e1;
+    border-radius: 0.35rem;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    line-height: 1;
+    user-select: none;
+}
+
+.ce-btn:hover {
+    background: #2d3350;
+    border-color: #3b4566;
+    color: #e2e8f0;
+}
+
+.ce-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.ce-toggle {
+    background: #1e3a5f;
+    border-color: #2b528a;
+    color: #7dd3fc;
+}
+
+.ce-toggle:hover {
+    background: #28507f;
+    color: #93c5fd;
+}
+
+.code-editor-body {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    background: #0f111a;
+}
+
+#ceNativeInput {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    background: #0f111a;
+    color: #e2e8f0;
+    border: none;
+    outline: none;
+    resize: none;
+    padding: 0.75rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    tab-size: 4;
+    white-space: pre-wrap;
+    overflow: auto;
+    -webkit-user-select: text;
+    user-select: text;
+    touch-action: pan-x pan-y;
+}
+
+.ce-btn.ce-active {
+    background: #1e3a5f;
+    border-color: #2b528a;
+    color: #93c5fd;
+}
+
+.ce-save-btn.ce-save-ok {
+    background: #1a7f37;
+    border-color: #238636;
+    color: #dcfce7;
+}
+
+.ce-save-btn.ce-save-err {
+    background: #b91c1c;
+    border-color: #dc2626;
+    color: #fee2e2;
+}
+
+.ce-save-btn.ce-save-busy {
+    opacity: 0.7;
+}
+
+.code-editor-find {
+    flex-shrink: 0;
+    background: #171a26;
+    border-top: 1px solid #2a2f45;
+    padding: 0.5rem 0.8rem;
+    display: none;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.code-editor-find.show {
+    display: flex;
+}
+
+.ce-find-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.code-editor-find input {
+    flex: 1;
+    background: #0f111a;
+    border: 1px solid #2f3650;
+    color: #e2e8f0;
+    border-radius: 0.3rem;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.85rem;
+    outline: none;
+    min-width: 0;
+}
+
+.code-editor-find input:focus {
+    border-color: #2b528a;
+}
+
+.ce-btn-sm {
+    padding: 0.35rem 0.55rem;
+    font-size: 0.8rem;
+}
+
+.ce-find-count {
+    font-size: 0.75rem;
+    color: #64748b;
+    white-space: nowrap;
+    min-width: 2.5rem;
+    text-align: right;
+}
+
+.code-editor-footer {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.8rem;
+    background: #171a26;
+    border-top: 1px solid #2a2f45;
+}
+
+.ce-hist-btn {
+    font-size: 0.8rem;
+}
+
+.ce-hist-label {
+    font-size: 0.75rem;
+}
+
+.ce-hist-info {
+    font-size: 0.75rem;
+    color: #64748b;
+    white-space: nowrap;
+    min-width: 3rem;
+    text-align: center;
+}
+
+.ce-save-btn {
+    background: #1a7f37;
+    border-color: #238636;
+    color: #dcfce7;
+    font-weight: 600;
+}
+
+.ce-save-btn:hover {
+    background: #1f8b3d;
+    color: #ffffff;
+}
+
+.ce-save-btn:disabled {
+    opacity: 0.5;
+}
+
+body.light-theme .code-editor-modal {
+    background: #ffffff;
+}
+
+body.light-theme .code-editor-header {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #1e293b;
+}
+
+body.light-theme .code-editor-file {
+    color: #0369a1;
+}
+
+body.light-theme .code-editor-path {
+    color: #94a3b8;
+}
+
+body.light-theme .ce-btn {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #334155;
+}
+
+body.light-theme .ce-btn:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+body.light-theme .ce-btn.ce-active {
+    background: #e0f2fe;
+    border-color: #7dd3fc;
+    color: #0369a1;
+}
+
+body.light-theme .ce-save-btn.ce-save-ok {
+    background: #16a34a;
+    border-color: #15803d;
+    color: #ffffff;
+}
+
+body.light-theme .ce-save-btn.ce-save-err {
+    background: #dc2626;
+    border-color: #b91c1c;
+    color: #ffffff;
+}
+
+body.light-theme .code-editor-body {
+    background: #ffffff;
+}
+
+body.light-theme .code-editor-loading {
+    background: #ffffff;
+}
+
+body.light-theme .ce-loading-spinner {
+    border-color: #e2e8f0;
+    border-top-color: #0ea5e9;
+}
+
+body.light-theme .ce-loading-text {
+    color: #64748b;
+}
+
+body.light-theme .ce-retry-btn {
+    background: #e0f2fe;
+    border-color: #7dd3fc;
+    color: #0369a1;
+}
+
+body.light-theme #ceNativeInput {
+    background: #ffffff;
+    color: #1e293b;
+}
+
+body.light-theme .code-editor-find {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+body.light-theme .code-editor-find input {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #1e293b;
+}
+
+body.light-theme .code-editor-find input:focus {
+    border-color: #0ea5e9;
+}
+
+body.light-theme .ce-find-count {
+    color: #94a3b8;
+}
+
+body.light-theme .code-editor-footer {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+body.light-theme .ce-hist-info {
+    color: #94a3b8;
+}
+
+body.light-theme .ce-save-btn {
+    background: #16a34a;
+    border-color: #15803d;
+    color: #ffffff;
+}
+
+@media (max-width: 600px) {
+    .code-editor-path {
+        max-width: 25%;
+        display: none;
+    }
+.code-editor-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    background: #0f111a;
+    z-index: 5;
+    transition: opacity 0.2s;
+}
+
+.code-editor-loading.hidden {
+    display: none;
+}
+
+.ce-loading-spinner {
+    width: 34px;
+    height: 34px;
+    border: 3px solid #2a2f45;
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: ce-spin 0.8s linear infinite;
+}
+
+@keyframes ce-spin {
+    to { transform: rotate(360deg); }
+}
+
+.ce-loading-text {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    max-width: 80%;
+    text-align: center;
+    word-break: break-all;
+}
+
+.ce-retry-btn {
+    background: #1e3a5f;
+    border: 1px solid #2b528a;
+    color: #93c5fd;
+    border-radius: 0.35rem;
+    padding: 0.45rem 1.4rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.ce-retry-btn.hidden {
+    display: none;
+}
+
+.code-editor-find {
+        padding: 0.45rem 0.6rem;
+    }
+    .ce-btn {
+        padding: 0.4rem 0.55rem;
+    }
+}

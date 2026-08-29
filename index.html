@@ -455,16 +455,25 @@
         </h3>
 
         <div class="proxy-prefix-section">
-            <p class="proxy-prefix-label">代理前缀（用于加速 GitHub 下载与访问）</p>
-            <input id="proxyPrefixInput" type="url" placeholder="https://down.ksx.qzz.io/" autocomplete="off">
-            <p class="proxy-prefix-hint">选择你需要的代理：</p>
+            <p class="proxy-prefix-label">访问代理前缀（用于打开文本、图片等内容）</p>
+            <input id="proxyPrefixInput" type="url" placeholder="https://gh-proxy.org/" autocomplete="off">
+            <p class="proxy-prefix-hint">选择访问代理：</p>
             <div class="proxy-preset-buttons">
-                <button type="button" class="btn proxy-preset-btn" data-proxy="https://down.ksx.qzz.io/">down.ksx.qzz.io</button>
-                <button type="button" class="btn proxy-preset-btn" data-proxy="https://gh-proxy.org/">gh-proxy.org</button>
+                <button type="button" class="btn proxy-preset-btn" data-target="proxyPrefixInput" data-proxy="https://gh-proxy.org/">gh-proxy.org</button>
+                <button type="button" class="btn proxy-preset-btn" data-target="proxyPrefixInput" data-proxy="https://down.ksx.qzz.io/">down.ksx.qzz.io</button>
+            </div>
+
+            <p class="proxy-prefix-label" style="margin-top:14px;">下载代理前缀（仅用于“代理下载”按钮）</p>
+            <input id="proxyDownloadInput" type="url" placeholder="https://down.ksx.qzz.io/" autocomplete="off">
+            <p class="proxy-prefix-hint">选择下载代理：</p>
+            <div class="proxy-preset-buttons">
+                <button type="button" class="btn proxy-preset-btn" data-target="proxyDownloadInput" data-proxy="https://down.ksx.qzz.io/">down.ksx.qzz.io</button>
+                <button type="button" class="btn proxy-preset-btn" data-target="proxyDownloadInput" data-proxy="https://gh-proxy.org/">gh-proxy.org</button>
             </div>
             <p class="proxy-prefix-note">
-                <b>down.ksx.qzz.io（推荐）：</b>支持文本/代码文件强制下载，不触发预览。<br>
-                <b>gh-proxy.org：</b>稳定快速，但文本文件下载会直接进入预览，适合加速图片与二进制文件。
+                <b>访问代理：</b>文本/代码/图片等内容的正常加载与预览，不会触发强制下载。<br>
+                <b>下载代理：</b>长按文件菜单中的“代理下载”按钮使用，负责强制下载文件。<br>
+                <b>两个代理可同时开启，各司其职。</b>
             </p>
         </div>
 
@@ -1020,6 +1029,64 @@
     </div>
 </div>
 
+<div id="codeEditorModal" class="code-editor-modal hidden">
+    <div class="code-editor-header">
+        <div class="code-editor-file">
+            <i class="fa fa-file-code"></i>
+            <span id="codeEditorFilename" class="code-editor-filename"></span>
+            <span id="codeEditorPath" class="code-editor-path"></span>
+        </div>
+        <div class="code-editor-header-actions">
+            <button class="ce-btn" id="ceFindToggle" title="搜索 / 替换 (Ctrl+F)">
+                <i class="fa fa-search"></i>
+            </button>
+            <button class="ce-btn" id="ceWrapToggle" title="自动换行">
+                <i class="fa fa-bars"></i>
+            </button>
+            <button class="ce-btn" id="ceCloseBtn" title="关闭">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="code-editor-body" id="ceBody">
+        <textarea id="ceNativeInput" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea>
+        <div class="code-editor-loading hidden" id="ceLoadingOverlay">
+            <div class="ce-loading-spinner"></div>
+            <div class="ce-loading-text" id="ceLoadingText">正在加载文件...</div>
+            <button class="ce-btn ce-retry-btn hidden" id="ceRetryBtn">重试</button>
+        </div>
+    </div>
+
+    <div class="code-editor-find" id="ceFindPanel">
+        <div class="ce-find-row">
+            <input id="ceFindInput" placeholder="查找" enterkeyhint="search">
+            <button class="ce-btn ce-btn-sm" id="ceFindPrev">↑</button>
+            <button class="ce-btn ce-btn-sm" id="ceFindNext">↓</button>
+            <span class="ce-find-count" id="ceFindCount"></span>
+        </div>
+        <div class="ce-find-row">
+            <input id="ceReplaceInput" class="ce-repl-input" placeholder="替换为" enterkeyhint="done">
+            <button class="ce-btn ce-btn-sm" id="ceReplaceOne">替换</button>
+            <button class="ce-btn ce-btn-sm" id="ceReplaceAll">全部</button>
+        </div>
+    </div>
+
+    <div class="code-editor-footer">
+        <button class="ce-btn ce-hist-btn" id="ceHistoryPrev" title="上一步">
+            <i class="fa fa-arrow-up"></i><span class="ce-hist-label">上一步</span>
+        </button>
+        <span class="ce-hist-info" id="ceHistoryInfo"></span>
+        <button class="ce-btn ce-hist-btn" id="ceHistoryNext" title="下一步">
+            <span class="ce-hist-label">下一步</span><i class="fa fa-arrow-down"></i>
+        </button>
+        <span style="flex:1"></span>
+        <button class="ce-btn ce-save-btn" id="ceSaveBtn">
+            <i class="fa fa-upload"></i> 保存
+        </button>
+    </div>
+</div>
+
 <script>
 
 
@@ -1455,7 +1522,8 @@ const state = {
     myRepos: [],
 
     proxyGlobalEnable: JSON.parse(localStorage.getItem('proxy_global_enable') || 'true'),
-    proxyPrefix: localStorage.getItem('proxy_prefix') || 'https://down.ksx.qzz.io/',
+    proxyPrefix: localStorage.getItem('proxy_prefix') || 'https://gh-proxy.org/',
+    proxyDownloadPrefix: localStorage.getItem('proxy_download_prefix') || 'https://down.ksx.qzz.io/',
     user: null,
     fileCache: new Map(),
     viewMode: localStorage.getItem('view_mode') || 'grid',
@@ -1490,6 +1558,22 @@ const state = {
         indicator: null
     }
 };
+
+(function migrateLegacyProxy() {
+    try {
+        const storedPrefix = localStorage.getItem('proxy_prefix');
+        const hasDownload = localStorage.getItem('proxy_download_prefix');
+        if (storedPrefix && !hasDownload) {
+            const isLegacyDownloadProxy = storedPrefix.indexOf('down.ksx.qzz.io') !== -1;
+            if (isLegacyDownloadProxy) {
+                state.proxyDownloadPrefix = storedPrefix;
+                localStorage.setItem('proxy_download_prefix', storedPrefix);
+                state.proxyPrefix = 'https://gh-proxy.org/';
+                localStorage.setItem('proxy_prefix', 'https://gh-proxy.org/');
+            }
+        }
+    } catch (e) {}
+})();
 
 initializeActiveToken();
 const CONTEXT_MENU_DEFINITIONS = {
@@ -1615,6 +1699,7 @@ menuUsageGuide: document.getElementById('menuUsageGuide'),
     proxyCancelSettingsBtn: document.getElementById('proxyCancelSettingsBtn'),
     proxySaveBtn: document.getElementById('proxySaveBtn'),
     proxyPrefixInput: document.getElementById('proxyPrefixInput'),
+    proxyDownloadInput: document.getElementById('proxyDownloadInput'),
     renameModal: document.getElementById('renameModal'),
     renameTitle: document.getElementById('renameTitle'),
     renameInput: document.getElementById('renameInput'),
@@ -2192,14 +2277,16 @@ function escapeHtml(unsafe) {
         .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
-function getProxiedUrl(originalUrl) {
+function getProxiedUrl(originalUrl, isDownload) {
     try {
         if (!originalUrl || !originalUrl.startsWith('http')) return originalUrl;
 
         if (!state.proxyGlobalEnable) return originalUrl;
 
-        if (state.proxyPrefix) {
-            let proxyUrl = state.proxyPrefix.trim();
+        const prefix = isDownload ? state.proxyDownloadPrefix : state.proxyPrefix;
+
+        if (prefix) {
+            let proxyUrl = prefix.trim();
             if (proxyUrl) {
                 if (!proxyUrl.endsWith('/')) proxyUrl += '/';
                 return proxyUrl + originalUrl;
@@ -2450,7 +2537,7 @@ function updateFileListViewMode() {
 
 function updateAllProxySwitchUI() {
     const isEnabled = !!state.proxyGlobalEnable;
-    const title = isEnabled ? `代理已开启 (${state.proxyPrefix || ''})` : '代理已关闭';
+    const title = isEnabled ? `代理已开启 (访问: ${state.proxyPrefix || '无'} | 下载: ${state.proxyDownloadPrefix || '无'})` : '代理已关闭';
     if (el.proxyQuickToggle) {
         el.proxyQuickToggle.classList.toggle('active', isEnabled);
         el.proxyQuickToggle.title = title;
@@ -4528,8 +4615,8 @@ async function downloadReleaseAsset(asset) {
 
     let downloadUrl = asset.browser_download_url;
 
-    if (state.proxyGlobalEnable && state.proxyPrefix) {
-        let proxyBase = state.proxyPrefix.trim();
+    if (state.proxyGlobalEnable && state.proxyDownloadPrefix) {
+        let proxyBase = state.proxyDownloadPrefix.trim();
         if (proxyBase) {
             if (!proxyBase.endsWith('/')) {
                 proxyBase += '/';
@@ -4618,7 +4705,7 @@ async function downloadFile(item) {
             ? item.download_url
             : item.html_url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
 
-        const finalUrl = typeof getProxiedUrl === 'function' ? getProxiedUrl(rawUrl) : rawUrl;
+        const finalUrl = typeof getProxiedUrl === 'function' ? getProxiedUrl(rawUrl, true) : rawUrl;
 
         if (typeof showToast === 'function') showToast(`正在请求下载: ${item.name}`);
 
@@ -4639,6 +4726,35 @@ async function downloadFile(item) {
         console.error(e);
     }
 }
+async function downloadFileForce(item) {
+    if (!item || item.type === 'dir') return;
+    try {
+        const rawUrl = item.download_url
+            ? item.download_url
+            : item.html_url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+
+        const finalUrl = typeof getProxiedUrl === 'function' ? getProxiedUrl(rawUrl, true) : rawUrl;
+
+        if (typeof showToast === 'function') showToast(`正在请求下载: ${item.name}`);
+
+        const a = document.createElement('a');
+        a.href = finalUrl;
+        a.download = item.name;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+
+        a.click();
+
+        setTimeout(() => {
+            document.body.removeChild(a);
+        }, 100);
+
+    } catch (e) {
+        if (typeof showToast === 'function') showToast(`下载出错: ${e.message}`, 'error');
+        console.error(e);
+    }
+}
+
 function copyLink(file) {
     const rawUrl = file.download_url || file.html_url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
     navigator.clipboard.writeText(rawUrl).then(() => {
@@ -4653,8 +4769,8 @@ function copyProxyLink(file) {
     const rawUrl = file.download_url ||
                    file.html_url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
 
-    if (state.proxyGlobalEnable && state.proxyPrefix) {
-        let proxyBase = state.proxyPrefix.trim();
+    if (state.proxyGlobalEnable && state.proxyDownloadPrefix) {
+        let proxyBase = state.proxyDownloadPrefix.trim();
         if (!proxyBase.endsWith('/')) {
             proxyBase += '/';
         }
@@ -5299,7 +5415,7 @@ async function handleContextMenuAction(action, oldFileObject) {
             updateActionBar();
             break;
         case 'download':
-            downloadFile(currentFile);
+            downloadFileForce(currentFile);
             break;
         case 'downloadFolder':
             downloadFolderAsZip(currentFile);
@@ -7149,6 +7265,9 @@ function openProxySettingsModal() {
     if (el.proxyPrefixInput) {
         el.proxyPrefixInput.value = state.proxyPrefix || '';
     }
+    if (el.proxyDownloadInput) {
+        el.proxyDownloadInput.value = state.proxyDownloadPrefix || '';
+    }
     if (el.proxyGlobalEnableToggle) {
         el.proxyGlobalEnableToggle.checked = !!state.proxyGlobalEnable;
     }
@@ -7168,6 +7287,14 @@ function saveProxySettings() {
     }
     state.proxyPrefix = prefix;
     localStorage.setItem('proxy_prefix', prefix);
+
+    let downloadPrefix = (el.proxyDownloadInput && el.proxyDownloadInput.value.trim()) || '';
+    if (downloadPrefix && !/^https?:\/\//i.test(downloadPrefix)) {
+        downloadPrefix = 'https://' + downloadPrefix;
+    }
+    state.proxyDownloadPrefix = downloadPrefix;
+    localStorage.setItem('proxy_download_prefix', downloadPrefix);
+
     updateAllProxySwitchUI();
     closeProxySettingsModal();
 }
@@ -7240,7 +7367,7 @@ async function downloadFilesConcurrently(files, zipFolder, onProgress) {
                         const rawUrl = file.download_url ||
                                      `https://raw.githubusercontent.com/${state.currentRepo}/${state.currentBranch}/${file.path.split('/').map(encodeURIComponent).join('/')}`;
 
-                        const url = getProxiedUrl(rawUrl);
+                        const url = getProxiedUrl(rawUrl, true);
 
                         const res = await fetch(url);
 
@@ -7449,8 +7576,8 @@ function downloadRepoAsZip(repo) {
     let zipUrl = zipRaw;
     let viaProxy = false;
 
-    if (state.proxyGlobalEnable && state.proxyPrefix) {
-        let proxyBase = state.proxyPrefix.trim();
+    if (state.proxyGlobalEnable && state.proxyDownloadPrefix) {
+        let proxyBase = state.proxyDownloadPrefix.trim();
         if (proxyBase) {
             if (!proxyBase.endsWith('/')) {
                 proxyBase += '/';
@@ -9819,7 +9946,11 @@ if (el.menuThemeToggle) {
                 const fileExtension = file.name.split('.').pop()?.toLowerCase();
                 const isMedia = IMAGE_EXTS.includes(fileExtension) || VIDEO_EXTS.includes(fileExtension) || AUDIO_EXTS.includes(fileExtension);
                 if (!isMedia) {
-                   downloadFile(file);
+                    if (window.CodeEditor && CodeEditor.isTextFile(file.name) && !state.isMultiSelectMode) {
+                        CodeEditor.open(file, state.repo || state.currentRepo, state.currentBranch);
+                    } else {
+                        showToast('长按文件选择「代理下载」进行下载', 'info');
+                    }
                 }
             }
         }
@@ -10389,8 +10520,10 @@ el.menuBatchPublishSites.onclick = () => {
     el.proxySaveBtn.addEventListener('click', saveProxySettings);
     document.querySelectorAll('.proxy-preset-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            if (el.proxyPrefixInput) {
-                el.proxyPrefixInput.value = btn.dataset.proxy || '';
+            const targetId = btn.dataset.target || 'proxyPrefixInput';
+            const targetInput = document.getElementById(targetId);
+            if (targetInput) {
+                targetInput.value = btn.dataset.proxy || '';
             }
         });
     });
@@ -11166,6 +11299,10 @@ async function init() {
     updateSortDropdownUI();
     initializeActiveToken();
 
+    if (window.CodeEditor && CodeEditor.bind) {
+        CodeEditor.bind();
+    }
+
     if (state.token) {
         showApp();
         updateUserUI();
@@ -11340,7 +11477,7 @@ async function unzipFile(file) {
         try {
             showToast('正在下载压缩包...', 'loading', 0);
 
-            const response = await fetch(getProxiedUrl(file.download_url));
+            const response = await fetch(getProxiedUrl(file.download_url, true));
             if (!response.ok) throw new Error(`下载失败: ${response.status}`);
             const blob = await response.blob();
 
@@ -11458,32 +11595,582 @@ const LIBS = {
     MARKED: 'https://cdn.bootcdn.net/ajax/libs/marked/9.1.2/marked.min.js'
 };
 
+var CodeEditor = (function() {
+    const TEXT_EXTS = new Set([
+        'txt','md','markdown','json','js','mjs','cjs','ts','jsx','tsx','css','scss','less','html','htm','xml',
+        'py','java','c','h','cpp','hpp','cs','go','rs','rb','php','swift','kt','kts','sql','sh','bash','zsh',
+        'yml','yaml','toml','ini','conf','cfg','env','gitignore','dockerfile','vue','svelte','astro','svg',
+        'csv','log','lock','gradle','properties','bat','ps1','scala','lua','r','pl','dart','clj','ex','exs',
+        'erl','fs','hs','jl','nim','zig','sass','map','editorconfig','prettierrc','eslintrc','babelrc'
+    ]);
+    const MAX_EDIT_SIZE = 2 * 1024 * 1024;
+    const contentCache = new Map();
+    const MIN_FONT = 10;
+    const MAX_FONT = 30;
+    const SAVE_BTN_IDLE = '<i class="fa fa-upload"></i> 保存';
+    let saveBtnTimer = null;
 
+    let currentFile = null;
+    let currentRepo = null;
+    let currentBranch = null;
+    let currentSha = null;
+    let historyStack = [];
+    let historyIndex = -1;
+    let findIndex = -1;
+    let lastFindQuery = '';
+    let isFindOpen = false;
+    let pendingOpen = null;
+    let wrapEnabled = true;
+    let pinchState = null;
+    let findHistory = [];
 
-</script>
+    const el = {
+        modal: document.getElementById('codeEditorModal'),
+        filename: document.getElementById('codeEditorFilename'),
+        filepath: document.getElementById('codeEditorPath'),
+        findToggle: document.getElementById('ceFindToggle'),
+        wrapToggle: document.getElementById('ceWrapToggle'),
+        closeBtn: document.getElementById('ceCloseBtn'),
+        body: document.getElementById('ceBody'),
+        native: document.getElementById('ceNativeInput'),
+        loading: document.getElementById('ceLoadingOverlay'),
+        loadingText: document.getElementById('ceLoadingText'),
+        retryBtn: document.getElementById('ceRetryBtn'),
+        findPanel: document.getElementById('ceFindPanel'),
+        findInput: document.getElementById('ceFindInput'),
+        replaceInput: document.getElementById('ceReplaceInput'),
+        findPrev: document.getElementById('ceFindPrev'),
+        findNext: document.getElementById('ceFindNext'),
+        replaceOne: document.getElementById('ceReplaceOne'),
+        replaceAll: document.getElementById('ceReplaceAll'),
+        findCount: document.getElementById('ceFindCount'),
+        histPrev: document.getElementById('ceHistoryPrev'),
+        histNext: document.getElementById('ceHistoryNext'),
+        histInfo: document.getElementById('ceHistoryInfo'),
+        saveBtn: document.getElementById('ceSaveBtn')
+    };
 
-<script>
-const LibraryLoader = {
-    loaded: {},
-    load: function(url, globalName) {
-        if (this.loaded[url]) return Promise.resolve(window[globalName]);
-        return new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = url;
-            script.onload = () => {
-                this.loaded[url] = true;
-                resolve(window[globalName]);
-            };
-            script.onerror = reject;
-            document.head.appendChild(script);
-        });
+    function getValue() {
+        return el.native.value;
     }
-};
+    function setValue(v) {
+        el.native.value = v;
+    }
+    function getSelectionRange() {
+        return { start: el.native.selectionStart, end: el.native.selectionEnd };
+    }
+    function setSelection(start, end) {
+        el.native.setSelectionRange(start, end);
+        el.native.focus();
+    }
+    function focusEditor() {
+        el.native.focus();
+    }
 
-const LIBS = {
-    JSZIP: 'https://cdn.bootcdn.net/ajax/libs/jszip/3.10.1/jszip.min.js',
-    MARKED: 'https://cdn.bootcdn.net/ajax/libs/marked/9.1.2/marked.min.js'
-};
+    function isTextFile(name) {
+        if (!name) return false;
+        const ext = name.split('.').pop().toLowerCase();
+        if (TEXT_EXTS.has(ext)) return true;
+        const base = name.toLowerCase();
+        if (base.startsWith('dockerfile')) return true;
+        if (base.startsWith('makefile')) return true;
+        if (['.gitignore','.gitattributes','.npmrc','.editorconfig','.eslintrc','.prettierrc','.babelrc'].includes(base)) return true;
+        return false;
+    }
+
+    function pushHistory(value) {
+        if (historyStack[historyIndex] === value) return;
+        if (findHistory.length) findHistory = [];
+        historyStack = historyStack.slice(0, historyIndex + 1);
+        historyStack.push(value);
+        historyIndex = historyStack.length - 1;
+        if (historyStack.length > 50) {
+            historyStack.shift();
+            historyIndex--;
+        }
+        updateHistoryUI();
+    }
+
+    function historyBack() {
+        if (findHistory.length > 0) {
+            const prev = findHistory.pop();
+            setSelection(prev.start, prev.end);
+            showToast('回退到上一个位置', 'info');
+            return;
+        }
+        if (historyIndex > 0) {
+            historyIndex--;
+            setValue(historyStack[historyIndex]);
+            updateHistoryUI();
+            showToast(`上一步 (${historyStack.length - 1 - historyIndex} 步前)`);
+        } else {
+            showToast('已经是第一步', 'error');
+        }
+    }
+
+    function historyForward() {
+        if (historyIndex < historyStack.length - 1) {
+            historyIndex++;
+            setValue(historyStack[historyIndex]);
+            updateHistoryUI();
+            showToast(`下一步 (剩余 ${historyStack.length - 1 - historyIndex} 步)`);
+        } else {
+            showToast('已经到最后一步', 'error');
+        }
+    }
+
+    function updateHistoryUI() {
+        el.histPrev.disabled = historyIndex <= 0;
+        el.histNext.disabled = historyIndex >= historyStack.length - 1;
+        el.histInfo.textContent = historyStack.length > 0 ? `${historyIndex + 1}/${historyStack.length}` : '';
+    }
+
+    function escapeRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+    function findAllIndexes(text, query) {
+        const idx = [];
+        if (!query) return idx;
+        const re = new RegExp(escapeRe(query), 'g');
+        let m;
+        while ((m = re.exec(text)) !== null) {
+            idx.push(m.index);
+            if (m.index === re.lastIndex) re.lastIndex++;
+        }
+        return idx;
+    }
+
+    function doFind(direction) {
+        const query = el.findInput.value;
+        const text = getValue();
+        const indexes = findAllIndexes(text, query);
+        el.findCount.textContent = indexes.length ? `${indexes.length} 处` : '无结果';
+        if (!indexes.length) { showToast('未找到匹配', 'error'); return; }
+        if (query !== lastFindQuery) {
+            lastFindQuery = query;
+            findIndex = -1;
+        }
+        const cursor = getSelectionRange().start;
+        let next, idx;
+
+        if (direction === 'prev') {
+            idx = findIndex <= 0 ? indexes.length - 1 : Math.min(findIndex - 1, indexes.length - 1);
+        } else if (direction === 'next') {
+            idx = (findIndex + 1) % indexes.length;
+        } else if (typeof direction === 'number') {
+            idx = indexes.findIndex(i => i > direction);
+            if (idx === -1) idx = 0;
+        } else {
+            idx = indexes.findIndex(i => i > cursor);
+            if (idx === -1) idx = 0;
+        }
+        next = indexes[idx];
+        if ((direction === 'prev' || direction === 'next') && !(findHistory.length && findHistory[findHistory.length-1].start === cursor)) {
+            findHistory.push({ start: cursor, end: cursor });
+            if (findHistory.length > 100) findHistory.shift();
+        }
+        findIndex = idx;
+        setSelection(next, next + query.length);
+    }
+
+    function doReplaceOne() {
+        const query = el.findInput.value, repl = el.replaceInput.value;
+        if (!query) return;
+        const sel = getSelectionRange();
+        const text = getValue();
+        if (text.substring(sel.start, sel.end) !== query) {
+            doFind();
+            if (getSelectionRange().end - getSelectionRange().start === query.length) doReplaceOne();
+            return;
+        }
+        const newText = text.substring(0, sel.start) + repl + text.substring(sel.end);
+        setValue(newText);
+        pushHistory(newText);
+        doFind(sel.start + repl.length);
+        showToast('已替换 1 处', 'success');
+    }
+
+    function doReplaceAll() {
+        const query = el.findInput.value, repl = el.replaceInput.value;
+        if (!query) return;
+        const text = getValue();
+        const indexes = findAllIndexes(text, query);
+        if (!indexes.length) { showToast('未找到匹配', 'error'); return; }
+        const newText = text.replace(new RegExp(escapeRe(query), 'g'), repl);
+        setValue(newText);
+        pushHistory(newText);
+        el.findCount.textContent = '0 处';
+        showToast(`已替换 ${indexes.length} 处`, 'success');
+    }
+
+    function openEditor(file, repo, branch) {
+        currentFile = file;
+        if (typeof repo === 'string') {
+            const [o, r] = repo.split('/');
+            repo = { full_name: repo, owner: { login: o }, name: r, default_branch: branch || 'main' };
+        }
+        currentRepo = repo;
+        currentBranch = branch || (repo && repo.default_branch) || 'main';
+        currentSha = file.sha || null;
+
+        el.filename.textContent = file.name;
+        el.filepath.textContent = repo ? `${repo.full_name}/${file.path || ''}` : (file.path || '');
+        el.modal.classList.remove('hidden');
+
+        historyStack = [''];
+        historyIndex = 0;
+        findIndex = -1;
+        lastFindQuery = '';
+        findHistory = [];
+        el.findInput.value = '';
+        el.replaceInput.value = '';
+        el.findPanel.classList.remove('show');
+        isFindOpen = false;
+        el.native.value = '';
+        applyFontSize(getSavedFontSize());
+
+        pendingOpen = { file, repo, branch };
+        if (typeof uiStateStack !== 'undefined') uiStateStack.push(hideEditor);
+
+        showLoading('正在加载文件...');
+        loadContent(file, repo, branch);
+    }
+
+    function showLoading(msg) {
+        if (el.loadingText) el.loadingText.textContent = msg || '正在加载文件...';
+        if (el.retryBtn) el.retryBtn.classList.add('hidden');
+        if (el.loading) el.loading.classList.remove('hidden');
+    }
+    function hideLoading() {
+        if (el.loading) el.loading.classList.add('hidden');
+    }
+    function showLoadingError(msg) {
+        if (el.loadingText) el.loadingText.textContent = msg || '加载失败';
+        if (el.retryBtn) el.retryBtn.classList.remove('hidden');
+        if (el.loading) el.loading.classList.remove('hidden');
+    }
+    function retryLoad() {
+        if (!pendingOpen) { hideLoading(); return; }
+        showLoading('正在加载文件...');
+        loadContent(pendingOpen.file, pendingOpen.repo, pendingOpen.branch);
+    }
+
+    async function loadContent(file, repo, branch) {
+        const [owner, repoName] = (repo.full_name || state.currentRepo || '').split('/');
+        if (!owner || !repoName) { showLoadingError('无法识别仓库'); return; }
+
+        currentSha = file.sha || currentSha;
+        const cacheKey = `${owner}/${repoName}/${branch}/${file.path}`;
+
+        if (contentCache.has(cacheKey)) {
+            const cached = contentCache.get(cacheKey);
+            setValue(cached.text);
+            historyStack = [cached.text];
+            historyIndex = 0;
+            updateHistoryUI();
+            currentSha = cached.sha || currentSha;
+            hideLoading();
+            showToast('已加载文件（缓存）', 'success');
+            return;
+        }
+
+        let loadedText = null;
+        try {
+            const rawUrl = file.download_url || `https://raw.githubusercontent.com/${owner}/${repoName}/${branch}/${file.path.split('/').map(encodeURIComponent).join('/')}`;
+            const url = typeof getProxiedUrl === 'function' ? getProxiedUrl(rawUrl) : rawUrl;
+            const res = await fetch(url, { cache: 'no-store' });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const text = await res.text();
+            if (text.length > MAX_EDIT_SIZE) {
+                showLoadingError('文件过大，无法编辑');
+                return;
+            }
+            loadedText = text;
+            setValue(text);
+            historyStack = [text];
+            historyIndex = 0;
+            updateHistoryUI();
+            hideLoading();
+            if (typeof showToast === 'function') showToast('已加载文件', 'success');
+        } catch (e) {
+            const apiText = await loadContentViaApi(owner, repoName, branch, file.path);
+            if (apiText === null) {
+                showLoadingError(`加载失败: ${e.message}，点击重试`);
+            } else {
+                loadedText = apiText;
+                setValue(apiText);
+                historyStack = [apiText];
+                historyIndex = 0;
+                updateHistoryUI();
+                hideLoading();
+                showToast('已加载文件', 'success');
+            }
+        }
+
+        if (loadedText !== null) {
+            contentCache.set(cacheKey, { text: loadedText, sha: currentSha });
+            if (contentCache.size > 50) {
+                const firstKey = contentCache.keys().next().value;
+                contentCache.delete(firstKey);
+            }
+        }
+
+        if (!currentSha) {
+            try {
+                const encodedPath = file.path.split('/').map(encodeURIComponent).join('/');
+                const apiUrl = `https://api.github.com/repos/${owner}/${repoName}/contents/${encodedPath}?ref=${encodeURIComponent(branch)}`;
+                const apiRes = await fetch(apiUrl, {
+                    headers: { 'Authorization': `token ${state.token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if (apiRes.ok) {
+                    const meta = await apiRes.json();
+                    if (meta && meta.sha) currentSha = meta.sha;
+                }
+            } catch (e) {}
+        }
+    }
+
+    async function loadContentViaApi(owner, repoName, branch, filePath) {
+        try {
+            const encodedPath = filePath.split('/').map(encodeURIComponent).join('/');
+            const apiUrl = `https://api.github.com/repos/${owner}/${repoName}/contents/${encodedPath}?ref=${encodeURIComponent(branch)}`;
+            const apiRes = await fetch(apiUrl, {
+                headers: { 'Authorization': `token ${state.token}`, 'Accept': 'application/vnd.github.v3+json' }
+            });
+            if (!apiRes.ok) return null;
+            const data = await apiRes.json();
+            if (data && data.encoding === 'base64' && data.content) {
+                if (data.sha) currentSha = data.sha;
+                let text;
+                try {
+                    text = decodeURIComponent(escape(atob(data.content.replace(/\s/g, ''))));
+                } catch (e2) {
+                    text = atob(data.content.replace(/\s/g, ''));
+                }
+                if (text.length > MAX_EDIT_SIZE) {
+                    showLoadingError('文件过大，无法编辑');
+                    return null;
+                }
+                return text;
+            }
+        } catch (e) {}
+        return null;
+    }
+
+    function setSaveBtn(state, msg) {
+        if (saveBtnTimer) { clearTimeout(saveBtnTimer); saveBtnTimer = null; }
+        if (state === 'saving') {
+            el.saveBtn.disabled = true;
+            el.saveBtn.classList.add('ce-save-busy');
+            el.saveBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> 保存中';
+        } else if (state === 'ok') {
+            el.saveBtn.disabled = false;
+            el.saveBtn.classList.remove('ce-save-busy');
+            el.saveBtn.classList.add('ce-save-ok');
+            el.saveBtn.innerHTML = '<i class="fa fa-check"></i> 保存成功';
+            saveBtnTimer = setTimeout(() => setSaveBtn('idle'), 2500);
+        } else if (state === 'err') {
+            el.saveBtn.disabled = false;
+            el.saveBtn.classList.remove('ce-save-busy');
+            el.saveBtn.classList.add('ce-save-err');
+            el.saveBtn.innerHTML = '<i class="fa fa-times"></i> 保存失败';
+            saveBtnTimer = setTimeout(() => setSaveBtn('idle'), 2500);
+        } else {
+            el.saveBtn.disabled = false;
+            el.saveBtn.classList.remove('ce-save-busy', 'ce-save-ok', 'ce-save-err');
+            el.saveBtn.innerHTML = SAVE_BTN_IDLE;
+        }
+    }
+
+    async function saveFile() {
+        if (!currentRepo || !currentFile) { showToast('缺少文件信息', 'error'); return; }
+        const content = getValue();
+        if (!currentSha) {
+            showToast('无法获取文件 SHA，保存失败', 'error');
+            return;
+        }
+        setSaveBtn('saving');
+        try {
+            const owner = currentRepo.owner ? currentRepo.owner.login : (currentRepo.full_name || '').split('/')[0];
+            const repoName = currentRepo.name || (currentRepo.full_name || '').split('/')[1];
+            if (!owner || !repoName) throw new Error('无法识别仓库');
+            const path = currentFile.path || currentFile.name;
+            const base64 = btoa(unescape(encodeURIComponent(content)));
+            const body = {
+                message: `Edit ${currentFile.name}`,
+                content: base64,
+                branch: currentBranch,
+                sha: currentSha
+            };
+            const res = await fetch(`https://api.github.com/repos/${owner}/${repoName}/contents/${encodeURIComponent(path)}`, {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${state.token}`, 'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0' },
+                body: JSON.stringify(body)
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.message || `HTTP ${res.status}`);
+            }
+            const data = await res.json();
+            if (data && data.content && data.content.sha) currentSha = data.content.sha;
+            const now = new Date();
+            const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+            showToast(`保存成功 ${timeStr}`, 'success');
+            setSaveBtn('ok');
+            if (contentCache) {
+                const cacheKey = `${currentRepo.owner ? (currentRepo.owner.login || (currentRepo.full_name||'').split('/')[0]) : (currentRepo.full_name||'').split('/')[0]}/${currentRepo.name || (currentRepo.full_name||'').split('/')[1]}/${currentBranch}/${currentFile.path}`;
+                contentCache.set(cacheKey, { text: content, sha: currentSha });
+            }
+            if (typeof state !== 'undefined' && state.files) {
+                const patched = state.files.map(f => f.path === path ? { ...f, sha: currentSha } : f);
+                state.files = patched;
+                if (Array.isArray(state.displayFiles)) {
+                    state.displayFiles = state.displayFiles.map(f => f.path === path ? { ...f, sha: currentSha } : f);
+                }
+                state.shouldAnimateList = false;
+                if (typeof renderFileList === 'function') renderFileList();
+            }
+        } catch (e) {
+            showToast(`保存失败: ${e.message}`, 'error');
+            setSaveBtn('err');
+        } finally {
+            el.saveBtn.disabled = false;
+        }
+    }
+
+    function toggleFind() {
+        isFindOpen = !isFindOpen;
+        el.findPanel.classList.toggle('show', isFindOpen);
+        if (isFindOpen) setTimeout(() => el.findInput.focus(), 50);
+    }
+
+    function getSavedFontSize() {
+        try {
+            const v = parseInt(localStorage.getItem('ceFontSize') || '14', 10);
+            if (!isNaN(v) && v >= MIN_FONT && v <= MAX_FONT) return v;
+        } catch (e) {}
+        return 14;
+    }
+    function applyFontSize(size) {
+        el.native.style.fontSize = size + 'px';
+    }
+    function saveFontSize(size) {
+        try { localStorage.setItem('ceFontSize', String(size)); } catch (e) {}
+    }
+
+    function toggleWrap() {
+        wrapEnabled = !wrapEnabled;
+        applyWrap();
+        try { localStorage.setItem('ceWrap', wrapEnabled ? '1' : '0'); } catch (e) {}
+    }
+    function initWrap() {
+        try { wrapEnabled = localStorage.getItem('ceWrap') !== '0'; } catch (e) {}
+        applyWrap();
+    }
+    function applyWrap() {
+        el.native.setAttribute('wrap', wrapEnabled ? 'soft' : 'off');
+        el.native.style.whiteSpace = wrapEnabled ? 'pre-wrap' : 'pre';
+        el.wrapToggle.classList.toggle('ce-active', wrapEnabled);
+        el.wrapToggle.innerHTML = wrapEnabled ? '<i class="fa fa-bars"></i>' : '<i class="fa fa-ban"></i>';
+        el.wrapToggle.title = wrapEnabled ? '自动换行' : '自动换行已关闭';
+    }
+
+    function initPinchZoom() {
+        if (!el.body) return;
+        el.body.addEventListener('touchstart', e => {
+            if (e.touches.length === 2) {
+                const t = e.touches;
+                const dx = t[0].clientX - t[1].clientX;
+                const dy = t[0].clientY - t[1].clientY;
+                pinchState = {
+                    dist: Math.hypot(dx, dy),
+                    fontSize: parseFloat(getComputedStyle(el.native).fontSize) || 14,
+                    cx: (t[0].clientX + t[1].clientX) / 2,
+                    cy: (t[0].clientY + t[1].clientY) / 2,
+                    scrollTop: el.native.scrollTop,
+                    scrollLeft: el.native.scrollLeft
+                };
+            }
+        }, { passive: true });
+        el.body.addEventListener('touchmove', e => {
+            if (!pinchState || e.touches.length !== 2) return;
+            const t = e.touches;
+            const dx = t[0].clientX - t[1].clientX;
+            const dy = t[0].clientY - t[1].clientY;
+            const dist = Math.hypot(dx, dy);
+            const ratio = dist / pinchState.dist;
+            const newSize = Math.min(MAX_FONT, Math.max(MIN_FONT, Math.round(pinchState.fontSize * ratio)));
+            if (newSize === Math.round(parseFloat(getComputedStyle(el.native).fontSize))) return;
+            applyFontSize(newSize);
+            const rect = el.native.getBoundingClientRect();
+            const cx = pinchState.cx - rect.left;
+            const cy = pinchState.cy - rect.top;
+            const k = newSize / pinchState.fontSize;
+            el.native.scrollTop = Math.max(0, Math.round(pinchState.scrollTop * k + cy * (k - 1)));
+            el.native.scrollLeft = Math.max(0, Math.round(pinchState.scrollLeft * k + cx * (k - 1)));
+            saveFontSize(newSize);        }, { passive: true });
+        el.body.addEventListener('touchend', () => { pinchState = null; });
+        el.body.addEventListener('touchcancel', () => { pinchState = null; });
+    }
+
+    function hideEditor() {
+        hideLoading();
+        el.modal.classList.add('hidden');
+        if (typeof uiStateStack !== 'undefined' && window.removeFromStack) removeFromStack(hideEditor);
+    }
+
+    function bindEvents() {
+        el.closeBtn.onclick = hideEditor;
+        el.findToggle.onclick = toggleFind;
+        el.wrapToggle.onclick = toggleWrap;
+        el.findPrev.onclick = () => doFind('prev');
+        el.findNext.onclick = () => doFind('next');
+        el.replaceOne.onclick = doReplaceOne;
+        el.replaceAll.onclick = doReplaceAll;
+        el.histPrev.onclick = historyBack;
+        el.histNext.onclick = historyForward;
+        el.saveBtn.onclick = saveFile;
+        if (el.retryBtn) el.retryBtn.onclick = retryLoad;
+
+        el.findInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') { e.preventDefault(); doFind(); }
+        });
+        el.replaceInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (e.shiftKey) doReplaceAll(); else doReplaceOne();
+            }
+        });
+        el.native.addEventListener('input', () => {
+            pushHistory(el.native.value);
+        });
+        el.native.addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); saveFile(); }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') { e.preventDefault(); toggleFind(); }
+        });
+        if (el.modal) {
+            el.modal.addEventListener('click', e => {
+                if (e.target === el.modal) hideEditor();
+            });
+        }
+        if (typeof window !== 'undefined') {
+            window.ceFindShortcut = toggleFind;
+        }
+        initWrap();
+        applyFontSize(getSavedFontSize());
+        initPinchZoom();
+    }
+
+    return {
+        open: openEditor,
+        isTextFile: isTextFile,
+        bind: bindEvents,
+        hide: hideEditor,
+        _getValue: getValue
+    };
+})();
+
+if (typeof window !== 'undefined') {
+    window.CodeEditor = CodeEditor;
+}
 
 </script>
 </body>
