@@ -83,19 +83,48 @@ main {
     border-bottom: 1px solid #1f2937;
 }
 
+:root {
+    --gk-bg: radial-gradient(ellipse at bottom, #1b2c4f 0, #04091a 100%);
+    --gk-surface: #1b2130;
+    --gk-surface-2: #232b3d;
+    --gk-border: rgba(255, 255, 255, 0.08);
+    --gk-text: #e7eaf0;
+    --gk-sub: #8a93a5;
+    --gk-slider: #2b3a50;
+    --gk-track: rgba(148, 163, 184, 0.12);
+}
+
+body.light-theme {
+    --gk-bg: #f0f2f5;
+    --gk-surface: #ffffff;
+    --gk-surface-2: #f6f8fa;
+    --gk-border: #e2e8f0;
+    --gk-text: #1e293b;
+    --gk-sub: #64748b;
+    --gk-slider: #ffffff;
+    --gk-track: rgba(226, 232, 240, 0.8);
+}
+
 #authScreen {
     position: fixed;
     inset: 0;
-    background: #ffffff;
+    background: var(--gk-bg);
     z-index: 1000;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 2rem;
+    justify-content: flex-start;
+    padding-top: 10vh;
+    padding-left: 2rem;
+    padding-right: 2rem;
     transition: opacity 0.3s;
     overflow-y: auto;
     box-sizing: border-box;
+}
+
+#tokenGuideModal.modal-overlay {
+    z-index: 1200;
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 .login-wrapper {
@@ -110,17 +139,22 @@ main {
     flex-direction: column;
     align-items: center;
     margin-bottom: 1.5rem;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    position: static;
+    background: transparent;
 }
 
 .logo-box {
     width: 3.5rem;
     height: 3.5rem;
-    background: #ffffff;
+    background: transparent;
     border-radius: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(34, 197, 94, 0.08);
+    border: none;
     margin-bottom: 1rem;
 }
 
@@ -132,7 +166,7 @@ main {
 .login-header h1 {
     font-size: 16px;
     font-weight: bold;
-    color: #1e293b;
+    color: var(--gk-text);
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
@@ -148,12 +182,12 @@ main {
 
 .login-tabs {
     position: relative;
-    background: rgba(226, 232, 240, 0.4);
+    background: var(--gk-track);
     padding: 4px;
     border-radius: 9999px;
     display: flex;
     margin-bottom: 2rem;
-    border: 1px solid rgba(226, 232, 240, 0.1);
+    border: 1px solid var(--gk-border);
 }
 
 .tab-btn-native {
@@ -169,7 +203,7 @@ main {
     gap: 0.5rem;
     border: none;
     background: none;
-    color: #94a3b8;
+    color: var(--gk-sub);
     cursor: pointer;
     font-family: inherit;
 }
@@ -180,7 +214,7 @@ main {
     left: 4px;
     width: calc(50% - 4px);
     height: calc(100% - 8px);
-    background: #ffffff;
+    background: var(--gk-slider);
     border-radius: 9999px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -198,9 +232,24 @@ main {
     flex-direction: column;
 }
 
+.pane-anim {
+    animation: loginPaneFadeIn 0.28s ease;
+}
+
+@keyframes loginPaneFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .oauth-card {
-    background: #ffffff;
-    border: 1px solid #f1f5f9;
+    background: var(--gk-surface);
+    border: 1px solid var(--gk-border);
     border-radius: 24px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
@@ -217,13 +266,13 @@ main {
 .oauth-card-head span {
     font-size: 11px;
     font-weight: bold;
-    color: #475569;
+    color: var(--gk-sub);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .oauth-card p {
     font-size: 12px;
-    color: #94a3b8;
+    color: var(--gk-sub);
     line-height: 1.7;
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -264,15 +313,15 @@ main {
 .oauth-foot span {
     font-size: 10px;
     font-weight: bold;
-    color: #94a3b8;
+    color: var(--gk-sub);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .token-area {
-    background: #ffffff;
+    background: var(--gk-surface);
     padding: 4px;
     border-radius: 22px;
-    border: 1px solid #f1f5f9;
+    border: 1px solid var(--gk-border);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     margin-bottom: 1.5rem;
 }
@@ -287,7 +336,7 @@ main {
 .token-area-head span {
     font-size: 9px;
     font-weight: 700;
-    color: #cbd5e1;
+    color: var(--gk-sub);
     text-transform: uppercase;
     letter-spacing: 1px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -301,7 +350,7 @@ main {
     outline: none;
     font-size: 11px;
     font-family: 'JetBrains Mono', monospace;
-    color: #475569;
+    color: var(--gk-text);
     resize: none;
     box-sizing: border-box;
 }
@@ -313,9 +362,9 @@ main {
 .token-login-btn {
     width: 100%;
     height: 54px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    color: #475569;
+    background: var(--gk-surface-2);
+    border: 1px solid var(--gk-border);
+    color: var(--gk-text);
     border-radius: 1rem;
     font-size: 13px;
     font-weight: 700;
@@ -341,7 +390,7 @@ main {
 .token-guide-link span {
     font-size: 10px;
     font-weight: 700;
-    color: #94a3b8;
+    color: var(--gk-sub);
     text-transform: uppercase;
     letter-spacing: 1px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -392,8 +441,8 @@ main {
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    background: #ffffff;
-    border: 1px solid #f1f5f9;
+    background: var(--gk-surface);
+    border: 1px solid var(--gk-border);
     border-radius: 16px;
     padding: 0.55rem 0.8rem;
     cursor: pointer;
@@ -402,19 +451,19 @@ main {
     box-sizing: border-box;
 }
 .login-saved-account:hover {
-    border-color: #e2e8f0;
-    background: #f8fafc;
+    border-color: var(--gk-border);
+    background: var(--gk-surface-2);
 }
 .login-saved-account .acc-avatar {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
+    background: var(--gk-surface-2);
+    border: 1px solid var(--gk-border);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #64748b;
+    color: var(--gk-sub);
     font-size: 0.9rem;
     background-size: cover;
     background-position: center;
@@ -424,7 +473,7 @@ main {
 .login-saved-account .acc-avatar span {
     font-size: 14px;
     font-weight: 700;
-    color: #94a3b8;
+    color: var(--gk-sub);
 }
 .login-saved-account .acc-meta {
     flex: 1;
@@ -435,7 +484,7 @@ main {
 .login-saved-account .acc-name {
     font-size: 0.83rem;
     font-weight: 700;
-    color: #334155;
+    color: var(--gk-text);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -444,13 +493,13 @@ main {
 .login-saved-account .acc-hint {
     font-size: 9px;
     font-weight: 700;
-    color: #94a3b8;
+    color: var(--gk-sub);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 .login-saved-account .acc-arrow {
-    color: #cbd5e1;
+    color: var(--gk-sub);
     font-size: 0.75rem;
 }
 .login-saved-account.acc-loading {

@@ -16,15 +16,15 @@
             <div class="logo-box">
                 <svg viewBox="0 0 24 24" style="width:1.75rem;height:1.75rem;fill:none;stroke:#334155;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
             </div>
-            <h1 style="font-size:16px;font-weight:bold;color:#1e293b;margin:0;">GK 登陆中心</h1>
-            <p style="font-size:10px;font-weight:bold;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-top:4px;">安全加密环境已就绪</p>
+            <h1 style="font-size:16px;font-weight:bold;color:var(--gk-text);margin:0;">Github King</h1>
+            <p style="font-size:10px;font-weight:bold;color:var(--gk-sub);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">安全加密环境已就绪</p>
         </header>
 
         <div id="loginSavedAccounts" style="width:100%;margin-bottom:1.5rem;display:flex;flex-direction:column;gap:0.5rem;max-height:160px;overflow-y:auto;"></div>
 
         <div class="login-tabs">
             <div id="loginModeSlider"></div>
-            <button type="button" onclick="toggleLoginMode('oauth')" id="btnModeOauth" class="tab-btn-native" style="color:#1e293b">
+            <button type="button" onclick="toggleLoginMode('oauth')" id="btnModeOauth" class="tab-btn-native" data-default-active="true" style="color:var(--gk-text)">
                 <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
                 <span>官方授权</span>
             </button>
@@ -66,7 +66,7 @@
                     <span>验证并初始化环境</span>
                     <i class="fa fa-spinner fa-spin hidden"></i>
                 </button>
-                <div class="token-guide-link" onclick="openExternalBrowser('https://github.com/settings/tokens/new')">
+                <div class="token-guide-link" id="showTokenGuideBtn" onclick="var m=document.getElementById('tokenGuideModal');if(m)m.classList.remove('hidden');" style="cursor:pointer">
                     <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#6366f1;fill:none;stroke-width:2;"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" x2="12.01" y1="17" y2="17"></line></svg>
                     <span>如何获取 TOKEN？</span>
                 </div>
@@ -595,6 +595,10 @@
         <input id="accountNameInput" type="text" placeholder="设置一个名称" autocomplete="off">
 
         <input id="accountTokenInput" type="text" placeholder="粘贴你的GitHub访问令牌" autocomplete="off">
+
+        <button id="oauthAddAccountBtn" type="button" class="btn btn-primary" style="width:100%;margin-top:0.6rem;">
+            <span>Github授权登陆</span>
+        </button>
 
         <div id="addEditAccountError" class="text-red-400"></div>
 
@@ -10065,6 +10069,22 @@ el.closeAddEditAccountModalBtn.addEventListener('click', closeAddEditAccountModa
 el.addEditAccountCancelBtn.addEventListener('click', closeAddEditAccountModal);
 el.addEditAccountSaveBtn.addEventListener('click', handleSaveAccount);
 
+window.oauthAddAccount = false;
+function handleOAuthAddAccount() {
+    window.oauthAddAccount = true;
+    if (typeof startOAuthLogin === 'function') {
+        startOAuthLogin();
+        if (!(window.AndroidBridge && typeof window.AndroidBridge.startGithubAuth === 'function')) {
+            setTimeout(() => { window.oauthAddAccount = false; }, 1000);
+        }
+    } else {
+        window.oauthAddAccount = false;
+        showToast('当前环境不支持授权登录', 'error');
+    }
+}
+const oauthAddBtn = document.getElementById('oauthAddAccountBtn');
+if (oauthAddBtn) oauthAddBtn.addEventListener('click', handleOAuthAddAccount);
+
 document.getElementById('repoDetailsCloseBtn').onclick = hideRepoDetailsModal;
 el.repoDetailsModal.onclick = (e) => {
     if (e.target === el.repoDetailsModal) {
@@ -10325,17 +10345,24 @@ el.accountTokenInput.addEventListener('input', validateAccountForm);
         const paneO = document.getElementById('paneOauth');
         const paneT = document.getElementById('paneToken');
         const slider = document.getElementById('loginModeSlider');
+        const showPane = (el) => {
+            if (!el) return;
+            el.classList.remove('pane-anim');
+            el.style.display = 'flex';
+            void el.offsetWidth;
+            el.classList.add('pane-anim');
+        };
         if (type === 'oauth') {
             if (slider) slider.style.transform = 'translateX(0)';
-            if (btnO) { btnO.style.color = '#1e293b'; }
-            if (btnT) { btnT.style.color = '#94a3b8'; }
-            if (paneO) { paneO.style.display = 'flex'; }
+            if (btnO) { btnO.style.color = 'var(--gk-text)'; }
+            if (btnT) { btnT.style.color = 'var(--gk-sub)'; }
+            showPane(paneO);
             if (paneT) { paneT.style.display = 'none'; }
         } else {
             if (slider) slider.style.transform = 'translateX(100%)';
-            if (btnT) { btnT.style.color = '#1e293b'; }
-            if (btnO) { btnO.style.color = '#94a3b8'; }
-            if (paneT) { paneT.style.display = 'flex'; }
+            if (btnT) { btnT.style.color = 'var(--gk-text)'; }
+            if (btnO) { btnO.style.color = 'var(--gk-sub)'; }
+            showPane(paneT);
             if (paneO) { paneO.style.display = 'none'; }
         }
     }
@@ -10366,7 +10393,15 @@ el.accountTokenInput.addEventListener('input', validateAccountForm);
                 '<i class="fa fa-github"></i><span>开启官方安全登录</span>',
                 false
             );
+            window.oauthAddAccount = false;
             showToast('授权失败或已取消', 'error');
+            return;
+        }
+        if (window.oauthAddAccount) {
+            window.oauthAddAccount = false;
+            el.accountTokenInput.value = token;
+            handleSaveAccount();
+            showToast('授权成功，账号已添加', 'success');
             return;
         }
         el.tokenInput.value = token;
@@ -10439,7 +10474,7 @@ el.accountTokenInput.addEventListener('input', validateAccountForm);
     function setupEventListeners2_oauth() {
         const btnO = document.getElementById('btnModeOauth');
         const slider = document.getElementById('loginModeSlider');
-        if (slider && btnO && btnO.style.color === 'rgb(30, 41, 59)') {
+        if (slider && btnO && btnO.getAttribute('data-default-active') === 'true') {
             toggleLoginMode('oauth');
         }
         renderLoginSavedAccounts();
@@ -10458,6 +10493,15 @@ el.accountTokenInput.addEventListener('input', validateAccountForm);
     window.toggleLoginMode = toggleLoginMode;
     window.startOAuthLogin = startOAuthLogin;
     window.renderLoginSavedAccounts = renderLoginSavedAccounts;
+
+    const tiEl = document.getElementById('tokenInput');
+    const authScrEl = document.getElementById('authScreen');
+    if (tiEl && authScrEl) {
+        tiEl.addEventListener('focus', () => {
+            const sy = authScrEl.scrollTop;
+            setTimeout(() => { authScrEl.scrollTop = sy; }, 0);
+        });
+    }
 
 el.authBtn.addEventListener('click', async () => {
     const token = el.tokenInput.value.trim();
