@@ -975,7 +975,7 @@
         <div class="repo-overview-body">
 
             <div id="overviewReadme" class="readme-preview">
-                <div class="loading-spinner small"><div class="spinner-small"></div> 正在加载简介...</div>
+                <div class="loading-spinner small" style="height:auto; min-height:0; padding:2px 0;"><div class="spinner-small"></div> 正在加载简介...</div>
             </div>
         </div>
 
@@ -1984,12 +1984,12 @@ async function showRepoDetailsModal(repo) {
     const cacheKey = `readme_summary_${repo.full_name}`;
     let hasRenderedReadme = false;
 
-    descriptionEl.innerHTML = '<div class="loading-spinner small"><div class="spinner-small"></div></div>';
+    descriptionEl.innerHTML = '<div class="loading-spinner small" style="height:auto; min-height:0; padding:2px 0;"><div class="spinner-small"></div></div>';
 
     try {
         const cachedReadme = await SimpleDB.get(cacheKey);
         if (cachedReadme) {
-            descriptionEl.innerHTML = cachedReadme;
+            descriptionEl.innerHTML = rewriteReadmeImages(cachedReadme, repo.full_name, repo.default_branch);
             hasRenderedReadme = true;
         }
     } catch (e) {}
@@ -2031,7 +2031,7 @@ async function showRepoDetailsModal(repo) {
             throw new Error('No README');
         }).then(html => {
             const cleanHtml = html.replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gim, "").replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gim, "");
-            descriptionEl.innerHTML = cleanHtml;
+            descriptionEl.innerHTML = rewriteReadmeImages(cleanHtml, repo.full_name, repo.default_branch);
             SimpleDB.set(cacheKey, cleanHtml);
         }).catch(() => {
             descriptionEl.textContent = repo.description || '暂无描述';
@@ -2294,6 +2294,41 @@ function getProxiedUrl(originalUrl, isDownload) {
         }
     } catch (e) {}
     return originalUrl;
+}
+
+function rewriteReadmeImages(html, repoFullName, branch) {
+    if (!html || typeof html !== 'string') return html;
+    try {
+        const [owner, repo] = (repoFullName || '').split('/');
+        return html.replace(/<img([^>]*)\bsrc\s*=\s*["']([^"']+)["']([^>]*)>/gi, (match, before, src, after) => {
+            let finalSrc = src;
+            if (src.startsWith('http')) {
+                finalSrc = getProxiedUrl(src);
+            } else if (owner && repo) {
+                const base = `https://raw.githubusercontent.com/${owner}/${repo}/${branch || 'HEAD'}/`;
+                const cleaned = src.replace(/^\.\//, '').replace(/^\/+/, '');
+                const encoded = cleaned.split('/').map(encodeURIComponent).join('/');
+                finalSrc = getProxiedUrl(base + encoded);
+            }
+            return `<img${before}src="${finalSrc}"${after}>`;
+        }).replace(/(\b(?:srcset|data-src)\s*=\s*["'])([^"']+)(["'])/gi, (match, pre, val, post) => {
+            const parts = val.split(',').map(p => {
+                const seg = p.trim().split(/\s+/);
+                if (seg[0].startsWith('http')) {
+                    seg[0] = getProxiedUrl(seg[0]);
+                } else if (owner && repo) {
+                    const base = `https://raw.githubusercontent.com/${owner}/${repo}/${branch || 'HEAD'}/`;
+                    const cleaned = seg[0].replace(/^\.\//, '').replace(/^\/+/, '');
+                    const encoded = cleaned.split('/').map(encodeURIComponent).join('/');
+                    seg[0] = getProxiedUrl(base + encoded);
+                }
+                return seg.join(' ');
+            });
+            return pre + parts.join(',') + post;
+        });
+    } catch (e) {
+        return html;
+    }
 }
 
 function applyFiltersAndSort() {
@@ -3287,6 +3322,10 @@ async function fetchAndDisplayReleases(repoFullName, updateHistory = true) {
     updatePaginationUI();
 
     if (updateHistory) {
+        const prevState = history.state || {};
+        if (prevState.view === 'public_search_results' || prevState.view === 'other_user_repos') {
+            history.replaceState({ view: 'own_repos' }, '', window.location.pathname);
+        }
         history.pushState({ view: 'releases_list', repo: repoFullName }, '', window.location.pathname);
     }
 
@@ -9581,7 +9620,7 @@ async function showRepoOverview(repoInput) {
                     const content = await res.text();
                     try {
                         await LibraryLoader.load(LIBS.MARKED, 'marked');
-                        readmeEl.innerHTML = marked.parse(content);
+                        readmeEl.innerHTML = rewriteReadmeImages(marked.parse(content), targetRepoFullName, targetBranch);
                     } catch (loadErr) {
                         readmeEl.innerHTML = content.replace(/\n/g, '<br>');
                     }
@@ -9627,6 +9666,8 @@ async function showRepoOverview(repoInput) {
         document.getElementById('statWatchers').textContent = formatNumber(watchers || 0);
         if (readmeContent) {
             readmeEl.innerHTML = readmeContent;
+        } else if (readmeContent === null) {
+            readmeEl.innerHTML = '<div style="padding:10px; color:#aaa; font-size:0.8rem;">该仓库没有 README 文件。</div>';
         } else {
             readmeEl.innerHTML = '<div class="loading-spinner small" style="display:flex; justify-content:flex-start; align-items:center; height:auto; min-height:0; padding:2px 0;"><div class="spinner-small"></div><span style="margin-left:8px; font-size:0.75rem;">正在获取 README...</span></div>';
         }
@@ -9674,7 +9715,7 @@ async function showRepoOverview(repoInput) {
                     const rawMarkdown = await contentRes.text();
                     try {
                         await LibraryLoader.load(LIBS.MARKED, 'marked');
-                        readmeHtml = marked.parse(rawMarkdown);
+                        readmeHtml = rewriteReadmeImages(marked.parse(rawMarkdown), freshRepo.full_name, freshRepo.default_branch);
                     } catch (loadErr) {
                         readmeHtml = rawMarkdown.replace(/\n/g, '<br>');
                     }
@@ -9690,7 +9731,7 @@ async function showRepoOverview(repoInput) {
                     const rawMarkdown = await rawRes.text();
                     try {
                         await LibraryLoader.load(LIBS.MARKED, 'marked');
-                        readmeHtml = marked.parse(rawMarkdown);
+                        readmeHtml = rewriteReadmeImages(marked.parse(rawMarkdown), freshRepo.full_name, freshRepo.default_branch);
                     } catch (loadErr) {
                         readmeHtml = rawMarkdown.replace(/\n/g, '<br>');
                     }
