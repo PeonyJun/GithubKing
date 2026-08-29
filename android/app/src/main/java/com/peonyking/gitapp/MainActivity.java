@@ -39,7 +39,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -52,6 +56,24 @@ public class MainActivity extends Activity {
 
     private static final int COLOR_DARK = 0xFF04091A;
     private static final int COLOR_LIGHT = 0xFFF0F2F5;
+
+    // GitHub OAuth 授权登录配置
+    private static final String OAUTH_CLIENT_ID = "Ov23li6NLp7oqOQW5oBG";
+    private static final String OAUTH_CLIENT_SECRET = "3743c626a2c25ab73a9ed909dda6b5a00abf7205";
+    private static final String OAUTH_REDIRECT_URI = "gk://login";
+    private static final String OAUTH_AUTH_ENDPOINT = "https://github.com/login/oauth/authorize";
+    private static final String OAUTH_TOKEN_ENDPOINT = "https://github.com/login/oauth/access_token";
+    private static final String OAUTH_SCOPES =
+            "repo,repo:status,repo_deployment,public_repo,repo:invite,security_events," +
+            "admin:repo_hook,write:repo_hook,read:repo_hook,admin:org,write:org,read:org," +
+            "admin:public_key,write:public_key,read:public_key,admin:org_hook,gist,notifications," +
+            "user,read:user,user:email,user:follow,project,read:project,delete_repo," +
+            "write:packages,read:packages,delete:packages,admin:gpg_key,write:gpg_key," +
+            "read:gpg_key,workflow";
+
+    private String pendingAuthToken = null;
+    private boolean oauthFlowActive = false;
+    private boolean pageLoaded = false;
 
     private WebView webView;
     private ValueCallback<Uri[]> filePathCallback;
@@ -85,6 +107,22 @@ public class MainActivity extends Activity {
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                 return assetLoader.shouldInterceptRequest(request.getUrl());
             }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                pageLoaded = true;
+                if (pendingAuthToken != null) {
+                    final String token = pendingAuthToken;
+                    pendingAuthToken = null;
+                    if (token != null) {
+                        String escaped = token.replace("\\", "\\\\").replace("'", "\\'");
+                        evalJs("window.onReceiveAuthToken && window.onReceiveAuthToken('" + escaped + "')");
+                    } else {
+                        evalJs("window.onReceiveAuthToken && window.onReceiveAuthToken(null)");
+                    }
+                }
+            }
         });
 
         webView.setWebChromeClient(new WebChromeClient() {
@@ -116,6 +154,23 @@ public class MainActivity extends Activity {
         }
 
         webView.loadUrl("https://appassets.androidplatform.net/assets/index.html");
+
+        handleLaunchIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleLaunchIntent(intent);
+    }
+
+    private void handleLaunchIntent(Intent intent) {
+        if (intent == null) return;
+        Uri data = intent.getData();
+        if (data != null && "gk".equalsIgnoreCase(data.getScheme())) {
+            handleOAuthDeepLink(data);
+        }
     }
 
     @Override
@@ -198,6 +253,98 @@ public class MainActivity extends Activity {
     @JavascriptInterface
     public void setTheme(final String theme) {
         runOnUiThread(() -> applyThemeUi(theme));
+    }
+
+    // ============ GitHub OAuth 授权登录 ============
+
+    @JavascriptInterface
+    public void startGithubAuth() {
+        runOnUiThread(() -> {
+            try {
+                oauthFlowActive = true;
+                String url = OAUTH_AUTH_ENDPOINT
+                        + "?client_id=" + OAUTH_CLIENT_ID
+                        + "&redirect_uri=" + Uri.encode(OAUTH_REDIRECT_URI)
+                        + "&scope=" + Uri.encode(OAUTH_SCOPES);
+                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                startActivity(i);
+            } catch (Exception e) {
+                toast("无法打开授权页面: " + e.getMessage());
+            }
+        });
+    }
+
+    private void handleOAuthDeepLink(Uri data) {
+        if (data == null) return;
+        String code = data.getQueryParameter("code");
+        String error = data.getQueryParameter("error");
+        if (error != null) {
+            injectAuthResult(null);
+            return;
+        }
+        if (code == null || code.isEmpty()) {
+            return;
+        }
+        exchangeCodeForToken(code);
+    }
+
+    private void exchangeCodeForToken(final String code) {
+        new Thread(() -> {
+            String token = null;
+            HttpURLConnection conn = null;
+            try {
+                URL url = new URL(OAUTH_TOKEN_ENDPOINT);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setConnectTimeout(15000);
+                conn.setReadTimeout(15000);
+                conn.setDoOutput(true);
+                conn.setRequestProperty("Accept", "application/json");
+                String body = "client_id=" + Uri.encode(OAUTH_CLIENT_ID)
+                        + "&client_secret=" + Uri.encode(OAUTH_CLIENT_SECRET)
+                        + "&code=" + Uri.encode(code)
+                        + "&redirect_uri=" + Uri.encode(OAUTH_REDIRECT_URI);
+                try (OutputStream os = conn.getOutputStream()) {
+                    os.write(body.getBytes(StandardCharsets.UTF_8));
+                }
+                int status = conn.getResponseCode();
+                InputStream is = status >= 200 && status < 300 ? conn.getInputStream() : conn.getErrorStream();
+                String resp = is == null ? "" : readStream(is);
+                if (status >= 200 && status < 300) {
+                    try {
+                        JSONObject obj = new JSONObject(resp);
+                        if (obj.has("access_token")) {
+                            token = obj.getString("access_token");
+                        } else if (obj.has("error")) {
+                            token = null;
+                        }
+                    } catch (JSONException e) {
+                        token = null;
+                    }
+                }
+            } catch (Exception e) {
+                token = null;
+            } finally {
+                if (conn != null) conn.disconnect();
+            }
+            final String finalToken = token;
+            runOnUiThread(() -> injectAuthResult(finalToken));
+        }, "oauth-exchange").start();
+    }
+
+    private void injectAuthResult(String token) {
+        oauthFlowActive = false;
+        if (webView == null) return;
+        if (pageLoaded) {
+            if (token != null) {
+                String escaped = token.replace("\\", "\\\\").replace("'", "\\'");
+                evalJs("window.onReceiveAuthToken && window.onReceiveAuthToken('" + escaped + "')");
+            } else {
+                evalJs("window.onReceiveAuthToken && window.onReceiveAuthToken(null)");
+            }
+        } else {
+            pendingAuthToken = token;
+        }
     }
 
     private void applyThemeUi(String theme) {
@@ -352,6 +499,14 @@ public class MainActivity extends Activity {
             while ((n = is.read(buf)) > 0) bos.write(buf, 0, n);
             return Base64.encodeToString(bos.toByteArray(), Base64.NO_WRAP);
         }
+    }
+
+    private String readStream(InputStream is) throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        byte[] buf = new byte[8192];
+        int n;
+        while ((n = is.read(buf)) > 0) bos.write(buf, 0, n);
+        return bos.toString("UTF-8");
     }
 
     private void evalJs(String js) {
