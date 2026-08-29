@@ -225,7 +225,7 @@
 
     <ul class="side-nav-bottom">
 
-    <li><a href="javascript:void(0);" id="menuThemeToggle"><i class="fa-regular fa-cloud"></i>切换主题</a></li>
+    <li><a href="javascript:void(0);" id="menuThemeToggle"><i class="fa-solid fa-cloud"></i>切换主题</a></li>
 
         <li><a href="javascript:void(0);" id="menuSwitchAccount"><i class="fa fa-exchange"></i>切换账号</a></li>
 
@@ -1839,7 +1839,7 @@ const themeManager = {
             newAppleMeta.setAttribute('content', 'default');
         } else {
             document.body.classList.remove('light-theme');
-            if (icon) icon.className = 'fa-regular fa-cloud';
+            if (icon) icon.className = 'fa-solid fa-cloud';
             newThemeMeta.setAttribute('content', '#04091a');
             newAppleMeta.setAttribute('content', 'black-translucent');
         }
@@ -2503,7 +2503,7 @@ async function switchAccount(accountId) {
         if (res.ok) {
             const scopesHeader = res.headers.get('x-oauth-scopes') || '';
             if (!scopesHeader.includes('repo')) {
-                showToast('此令牌无权限，大部分功能将无法使用。', 'error', 5000);
+                showToast('令牌无权限', 'error', 5000);
             }
         }
 
@@ -2680,13 +2680,7 @@ function showToast(message, type = 'info', duration = 2500) {
         toastTimer = null;
     }
 
-    let iconHtml = '';
-    if (type === 'success') iconHtml = '<i class="fa-solid fa-circle-check" style="color:#34d399"></i>';
-    else if (type === 'error') iconHtml = '<i class="fa-solid fa-circle-xmark" style="color:#f87171"></i>';
-    else if (type === 'loading') iconHtml = '<i class="fa fa-spinner fa-spin"></i>';
-    else iconHtml = '<i class="fa-solid fa-circle-info" style="color:#60a5fa"></i>';
-
-    toastEl.innerHTML = `${iconHtml}<span>${message}</span>`;
+    toastEl.innerHTML = `<span>${message}</span>`;
 
     if (!toastEl.classList.contains('show')) {
         toastEl.className = `show toast-${type}`;
@@ -3212,12 +3206,12 @@ function handleNextRepoPage() {
     let currentPage = state[pageStateKey];
 
     if (totalPages <= 1) {
-        showToast('仓库列表没有超过20个，没有下一页。');
+        showToast('没有下一页');
         return;
     }
 
     if (currentPage >= totalPages) {
-        showToast('已经是最后一页了');
+        showToast('已是最后一页');
         return;
     }
 
@@ -3253,12 +3247,12 @@ function handlePrevRepoPage() {
     let currentPage = state[pageStateKey];
 
     if (totalPages <= 1) {
-        showToast('仓库列表没有超过20个，没有上一页。');
+        showToast('没有上一页');
         return;
     }
 
     if (currentPage <= 1) {
-        showToast('已经是第一页了');
+        showToast('已是第一页');
         return;
     }
 
@@ -3379,13 +3373,13 @@ async function createRelease() {
     const btn = document.getElementById('submitReleaseBtn');
 
     if (!currentManagingRepo) {
-        showToast('操作上下文丢失，请重新点击底部加号按钮', 'error');
+        showToast('操作已失效，请重试');
         hideReleaseManagerModal();
         return;
     }
 
     if (!tagName) {
-        showToast('版本号不能为空', 'error');
+        showToast('版本号不能为空');
         return;
     }
 
@@ -3558,7 +3552,7 @@ function renderAssetsList(assets) {
 
 async function refreshAssetsList() {
     if (!state.currentRelease || !state.viewingReleasesForRepo) return;
-    showToast('正在刷新版本信息...');
+    showToast('正在刷新版本');
     try {
         const res = await fetch(`https://api.github.com/repos/${state.viewingReleasesForRepo}/releases?_t=${Date.now()}`, {
             headers: { Authorization: `token ${state.token}` },
@@ -3571,7 +3565,7 @@ async function refreshAssetsList() {
         if (updatedRelease) {
             fetchAndDisplayAssets(updatedRelease, false);
         } else {
-            showToast('此版本可能已被删除，返回上一页', 'error');
+            showToast('版本已删除');
             goUp();
         }
     } catch(e) {
@@ -3629,11 +3623,11 @@ async function fetchBranches(repo) {
             state.branches.reverse();
         } else {
             state.branches = [];
-            showToast('获取分支列表失败');
+            showToast('获取分支失败');
         }
     } catch (e) {
         state.branches = [];
-        showToast('获取分支列表失败');
+        showToast('获取分支失败');
         console.error(e);
     }
 }
@@ -3787,7 +3781,7 @@ async function loadRecursiveRepoTree() {
 
             const data = await res.json();
             if (data.truncated) {
-                showToast('仓库文件过多，部分深度目录可能需要单独加载', 'info');
+                showToast('文件过多');
             }
             state.repoTreeCache = data.tree;
 
@@ -4226,7 +4220,7 @@ async function fetchFilesFromNetwork(isInitialLoad = false, pathForFetch, isSile
                 applyFiltersAndSort();
                 renderFileList();
             } else {
-                showToast('加载文件失败: ' + err.message);
+                showToast('加载失败: ' + err.message);
             }
         }
     } finally {
@@ -4611,7 +4605,7 @@ function showSortDropdown() {
 }
 
 async function downloadReleaseAsset(asset) {
-    showToast(`正在准备下载: ${asset.name}`);
+    showToast(`准备下载 ${asset.name}`);
 
     let downloadUrl = asset.browser_download_url;
 
@@ -4634,7 +4628,7 @@ async function downloadReleaseAsset(asset) {
         document.body.removeChild(a);
 
     } catch (error) {
-        showToast(`下载 "${asset.name}" 失败，请检查浏览器设置`, 'error');
+        showToast(`下载 ${asset.name} 失败`, 'error');
         console.error(error);
     }
 }
@@ -4707,7 +4701,7 @@ async function downloadFile(item) {
 
         const finalUrl = typeof getProxiedUrl === 'function' ? getProxiedUrl(rawUrl, true) : rawUrl;
 
-        if (typeof showToast === 'function') showToast(`正在请求下载: ${item.name}`);
+        if (typeof showToast === 'function') showToast(`下载 ${item.name}`);
 
         const a = document.createElement('a');
         a.href = finalUrl;
@@ -4735,7 +4729,7 @@ async function downloadFileForce(item) {
 
         const finalUrl = typeof getProxiedUrl === 'function' ? getProxiedUrl(rawUrl, true) : rawUrl;
 
-        if (typeof showToast === 'function') showToast(`正在请求下载: ${item.name}`);
+        if (typeof showToast === 'function') showToast(`下载 ${item.name}`);
 
         const a = document.createElement('a');
         a.href = finalUrl;
@@ -4758,9 +4752,9 @@ async function downloadFileForce(item) {
 function copyLink(file) {
     const rawUrl = file.download_url || file.html_url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
     navigator.clipboard.writeText(rawUrl).then(() => {
-        showToast('Raw 链接已复制');
+        showToast('Raw 已复制');
     }).catch(e => {
-        showToast(`复制失败: ${e.message || '应用剪切板权限没给'}`);
+        showToast('复制失败', 'error');
         console.error(e);
     });
 }
@@ -4784,13 +4778,13 @@ function copyProxyLink(file) {
             } catch (e) {
                 domain = '代理';
             }
-            showToast(`已复制代理链接 [节点: ${domain}]`);
+            showToast(`已复制代理链接`);
         }).catch(e => {
             showToast(`复制失败: ${e.message}`, 'error');
         });
     } else {
         navigator.clipboard.writeText(rawUrl).then(() => {
-            showToast('代理未生效，已复制直连链接', 'warning');
+            showToast('代理未生效，已复制直连', 'warning');
         }).catch(e => {
             showToast(`复制失败: ${e.message}`, 'error');
         });
@@ -5320,7 +5314,7 @@ async function handleContextMenuAction(action, oldFileObject) {
     } else {
         currentFile = state.files.find(f => f.path === oldFileObject.path);
         if (!currentFile) {
-            showToast('文件已更新，请重新选择或刷新页面');
+            showToast('文件已更新，请刷新');
             return;
         }
     }
@@ -5382,9 +5376,9 @@ async function handleContextMenuAction(action, oldFileObject) {
                 : `https://${owner}.github.io/${repoName}/${currentFile.path}`;
 
             navigator.clipboard.writeText(pagesUrl).then(() => {
-                showToast(isMainSiteRepo ? '主站链接已复制' : '项目网站链接已复制');
+                showToast(isMainSiteRepo ? '主站链接已复制' : '网站链接已复制');
             }).catch(e => {
-                showToast(`复制失败: ${e.message || '应用剪切板权限没给'}`);
+                showToast('复制失败', 'error');
             });
             break;
 
@@ -5393,9 +5387,9 @@ async function handleContextMenuAction(action, oldFileObject) {
             if (currentRepoObject && currentRepoObject.customDomain) {
                 const customUrl = `https://${currentRepoObject.customDomain}/${currentFile.path}`;
                 navigator.clipboard.writeText(customUrl).then(() => {
-                    showToast(`自定义域名复制成功: ${customUrl}`);
+                    showToast('域名已复制');
                 }).catch(e => {
-                    showToast(`复制失败: ${e.message}`);
+                    showToast('复制失败', 'error');
                 });
             }
             break;
@@ -5430,7 +5424,7 @@ async function handleContextMenuAction(action, oldFileObject) {
             navigator.clipboard.writeText(currentFile.html_url).then(() => {
                 showToast('GitHub 链接已复制');
             }).catch(e => {
-                showToast(`复制失败: ${e.message || '应用剪切板权限没给'}`);
+                showToast('复制失败', 'error');
                 console.error(e);
             });
             break;
@@ -5508,7 +5502,7 @@ async function handleRepoContextMenuAction(action, repo) {
         case 'copyProjectSiteLink':
             const siteUrl = `https://${repo.owner.login}.github.io/${repo.name}/`;
             navigator.clipboard.writeText(siteUrl).then(() => {
-                showToast('项目网站链接已复制', 'success');
+                showToast('网站链接已复制', 'success');
             }).catch(err => {
                 showToast('复制失败', 'error');
             });
@@ -5526,7 +5520,7 @@ async function handleRepoContextMenuAction(action, repo) {
             if (repo.customDomain) {
                 const customUrl = `https://${repo.customDomain}`;
                 navigator.clipboard.writeText(customUrl).then(() => {
-                    showToast(`自定义域名复制成功: ${customUrl}`);
+                    showToast('域名已复制');
                 }).catch(err => {
                     showToast('复制失败', 'error');
                 });
@@ -5574,7 +5568,7 @@ async function batchUnpublishSites() {
     const reposToUnpublish = state.repos.filter(r => r.has_pages && r.name !== `${state.user.login}.github.io`);
 
     if (reposToUnpublish.length === 0) {
-        showToast('没有需要取消发布的网站。', 'info');
+        showToast('没有可下线的网站');
         return;
     }
 
@@ -5584,7 +5578,7 @@ async function batchUnpublishSites() {
     let successCount = 0;
 
     for (const [index, repo] of reposToUnpublish.entries()) {
-        showToast(`正在取消发布 (${index + 1}/${reposToUnpublish.length}): ${repo.name}`);
+        showToast(`下线 (${index + 1}/${reposToUnpublish.length})`);
         const result = await unpublishSite(repo);
         if (result.success) {
             const repoInState = state.repos.find(r => r.id === repo.id);
@@ -5604,7 +5598,7 @@ async function batchPublishSites() {
     const reposToPublish = state.repos.filter(r => !r.private && r.name !== `${state.user.login}.github.io` && !r.has_pages);
 
     if (reposToPublish.length === 0) {
-        showToast('没有可发布的仓库。', 'info');
+        showToast('没有可发布的仓库');
         return;
     }
 
@@ -5615,7 +5609,7 @@ async function batchPublishSites() {
     let failCount = 0;
 
     for (const [index, repo] of reposToPublish.entries()) {
-        showToast(`正在发布 (${index + 1}/${reposToPublish.length}): ${repo.name}`);
+        showToast(`发布 (${index + 1}/${reposToPublish.length})`);
         const result = await publishProjectSite(repo);
         if (result.success) {
             const repoInState = state.repos.find(r => r.id === repo.id);
@@ -5927,7 +5921,7 @@ async function showPublishBranchSelectorModal(repo, publishType) {
 
             async function enablePagesWithRetry(repo, branch, maxAttempts = 2, delayBetweenAttempts = 4000) {
                 for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-                    showToast(`正在配置网站页面`, 'info');
+                    showToast(`正在配置网站`, 'info');
                     try {
                         const pagesRes = await fetch(`https://api.github.com/repos/${repo.full_name}/pages`, {
                             method: 'POST',
@@ -5971,7 +5965,7 @@ async function showPublishBranchSelectorModal(repo, publishType) {
 
             for (let setupAttempt = 1; setupAttempt <= MAX_SETUP_ATTEMPTS; setupAttempt++) {
                 try {
-                    showToast(`正在设置主站 (第 ${setupAttempt}/${MAX_SETUP_ATTEMPTS} 次)`, 'info', 7000);
+                    showToast(`设置主站 (${setupAttempt}/${MAX_SETUP_ATTEMPTS})`, 'info', 7000);
                     const mainSiteName = `${state.user.login}.github.io`;
                     await fetchRepos(true, false);
                     const existingMainSite = state.repos.find(r => r.name === mainSiteName);
@@ -6022,7 +6016,7 @@ async function showPublishBranchSelectorModal(repo, publishType) {
             }
 
             if (finalError) {
-                 showToast(`操作最终失败: ${finalError.message}，请手动重试`, 'error');
+                 showToast(`操作失败: ${finalError.message}`, 'error');
                  if (mainSiteButton) {
                      mainSiteButton.textContent = '发布为主站';
                      mainSiteButton.disabled = false;
@@ -6080,10 +6074,10 @@ window.__nativeFolderFileContent = function(token, i, base64, err) {
             file.relativePath = item.path || item.name;
             state.pendingUploadFiles.push(file);
         } catch (e) {
-            if (typeof showToast === 'function') showToast('读取文件失败: ' + (e.message || e), 'error');
+            if (typeof showToast === 'function') showToast('读取失败: ' + (e.message || e), 'error');
         }
     } else if (typeof showToast === 'function') {
-        showToast('已跳过 ' + (item ? item.name : '文件') + ': ' + (err || '读取失败'), 'error');
+        showToast('跳过 ' + (item ? item.name : '文件') + ': ' + (err || '读取失败'), 'error');
     }
     seq.index++;
     if (seq.index < seq.list.length) {
@@ -6113,11 +6107,11 @@ async function uploadReleaseAssets(files) {
     const releaseId = state.currentRelease.id;
     const [owner, repo] = state.viewingReleasesForRepo.split('/');
 
-    showToast(`准备上传 ${files.length} 个文件到版本 ${state.currentRelease.tag_name}...`);
+    showToast(`准备上传 ${files.length} 个文件`);
 
     for (const file of files) {
         try {
-            showToast(`正在上传: ${file.name} ...`, 'info', 5000);
+            showToast(`正在上传 ${file.name}`, 'info', 5000);
 
             const uploadUrl = `https://uploads.github.com/repos/${owner}/${repo}/releases/${releaseId}/assets?name=${encodeURIComponent(file.name)}`;
 
@@ -6589,10 +6583,10 @@ function showUnpublishMainSiteModal(repo) {
         this.innerHTML = '处理中 <i class="fa fa-spinner fa-spin"></i>';
 
         try {
-            showToast('步骤1/2: 正在禁用静态页面配置...');
+            showToast('下线 1/2 禁用页面配置');
             await disablePages(repo);
 
-            showToast('步骤2/2: 正在重命名仓库以完成下线...');
+            showToast('下线 2/2 重命名仓库');
             const res = await fetch(`https://api.github.com/repos/${repo.full_name}`, {
                 method: 'PATCH',
                 headers: { 'Authorization': `token ${state.token}`, 'Content-Type': 'application/json' },
@@ -6995,7 +6989,7 @@ async function showCreateBranchModal(repo) {
     } catch (error) {
         console.error("加载分支失败:", error);
         sourceSelector.triggerText.textContent = '加载分支失败';
-        showToast('加载分支列表失败');
+        showToast('加载分支失败');
         sourceSelector.currentSelection = { name: null, sha: null };
         el.createBranchConfirm.disabled = true;
     }
@@ -7500,7 +7494,7 @@ let allFilesToDownload = [];
         allFilesToDownload = results.flat();
 
         if (allFilesToDownload.length === 0) {
-            showToast('没有可下载的文件');
+            showToast('没有可下载文件');
             return;
         }
 
@@ -7594,7 +7588,7 @@ function downloadRepoAsZip(repo) {
     document.body.appendChild(a);
     a.click();
     setTimeout(() => document.body.removeChild(a), 500);
-    showToast(`正在使用${viaProxy ? '代理' : '直连'}下载 ${repo.name}.zip `);
+    showToast(`${viaProxy ? '代理' : '直连'}下载 ${repo.name}.zip`);
 }
 
 function saveContextMenuSettings() {
@@ -7871,13 +7865,13 @@ function initMediaPreview() {
             this.audio.src = url;
             this.audio.currentTime = 0;
 
-            showToast(`正在缓冲: ${name}...`);
+            showToast(`缓冲中 ${name}`);
 
             try {
                 await this.audio.play();
 
                 if (this.activeRequestId === requestId) {
-                    showToast(`正在播放: ${name}`);
+                    showToast(`播放 ${name}`);
                 }
             } catch (error) {
 
@@ -8920,13 +8914,13 @@ function handlePrevPage() {
         const newPage = state.publicSearchPage - 1;
         const query = state.publicSearchQuery;
         if (!query) {
-            showToast('搜索词丢失，请重新搜索', 'error');
+            showToast('搜索词丢失', 'error');
             return;
         }
         history.replaceState({ view: 'public_search_results', query: query, page: newPage }, '', window.location.pathname);
         searchPublicRepositories(query, newPage, false);
     } else {
-        showToast('已经是第一页了');
+        showToast('已是第一页');
     }
 }
 
@@ -8936,13 +8930,13 @@ function handleNextPage() {
         const newPage = state.publicSearchPage + 1;
         const query = state.publicSearchQuery;
         if (!query) {
-            showToast('搜索词丢失，请重新搜索', 'error');
+            showToast('搜索词丢失', 'error');
             return;
         }
         history.replaceState({ view: 'public_search_results', query: query, page: newPage }, '', window.location.pathname);
         searchPublicRepositories(query, newPage, false);
     } else {
-        showToast('已经是最后一页了');
+        showToast('已是最后一页');
     }
 }
 
@@ -9305,7 +9299,7 @@ function updateHomeStarredButtonState() {
         icon.className = 'fa-regular fa-star';
         viewStarredBtn.title = '查看星标仓库';
     } else {
-        icon.className = 'fa-regular fa-house';
+        icon.className = 'fa-solid fa-house';
         viewStarredBtn.title = '返回我的仓库';
     }
 }
@@ -9743,7 +9737,7 @@ async function showRepoOverview(repoInput) {
             list = list.filter(id => id !== repoId);
         }
         localStorage.setItem('direct_entry_repos', JSON.stringify(list));
-        showToast(enabled ? '已开启：此仓库点击将直接进入' : '已关闭：此仓库点击将显示概览');
+        showToast(enabled ? '已开启：点击直接进入' : '已关闭：点击显示概览');
     });
     const toggleLabel = directToggleNew.parentElement;
     let refreshBtn = document.getElementById('overviewRefreshBtn');
@@ -9921,7 +9915,7 @@ if (el.menuThemeToggle) {
             e.stopPropagation();
             const allFailedContainers = document.querySelectorAll('#fileList .file-thumbnail-container.error');
             if (allFailedContainers.length > 0) {
-                showToast(`正在重试 ${allFailedContainers.length} 个失败的图片...`);
+                showToast(`重试 ${allFailedContainers.length} 张失败图片`);
                 allFailedContainers.forEach(container => {
                     container.classList.remove('error');
                     container.classList.add('loading');
@@ -9949,7 +9943,7 @@ if (el.menuThemeToggle) {
                     if (window.CodeEditor && CodeEditor.isTextFile(file.name) && !state.isMultiSelectMode) {
                         CodeEditor.open(file, state.repo || state.currentRepo, state.currentBranch);
                     } else {
-                        showToast('长按文件选择「代理下载」进行下载', 'info');
+                        showToast('长按文件选择代理下载');
                     }
                 }
             }
@@ -10148,7 +10142,7 @@ async function handleRemoveCustomDomain(repo) {
 
         if (!checkRes.ok) {
             if (checkRes.status === 404) {
-                showToast('域名配置已不存在', 'info');
+                showToast('域名配置不存在');
                 repo.customDomain = null;
                 try {
                     const CACHE_KEY = 'custom_domains_cache';
@@ -10266,7 +10260,7 @@ el.authBtn.addEventListener('click', async () => {
 
         if (scopesHeader !== null) {
             if (!scopesHeader.includes('repo')) {
-                showToast('此经典令牌权限不足，大部分功能将无法使用。', 'error', 6000);
+                showToast('令牌权限不足', 'error', 6000);
             }
         }
 
@@ -10305,7 +10299,7 @@ el.authBtn.addEventListener('click', async () => {
         }, 1000);
 
     } catch (error) {
-        showToast(error.message || '网络连接失败，请重试');
+        showToast(error.message || '网络连接失败');
         el.tokenInput.classList.add('error');
         btn.classList.add('error');
         btn.disabled = false;
@@ -10671,7 +10665,7 @@ el.menuBatchPublishSites.onclick = () => {
                 showRepoOverview(repo);
             }
         } else {
-            showToast('数据同步中，请稍后点击', 'info');
+            showToast('数据同步中');
         }
     }
 });
@@ -10737,7 +10731,7 @@ el.publishManageList.addEventListener('click', (e) => {
                 ? `https://${owner}.github.io/`
                 : `https://${owner}.github.io/${repoName}/`;
             navigator.clipboard.writeText(siteUrl).then(() => {
-                showToast(isMainSiteRepo ? '主站链接已复制' : '项目链接已复制');
+                showToast(isMainSiteRepo ? '主站链接已复制' : '链接已复制');
             });
         }
         return;
@@ -11116,7 +11110,7 @@ function initFooterEvents() {
 
     const handleCopyQQ = (qq) => {
         navigator.clipboard.writeText(qq).then(() => {
-            if(window.showToast) showToast(`已复制QQ: ${qq}`, 'success');
+            if(window.showToast) showToast(`QQ 已复制: ${qq}`, 'success');
             else alert(`已复制: ${qq}`);
         }).catch(() => {
             if(window.showToast) showToast('复制失败', 'error');
@@ -11168,7 +11162,7 @@ async function performRecursiveSearch(query) {
         const data = await res.json();
 
         if (data.truncated) {
-            showToast('文件过多，仅显示部分结果', 'info');
+            showToast('文件过多，仅显示部分');
         }
 
         const queryLower = query.toLowerCase();
@@ -11390,7 +11384,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                  renderPathNav();
                                  updatePaginationUI();
                             } else {
-                                showToast('无法获取仓库信息，返回主列表', 'error');
+                                showToast('无法获取仓库信息');
                                 state.currentView = 'own_repos';
                                 showRepoListView();
                             }
@@ -11401,7 +11395,7 @@ document.addEventListener('DOMContentLoaded', function() {
                              fetchFiles(false);
                              renderPathNav();
                         } else {
-                            showToast('网络错误，返回主列表', 'error');
+                            showToast('网络错误');
                             state.currentView = 'own_repos';
                             showRepoListView();
                         }
@@ -11475,13 +11469,13 @@ async function unzipFile(file) {
         const [owner, repo] = state.currentRepo.split('/');
 
         try {
-            showToast('正在下载压缩包...', 'loading', 0);
+            showToast('正在下载压缩包', 'loading', 0);
 
             const response = await fetch(getProxiedUrl(file.download_url, true));
             if (!response.ok) throw new Error(`下载失败: ${response.status}`);
             const blob = await response.blob();
 
-            showToast('正在解析 ZIP...', 'loading', 0);
+            showToast('正在解析 ZIP', 'loading', 0);
             const zip = await JSZip.loadAsync(blob);
             const filesInZip = Object.values(zip.files).filter(item => !item.dir);
             const totalFiles = filesInZip.length;
@@ -11543,11 +11537,11 @@ async function unzipFile(file) {
                     });
 
                     uploadedCount++;
-                    showToast(`解压进度: ${uploadedCount}/${totalFiles}`, 'loading', 0);
+                    showToast(`解压 ${uploadedCount}/${totalFiles}`, 'loading', 0);
                 }
             }
 
-            showToast(`解压完成，共 ${uploadedCount} 个文件`, 'success');
+            showToast('解压完成', 'success');
 
             if (state.files) {
                 const patched = ConsistencyManager.apply(state.files);
@@ -11695,7 +11689,7 @@ var CodeEditor = (function() {
         if (findHistory.length > 0) {
             const prev = findHistory.pop();
             setSelection(prev.start, prev.end);
-            showToast('回退到上一个位置', 'info');
+            showToast('回退到上个位置');
             return;
         }
         if (historyIndex > 0) {
@@ -11713,7 +11707,7 @@ var CodeEditor = (function() {
             historyIndex++;
             setValue(historyStack[historyIndex]);
             updateHistoryUI();
-            showToast(`下一步 (剩余 ${historyStack.length - 1 - historyIndex} 步)`);
+            showToast(`下一步 (剩 ${historyStack.length - 1 - historyIndex} 步)`);
         } else {
             showToast('已经到最后一步', 'error');
         }
@@ -11868,7 +11862,6 @@ var CodeEditor = (function() {
             updateHistoryUI();
             currentSha = cached.sha || currentSha;
             hideLoading();
-            showToast('已加载文件（缓存）', 'success');
             return;
         }
 
@@ -11984,7 +11977,7 @@ var CodeEditor = (function() {
         if (!currentRepo || !currentFile) { showToast('缺少文件信息', 'error'); return; }
         const content = getValue();
         if (!currentSha) {
-            showToast('无法获取文件 SHA，保存失败', 'error');
+            showToast('获取 SHA 失败', 'error');
             return;
         }
         setSaveBtn('saving');
@@ -12013,7 +12006,7 @@ var CodeEditor = (function() {
             if (data && data.content && data.content.sha) currentSha = data.content.sha;
             const now = new Date();
             const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
-            showToast(`保存成功 ${timeStr}`, 'success');
+            showToast('保存成功', 'success');
             setSaveBtn('ok');
             if (contentCache) {
                 const cacheKey = `${currentRepo.owner ? (currentRepo.owner.login || (currentRepo.full_name||'').split('/')[0]) : (currentRepo.full_name||'').split('/')[0]}/${currentRepo.name || (currentRepo.full_name||'').split('/')[1]}/${currentBranch}/${currentFile.path}`;

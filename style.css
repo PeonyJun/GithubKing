@@ -1228,15 +1228,14 @@ body.light-theme .checkbox-container {
     align-items: center;
     gap: 10px;
     min-width: auto;
-    max-width: 85%;
-    padding: 8px 20px 8px 16px;
+    max-width: 90%;
+    padding: 8px 20px;
     font-size: 0.7rem;
     font-weight: 500;
     line-height: 1.5;
     color: #e0e7ff;
     text-align: left;
-    white-space: normal;
-    word-break: break-word;
+    white-space: nowrap;
     background: rgba(30, 41, 59, 0.75);
     backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
@@ -1255,26 +1254,6 @@ body.light-theme .checkbox-container {
     opacity: 1;
     visibility: visible;
     transform: translate(-50%, 0) scale(1);
-}
-
-#toast i {
-    font-size: 0.8rem;
-    flex-shrink: 0;
-}
-
-#toast.toast-success i {
-    color: #34d399;
-    filter: drop-shadow(0 0 5px rgba(52, 211, 153, 0.4));
-}
-
-#toast.toast-error i {
-    color: #f87171;
-    filter: drop-shadow(0 0 5px rgba(248, 113, 113, 0.4));
-}
-
-#toast.toast-info i {
-    color: #60a5fa;
-    filter: drop-shadow(0 0 5px rgba(96, 165, 250, 0.4));
 }
 
 body.light-theme #toast {
