@@ -3022,10 +3022,7 @@ function renderRepoList(reposSource) {
         const isNotOwnRepo = !isOwnRepo;
 
         if (isNotOwnRepo || state.currentView === 'starred_repos') {
-            const isSearchView = state.currentView === 'public_search_results';
-            releasesButtonHTML = isSearchView
-                ? `<button class="star-text-btn releases-btn js-view-releases-btn" title="查看 Releases" data-repo-fullname="${escapeHtml(repo.full_name)}">Releases</button>`
-                : `<button class="star-text-btn releases-btn js-view-releases-btn" title="查看 Releases" data-repo-fullname="${escapeHtml(repo.full_name)}"><i class="fa fa-tags"></i> Releases</button>`;
+            releasesButtonHTML = `<button class="star-text-btn releases-btn js-view-releases-btn" title="查看 Releases" data-repo-fullname="${escapeHtml(repo.full_name)}">Releases</button>`;
             const isStarred = starredRepoFullNames.has(repo.full_name);
             const buttonText = isStarred ? '取消关注' : '关注';
             const buttonClass = isStarred ? 'star-text-btn starred' : 'star-text-btn';
@@ -3213,7 +3210,7 @@ async function fetchAndDisplayReleases(repoFullName, updateHistory = true) {
     }
 
     try {
-        const res = await fetch(`https://api.github.com/repos/${repoFullName}/releases`, {
+        const res = await fetch(`https://api.github.com/repos/${repoFullName}/releases?_t=${Date.now()}`, {
             headers: { Authorization: `token ${state.token}` },
             cache: 'no-store'
         });
@@ -3476,7 +3473,7 @@ async function refreshAssetsList() {
     if (!state.currentRelease || !state.viewingReleasesForRepo) return;
     showToast('正在刷新版本信息...');
     try {
-        const res = await fetch(`https://api.github.com/repos/${state.viewingReleasesForRepo}/releases`, {
+        const res = await fetch(`https://api.github.com/repos/${state.viewingReleasesForRepo}/releases?_t=${Date.now()}`, {
             headers: { Authorization: `token ${state.token}` },
             cache: 'no-store'
         });
@@ -6259,6 +6256,21 @@ async function uploadSingleReleaseAsset(file, index) {
                         statusElement.textContent = '上传成功';
                         statusElement.className = 'upload-status success';
                     }
+
+                    try {
+                        const asset = JSON.parse(xhr.responseText);
+                        if (asset && asset.id && state.currentRelease) {
+                            if (!Array.isArray(state.currentRelease.assets)) state.currentRelease.assets = [];
+                            state.currentRelease.assets = [asset, ...state.currentRelease.assets.filter(a => a.id !== asset.id)];
+                            if (state.currentView === 'assets_list') renderAssetsList(state.currentRelease.assets);
+
+                            const rel = (state.releases || []).find(r => r.id === state.currentRelease.id);
+                            if (rel) {
+                                if (!Array.isArray(rel.assets)) rel.assets = [];
+                                rel.assets = [asset, ...rel.assets.filter(a => a.id !== asset.id)];
+                            }
+                        }
+                    } catch (ignore) {}
 
                     setTimeout(() => {
                         const itemContainer = statusElement ? statusElement.closest('.upload-item') : null;
