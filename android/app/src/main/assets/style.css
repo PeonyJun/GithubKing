@@ -1190,406 +1190,6 @@ body.light-theme .checkbox-container {
     background-color: rgba(17, 24, 39, 0.7);
 }
 
-#editModal {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 120;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(2, 6, 18, 0.78);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-}
-
-#editModal .editor-modal-content {
-    display: flex;
-    flex-direction: column;
-    width: min(920px, 92vw);
-    height: min(72vh, 720px);
-    max-height: 92vh;
-    overflow: hidden;
-    background: #0b1220;
-    border: 1px solid rgba(148, 163, 184, 0.16);
-    border-radius: 14px;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(148, 163, 184, 0.05);
-}
-
-.editor-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-    gap: 10px;
-    padding: 10px 12px;
-    background: linear-gradient(180deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.92));
-    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-}
-
-.editor-title-area {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-}
-
-.editor-file-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    flex-shrink: 0;
-    color: #60a5fa;
-    font-size: 0.95rem;
-    background: rgba(96, 165, 250, 0.12);
-    border-radius: 8px;
-}
-
-.editor-title-text {
-    min-width: 0;
-}
-
-.editor-title-text h5 {
-    margin: 0;
-    overflow: hidden;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #f1f5f9;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-.editor-file-path {
-    display: block;
-    overflow: hidden;
-    max-width: 46vw;
-    font-size: 0.6rem;
-    color: #94a3b8;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-.editor-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex-shrink: 0;
-}
-
-.editor-header-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    color: #cbd5e1;
-    background: transparent;
-    border: none;
-    border-radius: 9px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: background-color 0.2s, color 0.2s;
-}
-
-.editor-header-btn:hover {
-    color: #ffffff;
-    background: rgba(148, 163, 184, 0.15);
-}
-
-.editor-header-close:hover {
-    color: #fca5a5;
-    background: rgba(239, 68, 68, 0.15);
-}
-
-.editor-container {
-    position: relative;
-    flex: 1 1 0;
-    min-height: 0;
-    overflow: hidden;
-    background-color: #030712;
-}
-
-#aceEditorContainer {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-}
-
-#fileContent {
-    width: 100%;
-    height: 100%;
-    padding: 12px 14px;
-    font-size: 13px;
-    line-height: 1.6;
-    color: #cbd5e1;
-    background-color: #030712;
-    border: none;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    overflow: auto;
-    overflow-wrap: break-word;
-    resize: none;
-    outline: 0;
-    caret-color: #60a5fa;
-}
-
-#fileContent::selection {
-    color: #ffffff;
-    background-color: #0078d4;
-}
-
-#fileContent::-moz-selection {
-    color: #ffffff;
-    background-color: #0078d4;
-}
-
-#editorOverlay {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(17, 24, 39, 0.7);
-    border-radius: 0.3rem;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
-}
-
-#editorOverlay.show {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-#closeEditModal,
-#toggleMaximizeModal,
-#revertEditBtn,
-#searchInFileBtn {
-    padding: 0.3rem;
-    font-size: 0.9rem;
-    color: #fff;
-    background: transparent;
-    border: none;
-    border-radius: 9999px;
-    cursor: pointer;
-}
-
-#revertEditBtn:disabled,
-#toggleMaximizeModal:disabled {
-    color: #6b7280;
-}
-
-.edit-status {
-    flex-shrink: 0;
-    min-height: 0;
-    padding: 0;
-    font-size: 0.62rem;
-    color: #94a3b8;
-    text-align: center;
-    background: transparent;
-    transition: min-height 0.2s;
-}
-
-.edit-status.error {
-    padding: 5px 0;
-    color: #fecaca;
-    background: rgba(239, 68, 68, 0.12);
-}
-
-.editor-statusbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-    gap: 8px;
-    padding: 4px 12px;
-    font-size: 0.6rem;
-    color: #94a3b8;
-    background: rgba(15, 23, 42, 0.85);
-    border-top: 1px solid rgba(148, 163, 184, 0.12);
-}
-
-.editor-statusbar-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 0;
-    overflow: hidden;
-}
-
-.editor-statusbar-right {
-    flex-shrink: 0;
-    font-variant-numeric: tabular-nums;
-}
-
-.editor-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 1px 7px;
-    font-size: 0.55rem;
-    line-height: 1.6;
-    border-radius: 999px;
-    white-space: nowrap;
-}
-
-.editor-badge i {
-    font-size: 0.4rem;
-}
-
-.editor-badge-modified {
-    color: #fbbf24;
-    background: rgba(245, 158, 11, 0.14);
-    border: 1px solid rgba(245, 158, 11, 0.3);
-}
-
-.editor-badge-modified i {
-    color: #fbbf24;
-}
-
-.editor-badge-readonly {
-    color: #94a3b8;
-    background: rgba(148, 163, 184, 0.12);
-    border: 1px solid rgba(148, 163, 184, 0.22);
-}
-
-#editModal.maximized {
-    padding: 0 !important;
-}
-
-#editModal.maximized .modal-content {
-    display: flex;
-    flex-direction: column;
-    width: 100vw !important;
-    height: 100dvh !important;
-    min-height: 100dvh !important;
-    max-width: 100vw !important;
-    margin: 0 !important;
-    border-radius: 0 !important;
-    border: none !important;
-}
-
-#editModal.maximized .editor-container {
-    flex: 1 1 0;
-    min-height: 0;
-    overflow: hidden;
-}
-
-#editModal.maximized #fileContent {
-    height: 100% !important;
-    min-height: unset !important;
-}
-
-#editModal.maximized .modal-footer,
-#editModal.maximized .editor-header {
-    flex-shrink: 0;
-}
-
-#editorSearchPanel {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 15;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    width: auto;
-    min-width: 280px;
-    max-width: calc(100% - 20px);
-    padding: 8px 10px;
-    background-color: rgba(15, 23, 42, 0.94);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(148, 163, 184, 0.2);
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    opacity: 0;
-    transform: translateY(-8px);
-    transition: transform 0.18s ease-out, opacity 0.18s ease-out;
-}
-
-#editorSearchPanel:not(.hidden) {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.editor-search-icon {
-    flex-shrink: 0;
-    color: #64748b;
-    font-size: 0.75rem;
-}
-
-#editorSearchInput {
-    flex: 1;
-    min-width: 0;
-    margin: 0;
-    padding: 5px 8px;
-    font-size: 0.78rem;
-    color: #f1f5f9;
-    background-color: rgba(30, 41, 59, 0.6);
-    border: 1px solid rgba(148, 163, 184, 0.15);
-    border-radius: 7px;
-    outline: none;
-    transition: border-color 0.2s;
-}
-
-#editorSearchInput:focus {
-    border-color: #3b82f6;
-}
-
-#editorSearchMatchCount {
-    flex-shrink: 0;
-    min-width: 44px;
-    margin: 0 2px;
-    font-size: 0.68rem;
-    color: #94a3b8;
-    text-align: center;
-}
-
-#editorSearchPrevBtn {
-    margin-right: 0;
-}
-
-#editorSearchNextBtn {
-    margin-right: 0;
-}
-
-#editorSearchPanel button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    margin: 0;
-    padding: 0;
-    color: #cbd5e1;
-    background: transparent;
-    border: none;
-    border-radius: 7px;
-    cursor: pointer;
-    font-size: 0.7rem;
-    transition: background-color 0.2s, color 0.2s;
-}
-
-#editorSearchPanel button:hover:not(:disabled) {
-    color: #ffffff;
-    background-color: rgba(148, 163, 184, 0.18);
-}
-
-#editorSearchPanel button:disabled {
-    color: #475569;
-    cursor: default;
-}
-
 #contextMenu {
     position: fixed;
     z-index: 50;
@@ -1853,7 +1453,56 @@ body.light-theme #toast {
     box-sizing: border-box;
 }
 
-.proxy-footer-actions {
+#proxySettingsModal .proxy-prefix-hint {
+    margin: 0.3rem 0 0;
+    font-size: 0.75rem;
+    color: #a2a7c7;
+}
+
+#proxySettingsModal .proxy-preset-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+#proxySettingsModal .proxy-preset-btn {
+    flex: 1;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.78rem;
+    color: #e5e7eb;
+    background-color: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 0.3rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+#proxySettingsModal .proxy-preset-btn:hover {
+    background-color: #374151;
+    border-color: #6366f1;
+}
+
+#proxySettingsModal .proxy-prefix-note {
+    margin: 0.2rem 0 0;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: #6b7280;
+}
+
+body.light-theme #proxySettingsModal .proxy-preset-btn {
+    color: #111827;
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+}
+
+body.light-theme #proxySettingsModal .proxy-preset-btn:hover {
+    background-color: #e5e7eb;
+    border-color: #4f46e5;
+}
+
+body.light-theme #proxySettingsModal .proxy-prefix-note {
+    color: #6b7280;
+}.proxy-footer-actions {
     position: relative;
     flex-shrink: 0;
     padding-top: 0.6rem;
@@ -2227,16 +1876,6 @@ body.light-theme #toast {
 
 .btn-icon-sm:hover:not(:disabled) {
     color: #f3f4f6;
-    background-color: rgba(107, 114, 128, 0.2);
-}
-
-#saveEdit {
-    color: #fff;
-    background: transparent;
-}
-
-#saveEdit:hover {
-
     background-color: rgba(107, 114, 128, 0.2);
 }
 
@@ -2779,7 +2418,6 @@ main.has-toolbar #pull-to-refresh {
     background-color: #6b7280;
 }
 
-#closeEditModal:hover,
 #contextMenuItems a:hover,
 #mainMenuBtn:hover,
 .custom-branch-select-option:hover {
@@ -2807,83 +2445,9 @@ main.has-toolbar #pull-to-refresh {
     font-size: 0.8rem;
 }
 
-.editor-footer {
-    display: flex;
-    align-items: stretch;
-    justify-content: space-around;
-    gap: 2px;
-    flex-shrink: 0;
-    height: 46px;
-    margin-top: 0;
-    padding: 4px 8px;
-    background: rgba(15, 23, 42, 0.92);
-    border-top: 1px solid rgba(148, 163, 184, 0.12);
-}
-
-.editor-footer button {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 2px;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    color: #e6e6e6;
-    background-color: transparent;
-    border: none;
-    border-radius: 0.4rem;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
-}
-
-.editor-footer button:hover:not(:disabled) {
-    color: #2575dc;
-    background-color: rgba(96, 165, 250, 0.1);
-}
-
-.editor-footer button i {
-    font-size: 0.8rem;
-}
-
-.editor-footer button span {
-    font-size: 0.52rem;
-    line-height: 1;
-}
-
-.editor-kbd {
-    padding: 0 4px;
-    font-family: inherit;
-    font-size: 0.48rem;
-    line-height: 1.5;
-    color: #64748b;
-    background: rgba(148, 163, 184, 0.1);
-    border: 1px solid rgba(148, 163, 184, 0.2);
-    border-radius: 4px;
-    white-space: nowrap;
-}
-
-.fa-spinner {
-    font-size: 0.7rem;
-}
-
-.editor-footer button:disabled {
-    color: #4b5563;
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.editor-footer #saveEdit.modified {
-    color: #fff;
-    text-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
-}
-
-.editor-footer #saveEdit:not(.modified) {
-    color: #4b5563;
-    opacity: 0.6;
-    text-shadow: none;
-}
+ .fa-spinner {
+     font-size: 0.7rem;
+ }
 
 @media (min-width: 768px) {
     .modal-content {
@@ -3074,67 +2638,6 @@ body.light-theme #createBranchModal #createBranchNameInput {
 body.light-theme .modal-form-container input:focus,
 body.light-theme .modal-form-container textarea:focus {
     border-color: #4f46e5;
-}
-
-body.light-theme #editModal .modal-content {
-    background: #ffffff;
-    border-color: rgba(15, 23, 42, 0.12);
-    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(15, 23, 42, 0.04);
-}
-
-body.light-theme .editor-header {
-    background: linear-gradient(180deg, #f8fafc, #f1f5f9);
-    border-bottom-color: rgba(15, 23, 42, 0.1);
-}
-
-body.light-theme .editor-file-icon {
-    color: #2563eb;
-    background: rgba(37, 99, 235, 0.1);
-}
-
-body.light-theme .editor-title-text h5 {
-    color: #0f172a;
-}
-
-body.light-theme .editor-file-path {
-    color: #64748b;
-}
-
-body.light-theme .editor-header-btn {
-    color: #475569;
-}
-
-body.light-theme .editor-header-btn:hover {
-    color: #0f172a;
-    background: rgba(15, 23, 42, 0.08);
-}
-
-body.light-theme .editor-header-close:hover {
-    color: #dc2626;
-    background: rgba(220, 38, 38, 0.12);
-}
-
-body.light-theme #fileContent {
-    color: #1f2937;
-    background-color: #ffffff;
-    caret-color: #2563eb;
-}
-
-body.light-theme #fileContent::selection {
-    color: #ffffff;
-    background-color: #2563eb;
-}
-
-body.light-theme #fileContent::-moz-selection {
-    color: #ffffff;
-    background-color: #2563eb;
-}
-
-body.light-theme #closeEditModal,
-body.light-theme #toggleMaximizeModal,
-body.light-theme #revertEditBtn,
-body.light-theme #searchInFileBtn {
-    color: #4b5563;
 }
 
 body.light-theme #mainMenuPopup {
@@ -3356,122 +2859,6 @@ body.light-theme #showAddAccountModalBtn {
 
 body.light-theme #proxyQuickToggle:not(.active) {
     color: #4b5563;
-}
-
-body.light-theme #editorOverlay {
-    background-color: rgba(249, 250, 251, 0.75);
-}
-
-body.light-theme #editorOverlay .fa-spinner {
-    border-top-color: #4f46e5;
-    border-bottom-color: #4f46e5;
-}
-
-body.light-theme .editor-statusbar {
-    background: #f8fafc;
-    border-top-color: rgba(15, 23, 42, 0.1);
-}
-
-body.light-theme .editor-statusbar,
-body.light-theme .editor-statusbar .editor-statusbar-right {
-    color: #64748b;
-}
-
-body.light-theme .editor-badge-modified {
-    color: #b45309;
-    background: rgba(245, 158, 11, 0.12);
-    border-color: rgba(245, 158, 11, 0.35);
-}
-
-body.light-theme .editor-badge-modified i {
-    color: #b45309;
-}
-
-body.light-theme .editor-badge-readonly {
-    color: #64748b;
-    background: rgba(100, 116, 139, 0.12);
-    border-color: rgba(100, 116, 139, 0.25);
-}
-
-body.light-theme .editor-footer {
-    background: #f8fafc;
-    border-top-color: rgba(15, 23, 42, 0.1);
-}
-
-body.light-theme .editor-footer button {
-    color: #1f2937;
-}
-
-body.light-theme .editor-footer button:hover:not(:disabled) {
-    color: #2563eb;
-    background-color: rgba(37, 99, 235, 0.08);
-}
-
-body.light-theme .editor-footer button:disabled {
-    color: #9ca3af;
-    opacity: 0.7;
-}
-
-body.light-theme .editor-kbd {
-    color: #94a3b8;
-    background: rgba(100, 116, 139, 0.1);
-    border-color: rgba(100, 116, 139, 0.22);
-}
-
-body.light-theme .editor-footer #saveEdit.modified {
-    color: #1f2937;
-    text-shadow: none;
-}
-
-body.light-theme .editor-footer #saveEdit:not(.modified) {
-    color: #9ca3af;
-    opacity: 0.7;
-}
-
-body.light-theme #editorSearchPanel {
-    background-color: rgba(255, 255, 255, 0.96);
-    border-color: rgba(15, 23, 42, 0.12);
-    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
-}
-
-body.light-theme .editor-search-icon {
-    color: #94a3b8;
-}
-
-body.light-theme #editorSearchInput {
-    color: #1f2937;
-    background-color: #f1f5f9;
-    border-color: rgba(15, 23, 42, 0.12);
-}
-
-body.light-theme #editorSearchInput:focus {
-    border-color: #2563eb;
-}
-
-body.light-theme #editorSearchMatchCount {
-    color: #64748b;
-}
-
-body.light-theme #editorSearchPanel button {
-    color: #4b5563;
-}
-
-body.light-theme #editorSearchPanel button:hover:not(:disabled) {
-    color: #1f2937;
-    background-color: rgba(15, 23, 42, 0.08);
-}
-
-body.light-theme #editorSearchPanel button:disabled {
-    color: #cbd5e1;
-}
-
-body.light-theme .edit-status {
-    color: #64748b;
-}
-
-body.light-theme .edit-status.error {
-    color: #b91c1c;
-    background: rgba(220, 38, 38, 0.08);
 }
 
 body.light-theme .publish-list {
@@ -3878,6 +3265,31 @@ body.light-theme #globalSearchInput {
 
 .star-text-btn.starred:hover {
     background-color: rgba(250, 204, 21, 0.2);
+}
+
+.star-text-btn.releases-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border-color: #3b82f6;
+    color: #60a5fa;
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+.star-text-btn.releases-btn:hover {
+    border-color: #60a5fa;
+    background-color: rgba(59, 130, 246, 0.2);
+}
+
+body.light-theme .star-text-btn.releases-btn {
+    border-color: #2563eb;
+    color: #2563eb;
+    background-color: #eff6ff;
+}
+
+body.light-theme .star-text-btn.releases-btn:hover {
+    border-color: #1d4ed8;
+    background-color: #dbeafe;
 }
 
 body.light-theme .star-text-btn {
@@ -4345,11 +3757,6 @@ body.light-theme #proxyQuickToggle.active i {
 #multiSelectToggleBtn i { color: #C084FC !important; }
 #viewToggleBtn i { color: #A5B4FC !important; }
 
-#revertEditBtn i { color: #FB923C !important; }
-#searchInFileBtn i { color: #38BDF8 !important; }
-#toggleMaximizeModal i { color: #A5B4FC !important; }
-#cancelEdit i { color: #A78BFA !important; }
-
 .btn-cancel {
     color: #e2e8f0;
     background: linear-gradient(135deg, #4b5563 0%, #374151 100%) !important;
@@ -4358,14 +3765,11 @@ body.light-theme #proxyQuickToggle.active i {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-body.light-theme .btn-cancel:hover:not(:disabled),
-body.light-theme #cancelEdit:hover {
+body.light-theme .btn-cancel:hover:not(:disabled) {
     color: #e2e8f0;
     background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%) !important;
     box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
 }
-
-#saveEdit i { color: #34D399 !important; }
 
 #menuProxySettings i { color: #F472B6 !important; }
 #menuContextMenuSettings i { color: #C084FC !important; }
@@ -4422,8 +3826,7 @@ body.light-theme #cancelEdit:hover {
 .btn.btn-processing,
 .btn-primary.btn-processing,
 .btn-danger.btn-processing,
-button.btn-processing,
-#saveEdit.btn-processing {
+button.btn-processing {
     color: rgba(255, 255, 255, 0.5) !important;
     background: #374151 !important;
     background-image: none !important;
@@ -4463,8 +3866,7 @@ body.light-theme #publishManagerModal .btn-unpublish:hover:not(:disabled) {
 body.light-theme .btn.btn-processing,
 body.light-theme .btn-primary.btn-processing,
 body.light-theme .btn-danger.btn-processing,
-body.light-theme button.btn-processing,
-body.light-theme #saveEdit.btn-processing {
+body.light-theme button.btn-processing {
     color: #9ca3af !important;
     background: #e5e7eb !important;
     background-image: none !important;
@@ -4930,14 +4332,15 @@ body.light-theme #nav-spectrum {
     display: flex;
     flex-direction: column;
     width: 100%;
+    height: 100%;
 
   padding: 0;
   margin:0;
-    max-height: 100vh;
+    max-height: 100%;
     background: #111827;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
     overflow: hidden;
     animation: zoomIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
@@ -5134,6 +4537,19 @@ body.light-theme .repo-overview-card {
     border-color: #e5e7eb;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
+
+#repoOverviewModal {
+    padding: 0;
+    align-items: stretch;
+}
+
+#repoOverviewModal .repo-overview-card {
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+}
 body.light-theme .repo-overview-header {
     background: #f9fafb;
     border-bottom-color: #e5e7eb;
@@ -5189,51 +4605,6 @@ body.light-theme .readme-preview pre { background: #f3f4f6; }
 .file-item.is-own-repo .file-icon,
 .file-item.is-own-repo .repo-avatar {
     border-radius: 50% !important;
-}
-
-#aceEditorContainer {
-    width: 100% !important;
-    height: 100% !important;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
-body.light-theme .editor-container {
-    background-color: #ffffff;
-}
-
-.ace_gutter {
-
-    color: #555 !important;
-    border-right: 1px solid #333 !important;
-    z-index: 10 !important;
-    text-align: center !important;
-    min-width: 20px !important;
-
-}
-
-.ace_gutter-cell {
-    padding-left: 4px !important;
-    padding-right: 0px !important;
-    text-align: center !important;
-    font-size: 7px !important;
-}
-
-.ace_scroller {
-
-    z-index: 1 !important;
-
-    margin-left: 1px !important;
-}
-
-body.light-theme .ace_gutter {
-    background: #f8fafc !important;
-    border-right: 1px solid #e2e8f0 !important;
-    color: #94a3b8 !important;
-}
-body.light-theme .ace_gutter-active-line {
-    background-color: #e2e8f0 !important;
 }
 
 #menuFeedback i { color: #f43f5e !important; }
@@ -5485,32 +4856,3 @@ body.light-theme .honor-chip:hover { background: #f1f5f9; }
 body.light-theme .honor-name { color: #334155; }
 body.light-theme .honor-title::after { background: #e2e8f0; }
 
-.ace_editor,
-.ace_editor *,
-.ace_text-input,
-.ace_content {
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
-    user-select: text !important;
-}
-
-.ace_editor,
-.ace_text-input {
-    -webkit-touch-callout: default !important;
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-}
-
-.ace_text-input {
-    position: absolute !important;
-    z-index: 9999 !important;
-    opacity: 0 !important;
-    height: 1px !important;
-    width: 1px !important;
-}
-
-#fileContent {
-    -webkit-user-select: text !important;
-    user-select: text !important;
-    -webkit-touch-callout: default !important;
-}

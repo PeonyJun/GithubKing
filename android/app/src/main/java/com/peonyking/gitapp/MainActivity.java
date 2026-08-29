@@ -36,6 +36,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
@@ -361,7 +362,7 @@ public class MainActivity extends Activity {
 
     private void startDownload(String url, String userAgent, String contentDisposition, String mimetype) {
         try {
-            String fileName = resolveFileName(contentDisposition, url, mimetype);
+            String fileName = resolveUniqueFileName(resolveFileName(contentDisposition, url, mimetype));
             DownloadManager.Request req = new DownloadManager.Request(Uri.parse(url));
             if (userAgent != null && !userAgent.isEmpty()) {
                 req.addRequestHeader("User-Agent", userAgent);
@@ -377,6 +378,29 @@ public class MainActivity extends Activity {
         } catch (Exception e) {
             toast("下载启动失败: " + e.getMessage());
         }
+    }
+
+    private String resolveUniqueFileName(String fileName) {
+        if (fileName == null || fileName.isEmpty()) return fileName;
+        String clean = fileName.replaceAll("[\\\\/]", "_");
+        File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File target = new File(dir, clean);
+        if (!target.exists()) return clean;
+
+        String base = clean;
+        String ext = "";
+        int dot = clean.lastIndexOf('.');
+        if (dot > 0) {
+            base = clean.substring(0, dot);
+            ext = clean.substring(dot);
+        }
+        for (int i = 1; i < 1000; i++) {
+            String candidate = base + " (" + i + ")" + ext;
+            if (!new File(dir, candidate).exists()) {
+                return candidate;
+            }
+        }
+        return base + " (999)" + ext;
     }
 
     private String resolveFileName(String contentDisposition, String url, String mimetype) {
@@ -400,7 +424,12 @@ public class MainActivity extends Activity {
             String name = m.group(1).trim();
             if (name.startsWith("UTF-8''")) name = name.substring(7);
             try {
-                return URLDecoder.decode(name, "UTF-8");
+                String decoded = URLDecoder.decode(name, "UTF-8");
+                // 兼容双重编码（代理将 filename 二次 encode），确保解码到可读明文
+                if (decoded.contains("%") && decoded.matches(".*%[0-9A-Fa-f]{2}.*")) {
+                    decoded = URLDecoder.decode(decoded, "UTF-8");
+                }
+                return decoded;
             } catch (Exception e) {
                 return name;
             }

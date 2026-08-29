@@ -198,84 +198,6 @@
 				</div>
 			</div>
 
-			<div id="editModal" class="hidden">
-				<div class="modal-content editor-modal-content">
-					<div class="editor-header">
-						<div class="editor-title-area">
-							<div class="editor-file-icon"><i class="fa-solid fa-code"></i></div>
-							<div class="editor-title-text">
-								<h5 id="editFileName">编辑文件</h5>
-								<span id="editFilePath" class="editor-file-path"></span>
-							</div>
-						</div>
-						<div class="editor-header-actions">
-							<button id="toggleMaximizeModal" class="editor-header-btn" title="全屏" aria-label="全屏">
-								<i class="fa fa-expand"></i>
-							</button>
-							<button id="closeEditModal" class="editor-header-btn editor-header-close" title="关闭" aria-label="关闭">
-								<i class="fa fa-times"></i>
-							</button>
-						</div>
-					</div>
-
-					<div id="editStatus" class="edit-status"></div>
-
-					<div class="editor-container">
-						<div id="editorSearchPanel" class="hidden">
-							<i class="fa fa-search editor-search-icon"></i>
-							<input type="text" id="editorSearchInput" placeholder="在文件中查找..." autocomplete="off" spellcheck="false">
-							<span id="editorSearchMatchCount">0 / 0</span>
-							<button id="editorSearchPrevBtn" title="上一个" aria-label="上一个"><i class="fa fa-chevron-up"></i></button>
-							<button id="editorSearchNextBtn" title="下一个" aria-label="下一个"><i class="fa fa-chevron-down"></i></button>
-							<button id="editorSearchCloseBtn" title="关闭查找" aria-label="关闭查找"><i class="fa fa-times"></i></button>
-						</div>
-
-						<div id="editorOverlay">
-							<div class="spinner-container">
-								<i class="fa fa-spinner fa-spin"></i>
-							</div>
-						</div>
-						<textarea id="fileContent"></textarea>
-					</div>
-
-					<div class="editor-statusbar">
-						<div class="editor-statusbar-left">
-							<span id="editorModifiedBadge" class="editor-badge editor-badge-modified hidden"><i class="fa fa-circle"></i>未保存</span>
-							<span id="editorReadonlyBadge" class="editor-badge editor-badge-readonly hidden"><i class="fa fa-lock"></i>只读</span>
-						</div>
-						<div class="editor-statusbar-right">
-							<span id="editorLineCol">Ln 1, Col 1</span>
-						</div>
-					</div>
-
-					<div class="modal-footer editor-footer">
-						<button id="selectAllEditorBtn" title="全选内容">
-							<i class="fa-solid fa-check-double"></i>
-							<span>全选</span>
-						</button>
-						<button id="revertEditBtn" title="撤销修改" disabled>
-							<i class="fa fa-undo"></i>
-							<span>撤销</span>
-						</button>
-						<button id="searchInFileBtn" title="查找内容 (Ctrl+F)">
-							<i class="fa fa-search"></i>
-							<span>查找</span>
-							<kbd class="editor-kbd">Ctrl+F</kbd>
-						</button>
-						<button id="cancelEdit" title="取消 (Esc)">
-							<i class="fa fa-times"></i>
-							<span>取消</span>
-							<kbd class="editor-kbd">Esc</kbd>
-						</button>
-						<button id="saveEdit" title="保存 (Ctrl+S)" disabled>
-							<i class="fa-solid fa-check"></i>
-							<span>保存</span>
-							<kbd class="editor-kbd">Ctrl+S</kbd>
-						</button>
-					</div>
-				</div>
-			</div>
-
 			<div id="contextMenu" class="hidden">
 				<div id="contextMenuItems">
 				</div>
@@ -534,7 +456,16 @@
 
         <div class="proxy-prefix-section">
             <p class="proxy-prefix-label">代理前缀（用于加速 GitHub 下载与访问）</p>
-            <input id="proxyPrefixInput" type="url" placeholder="https://gh-proxy.org/" autocomplete="off">
+            <input id="proxyPrefixInput" type="url" placeholder="https://down.ksx.qzz.io/" autocomplete="off">
+            <p class="proxy-prefix-hint">选择你需要的代理：</p>
+            <div class="proxy-preset-buttons">
+                <button type="button" class="btn proxy-preset-btn" data-proxy="https://down.ksx.qzz.io/">down.ksx.qzz.io</button>
+                <button type="button" class="btn proxy-preset-btn" data-proxy="https://gh-proxy.org/">gh-proxy.org</button>
+            </div>
+            <p class="proxy-prefix-note">
+                <b>down.ksx.qzz.io（推荐）：</b>支持文本/代码文件强制下载，不触发预览。<br>
+                <b>gh-proxy.org：</b>稳定快速，但文本文件下载会直接进入预览，适合加速图片与二进制文件。
+            </p>
         </div>
 
         <div class="proxy-footer-actions">
@@ -589,8 +520,6 @@
 </div>
 
     <input type="file" id="avatarUploadInput" class="hidden" accept="image/*">
-
-    <div id="editorScaleHint" class="hidden">双指缩放来调整大小</div>
 
 <div id="accountManagerModal" class="modal-overlay hidden">
     <div class="modal-form-container">
@@ -865,7 +794,7 @@
                     <br>- <b>批量删除：</b> 一次性删除多个文件/文件夹。
                     <br>- <b>批量下载：</b> 将选中的多个文件打包成一个 ZIP 下载。
                 </li>
-                <li><b>代理加速：</b> 在代理设置中配置代理前缀（默认 https://gh-proxy.org/），可加速图片加载与文件下载，并支持复制代理链接分享。</li>
+                <li><b>代理加速：</b> 在代理设置中配置代理前缀（默认 https://down.ksx.qzz.io/），可加速图片加载与文件下载，并支持复制代理链接分享。面板内提供 down.ksx.qzz.io 与 gh-proxy.org 快捷选择。</li>
                 <li><b>多账号管理：</b> 登录页或侧边栏可添加多个 Token，一键无缝切换账号。</li>
             </ul>
 
@@ -1116,29 +1045,6 @@ function removeFromStack(fn) {
     }
 }
 
-const NON_EDITABLE_EXTS = [
-    'zip', 'rar', '7z', 'tar', 'gz', 'iso', 'bin',
-    'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
-    'exe', 'dll', 'so', 'dmg', 'app', 'apk',
-    'woff', 'woff2', 'ttf', 'otf',
-    'db', 'sqlite', 'mdb'
-];
-
-const UpdatedFilesManager = {
-    getKey(path) {
-        return `smart_sha_${state.currentRepo}_${state.currentBranch}_${path}`;
-    },
-    get(path) {
-        return localStorage.getItem(this.getKey(path));
-    },
-    set(path, sha) {
-        localStorage.setItem(this.getKey(path), sha);
-    },
-    remove(path) {
-        localStorage.removeItem(this.getKey(path));
-    }
-};
-
 const ConsistencyManager = {
     DURATION: 60000,
     buffer: [],
@@ -1155,13 +1061,19 @@ const ConsistencyManager = {
 
         const targetPath = action.file ? action.file.path : (action.path || action.oldPath);
         if (targetPath) {
+            const repo = state.currentRepo;
             this.buffer = this.buffer.filter(item => {
                 const itemPath = item.file ? item.file.path : (item.path || item.oldPath);
-                return itemPath !== targetPath;
+                return item.repo !== repo || itemPath !== targetPath;
             });
         }
 
-        this.buffer.push({ ...action, timestamp: Date.now() });
+        this.buffer.push({
+            ...action,
+            repo: state.currentRepo,
+            branch: state.currentBranch,
+            timestamp: Date.now()
+        });
         this.save();
     },
 
@@ -1179,7 +1091,7 @@ const ConsistencyManager = {
     load() {
         try {
             const saved = JSON.parse(localStorage.getItem('consistency_buffer') || '[]');
-            this.buffer = Array.isArray(saved) ? saved : [];
+            this.buffer = Array.isArray(saved) ? saved.filter(item => item && item.repo) : [];
         } catch (e) {
             this.buffer = [];
         }
@@ -1193,8 +1105,12 @@ const ConsistencyManager = {
 
         let result = [...(fileList || [])];
         const currentPath = state.currentPath || '';
+        const repo = state.currentRepo;
+        const branch = state.currentBranch;
 
         this.buffer.forEach(action => {
+
+            if (action.repo !== repo || action.branch !== branch) return;
 
             if (action.type === 'delete') {
                 result = result.filter(f => f.path !== action.path && !f.path.startsWith(action.path + '/'));
@@ -1220,6 +1136,31 @@ const ConsistencyManager = {
         });
 
         return result;
+    },
+
+    reconcile(serverFiles) {
+        this.load();
+        this.clean();
+
+        if (this.buffer.length === 0) return;
+
+        const repo = state.currentRepo;
+        const branch = state.currentBranch;
+        const serverPaths = new Set((serverFiles || []).map(f => f.path));
+
+        const before = this.buffer.length;
+        this.buffer = this.buffer.filter(action => {
+            if (action.repo !== repo || action.branch !== branch) return true;
+
+            if (action.type === 'add' || action.type === 'rename') {
+                const targetPath = action.type === 'add' ? action.file.path : action.newFile.path;
+                if (serverPaths.has(targetPath)) return false;
+            }
+
+            return true;
+        });
+
+        if (this.buffer.length !== before) this.save();
     }
 };
 
@@ -1501,23 +1442,20 @@ const state = {
     currentRelease: null,
     viewingReleasesForRepo: null,
 
-    editingFile: null,
-    fileSha: '',
     publishManagerActiveTab: 'official',
     configuringDomainRepoFullName: null,
 
     publicSearchPage: 1,
     publicSearchTotalResults: 0,
-    publicSearchPerPage: 20,
+    publicSearchPerPage: 100,
 
     repoListScrollPosition: 0,
     publicSearchCache: new Map(),
 
     myRepos: [],
 
-    originalContent: '',
     proxyGlobalEnable: JSON.parse(localStorage.getItem('proxy_global_enable') || 'true'),
-    proxyPrefix: localStorage.getItem('proxy_prefix') || 'https://gh-proxy.org/',
+    proxyPrefix: localStorage.getItem('proxy_prefix') || 'https://down.ksx.qzz.io/',
     user: null,
     fileCache: new Map(),
     viewMode: localStorage.getItem('view_mode') || 'grid',
@@ -1536,11 +1474,6 @@ const state = {
     shouldAnimateList: true,
     currentView: 'own_repos',
     viewingOwner: null,
-    editorSearchState: {
-    query: '',
-    matches: [],
-    currentIndex: -1
-},
 
     isSearchResultsView: false,
     isLocalSearchResultsView: false,
@@ -1558,8 +1491,6 @@ const state = {
     }
 };
 
-const recentlySavedCache = new Map();
-
 initializeActiveToken();
 const CONTEXT_MENU_DEFINITIONS = {
     repo: [
@@ -1569,7 +1500,7 @@ const CONTEXT_MENU_DEFINITIONS = {
         { action: 'viewUserRepos', icon: 'fa-solid fa-user-group', text: '所有仓库' },
         { action: 'renameRepo', icon: 'fa-pencil', text: '仓库设置' },
         { action: 'createBranch', icon: 'fa-code-fork', text: '分支管理' },
-        { action: 'manageReleases', icon: 'fa-tags', text: '版本管理' },
+        { action: 'manageReleases', icon: 'fa-tags', text: 'Releases' },
         { action: 'downloadRepoDirect', icon: 'fa-regular fa-circle-down', text: '代理下载' },
         { action: 'copyMainSiteLink', icon: 'fa-link', text: '主站链接' },
         { action: 'copyProjectSiteLink', icon: 'fa-link', text: '网站链接' },
@@ -1589,7 +1520,6 @@ const CONTEXT_MENU_DEFINITIONS = {
 
     file: [
         { action: 'goToDirectory', icon: 'fa-regular fa-folder-open', text: '进入目录' },
-        { action: 'edit', icon: 'fa-edit', text: '编辑' },
         { action: 'rename', icon: 'fa-pencil', text: '重命名' },
         { action: 'download', icon: 'fa-download', text: '代理下载' },
         { action: 'copyPagesLink', icon: 'fa-link', text: '网站链接' },
@@ -1636,18 +1566,6 @@ main: document.querySelector('main'),
     toastMessage: document.getElementById('toastMessage'),
     uploadPanel: document.getElementById('uploadPanel'),
     uploadItems: document.getElementById('uploadItems'),
-    editModal: document.getElementById('editModal'),
-    editFileName: document.getElementById('editFileName'),
-    editFilePath: document.getElementById('editFilePath'),
-    editorLineCol: document.getElementById('editorLineCol'),
-    editorModifiedBadge: document.getElementById('editorModifiedBadge'),
-    editorReadonlyBadge: document.getElementById('editorReadonlyBadge'),
-    fileContent: document.getElementById('fileContent'),
-    closeEditModal: document.getElementById('closeEditModal'),
-    cancelEdit: document.getElementById('cancelEdit'),
-    saveEdit: document.getElementById('saveEdit'),
-    editStatus: document.getElementById('editStatus'),
-    editorOverlay: document.getElementById('editorOverlay'),
     setAsSiteModal: document.getElementById('setAsSiteModal'),
 setAsSiteCloseBtn: document.getElementById('setAsSiteCloseBtn'),
 setAsSiteCancelBtn: document.getElementById('setAsSiteCancelBtn'),
@@ -1750,15 +1668,6 @@ menuUsageGuide: document.getElementById('menuUsageGuide'),
     contextMenuSettingsCloseBtn: document.getElementById('contextMenuSettingsCloseBtn'),
     contextMenuSettingsContent: document.getElementById('contextMenuSettingsContent'),
      currentRepo: document.getElementById('currentRepo'),
-     revertEditBtn: document.getElementById('revertEditBtn'),
-    editorScaleHint: document.getElementById('editorScaleHint'),
-    searchInFileBtn: document.getElementById('searchInFileBtn'),
-editorSearchPanel: document.getElementById('editorSearchPanel'),
-editorSearchInput: document.getElementById('editorSearchInput'),
-editorSearchMatchCount: document.getElementById('editorSearchMatchCount'),
-editorSearchPrevBtn: document.getElementById('editorSearchPrevBtn'),
-editorSearchNextBtn: document.getElementById('editorSearchNextBtn'),
-editorSearchCloseBtn: document.getElementById('editorSearchCloseBtn'),
     manageAccountsBtn: document.getElementById('manageAccountsBtn'),
     menuSwitchAccount: document.getElementById('menuSwitchAccount'),
     accountManagerModal: document.getElementById('accountManagerModal'),
@@ -2673,35 +2582,6 @@ function showApp() {
     document.body.classList.remove('app-visible-loading');
 }
 
-function showEditorScaleHintOnce() {
-    const hintKey = 'editor_scale_hint_shown';
-    try {
-        if (localStorage.getItem(hintKey)) {
-            return;
-        }
-        const hintElement = el.editorScaleHint;
-        if (!hintElement) {
-            return;
-        }
-
-        hintElement.classList.remove('hidden');
-
-        setTimeout(() => {
-            hintElement.style.transition = 'opacity 0.5s ease-out';
-            hintElement.style.opacity = '0';
-            setTimeout(() => {
-                hintElement.classList.add('hidden');
-                hintElement.style.opacity = '';
-                hintElement.style.transition = '';
-            }, 500);
-        }, 3000);
-
-        localStorage.setItem(hintKey, 'true');
-    } catch (e) {
-        console.error("Could not show editor scale hint:", e);
-    }
-}
-
 let toastTimer = null;
 
 function showToast(message, type = 'info', duration = 2500) {
@@ -3142,7 +3022,10 @@ function renderRepoList(reposSource) {
         const isNotOwnRepo = !isOwnRepo;
 
         if (isNotOwnRepo || state.currentView === 'starred_repos') {
-            releasesButtonHTML = `<button class="star-text-btn js-view-releases-btn" title="查看版本" data-repo-fullname="${escapeHtml(repo.full_name)}">版本</button>`;
+            const isSearchView = state.currentView === 'public_search_results';
+            releasesButtonHTML = isSearchView
+                ? `<button class="star-text-btn releases-btn js-view-releases-btn" title="查看 Releases" data-repo-fullname="${escapeHtml(repo.full_name)}">Releases</button>`
+                : `<button class="star-text-btn releases-btn js-view-releases-btn" title="查看 Releases" data-repo-fullname="${escapeHtml(repo.full_name)}"><i class="fa fa-tags"></i> Releases</button>`;
             const isStarred = starredRepoFullNames.has(repo.full_name);
             const buttonText = isStarred ? '取消关注' : '关注';
             const buttonClass = isStarred ? 'star-text-btn starred' : 'star-text-btn';
@@ -3331,7 +3214,8 @@ async function fetchAndDisplayReleases(repoFullName, updateHistory = true) {
 
     try {
         const res = await fetch(`https://api.github.com/repos/${repoFullName}/releases`, {
-            headers: { Authorization: `token ${state.token}` }
+            headers: { Authorization: `token ${state.token}` },
+            cache: 'no-store'
         });
         if (!res.ok) throw new Error(`获取版本列表失败 (HTTP ${res.status})`);
 
@@ -3454,9 +3338,25 @@ async function createRelease() {
             throw new Error(err.message || '发布失败');
         }
 
+        const createdRelease = await res.json().catch(() => null);
         hideReleaseManagerModal();
+        showToast('发布成功', 'success');
+
+        if (createdRelease) {
+            if (!Array.isArray(state.releases)) state.releases = [];
+            state.releases = [createdRelease, ...state.releases.filter(r => r.id !== createdRelease.id)];
+            if (state.currentView === 'releases_list' || state.currentView === 'assets_list') {
+                if (state.viewingReleasesForRepo === repoFullName) {
+                    renderReleasesList(state.releases);
+                }
+            }
+        }
+
         if (state.currentView === 'releases_list' && state.viewingReleasesForRepo === repoFullName) {
-            fetchAndDisplayReleases(repoFullName, false);
+            await fetchAndDisplayReleases(repoFullName, false);
+        } else if (state.viewingReleasesForRepo === repoFullName) {
+            state.currentView = 'releases_list';
+            await fetchAndDisplayReleases(repoFullName, false);
         }
 
     } catch (e) {
@@ -3577,7 +3477,8 @@ async function refreshAssetsList() {
     showToast('正在刷新版本信息...');
     try {
         const res = await fetch(`https://api.github.com/repos/${state.viewingReleasesForRepo}/releases`, {
-            headers: { Authorization: `token ${state.token}` }
+            headers: { Authorization: `token ${state.token}` },
+            cache: 'no-store'
         });
         if (!res.ok) throw new Error('刷新失败');
         const releases = await res.json();
@@ -4057,10 +3958,6 @@ async function fetchFiles(forceRefresh = false, showLoader = true) {
     const pathForFetch = state.currentPath;
     let hasRenderedCache = false;
 
-    if (forceRefresh && typeof recentlySavedCache !== 'undefined') {
-        recentlySavedCache.clear();
-    }
-
     if (!forceRefresh) {
         const cacheKey = `${state.currentRepo}:${state.currentBranch}:${pathForFetch}`;
 
@@ -4208,6 +4105,8 @@ async function fetchFilesFromNetwork(isInitialLoad = false, pathForFetch, isSile
 
         let fetchedFiles = Array.isArray(rawData) ? rawData : [];
 
+        ConsistencyManager.reconcile(fetchedFiles);
+
         fetchedFiles = ConsistencyManager.apply(fetchedFiles);
 
         fetchedFiles = fetchedFiles.map(file => {
@@ -4228,12 +4127,6 @@ async function fetchFilesFromNetwork(isInitialLoad = false, pathForFetch, isSile
 
         if (pathForFetch === state.currentPath) {
             state.files = fetchedFiles;
-            if (typeof recentlySavedCache !== 'undefined') {
-                for (const file of fetchedFiles) {
-                    const cached = recentlySavedCache.get(file.path);
-                    if (cached && cached.sha !== file.sha) recentlySavedCache.delete(file.path);
-                }
-            }
             applyFiltersAndSort();
             renderFileList();
             preloadSubdirectories(fetchedFiles);
@@ -4633,602 +4526,6 @@ function showSortDropdown() {
     uiStateStack.push(hideSortDropdown);
 }
 
-function showEditModal() {
-    el.editModal.classList.remove('hidden');
-    el.editModal.classList.add('flex');
-    el.editorOverlay.classList.add('show');
-    setTimeout(adjustEditorDimensions, 10);
-    uiStateStack.push(hideEditModal);
-}
-
-function hideEditModal() {
-    toggleEditorSearch(false);
-    el.editModal.classList.add('hidden');
-    el.editModal.classList.remove('flex');
-    state.editingFile = state.fileSha = state.originalContent = '';
-    el.saveEdit.classList.remove('modified');
-    if (el.editorModifiedBadge) el.editorModifiedBadge.classList.add('hidden');
-    if (el.editorReadonlyBadge) el.editorReadonlyBadge.classList.add('hidden');
-    if (el.editorLineCol) el.editorLineCol.textContent = 'Ln 1, Col 1';
-    removeFromStack(hideEditModal);
-}
-
-function showEditStatus(text, type) {
-    if (!el.editStatus) return;
-    el.editStatus.textContent = text;
-    el.editStatus.className = `edit-status ${type || ''}`;
-}
-
-function adjustEditorDimensions() {
-    const editModal = document.getElementById('editModal');
-    if (!editModal || editModal.classList.contains('hidden')) return;
-
-    const viewportHeight = window.innerHeight;
-    const screenHeight = window.screen.height;
-    const isKeyboardOpen = viewportHeight < (screenHeight * 0.75);
-    const isMaximized = editModal.classList.contains('maximized');
-    const modalContent = editModal.querySelector('.modal-content');
-
-    if (isMaximized) {
-        modalContent.style.height = '100dvh';
-        modalContent.style.width = '100vw';
-        modalContent.style.borderRadius = '0';
-        modalContent.style.maxHeight = 'none';
-        editModal.style.padding = '0';
-        editModal.style.alignItems = 'center';
-    } else {
-        if (isKeyboardOpen) {
-            modalContent.style.height = `${viewportHeight}px`;
-            modalContent.style.maxHeight = 'none';
-            modalContent.style.width = '100%';
-            modalContent.style.maxWidth = '100%';
-            modalContent.style.borderRadius = '0';
-            editModal.style.padding = '0';
-            editModal.style.alignItems = 'flex-start';
-        } else {
-            const targetTotalHeight = viewportHeight * 0.7;
-            modalContent.style.height = `${targetTotalHeight}px`;
-            modalContent.style.maxHeight = '';
-            modalContent.style.width = '';
-            modalContent.style.maxWidth = '';
-            modalContent.style.borderRadius = '';
-            editModal.style.padding = '';
-            editModal.style.alignItems = 'center';
-        }
-    }
-
-    if (window.aceEditorInstance) {
-        window.aceEditorInstance.resize(true);
-    }
-}
-
-let aceEditorInstance = null;
-
-async function loadAceLibrary() {
-    if (window.ace) return;
-    return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js';
-        script.onload = resolve;
-        script.onerror = reject;
-        document.body.appendChild(script);
-    });
-}
-
-async function initAceEditor() {
-    if (typeof aceEditorInstance !== 'undefined' && aceEditorInstance) {
-        return aceEditorInstance;
-    }
-    await loadAceLibrary();
-    const textarea = document.getElementById('fileContent');
-    const parent = document.querySelector('.editor-container');
-    if (textarea) textarea.style.display = 'none';
-    let editorDiv = document.getElementById('aceEditorContainer');
-    if (!editorDiv) {
-        editorDiv = document.createElement('div');
-        editorDiv.id = 'aceEditorContainer';
-        if (parent) parent.appendChild(editorDiv);
-    }
-    const editor = ace.edit('aceEditorContainer');
-    aceEditorInstance = editor;
-    try {
-        window.aceEditorInstance = editor;
-    } catch (e) {}
-    editor.setTheme('ace/theme/twilight');
-    editor.session.setMode('ace/mode/text');
-    editor.session.setUseWorker(false);
-    editor.setOptions({
-        fontFamily: "'Menlo', 'Monaco', 'Consolas', 'Courier New', monospace",
-        wrap: true,
-        indentedSoftWrap: false,
-        showPrintMargin: false,
-        showGutter: true,
-        highlightActiveLine: true,
-        tabSize: 4,
-        useSoftTabs: true,
-        readOnly: false,
-        scrollPastEnd: 0.5,
-        autoScrollEditorIntoView: true,
-        fixedWidthGutter: false,
-        showFoldWidgets: false,
-        displayIndentGuides: true,
-        animatedScroll: false,
-        vScrollBarAlwaysVisible: false,
-        hScrollBarAlwaysVisible: false,
-        dragEnabled: false
-    });
-    editor.renderer.setPadding(15);
-    editor.renderer.setScrollMargin(15, 15, 0, 0);
-    const STORAGE_KEY = 'ace_font_size';
-    let currentFontSize = parseInt(localStorage.getItem(STORAGE_KEY) || '13');
-    editor.setOption('fontSize', currentFontSize + 'px');
-    let initialDistance = 0;
-    let startFontSize = 0;
-    const container = document.getElementById('aceEditorContainer');
-    container.addEventListener('touchstart', function(e) {
-        if (e.touches.length === 2) {
-            e.preventDefault();
-            initialDistance = Math.hypot(
-                e.touches[0].pageX - e.touches[1].pageX,
-                e.touches[0].pageY - e.touches[1].pageY
-            );
-            startFontSize = parseInt(editor.getOption('fontSize')) || 13;
-        }
-    }, {
-        passive: false
-    });
-    container.addEventListener('touchmove', function(e) {
-        if (e.touches.length === 2 && initialDistance > 0) {
-            e.preventDefault();
-            const currentDistance = Math.hypot(
-                e.touches[0].pageX - e.touches[1].pageX,
-                e.touches[0].pageY - e.touches[1].pageY
-            );
-
-const sensitivity = 0.9;
-const rawScale = currentDistance / initialDistance;
-const scale = 1 + (rawScale - 1) * sensitivity;
-            const newSize = Math.max(1, Math.min(20, Math.round(startFontSize * scale)));
-            const currentSize = parseInt(editor.getOption('fontSize'));
-            if (newSize !== currentSize) {
-                const firstRow = editor.renderer.getFirstVisibleRow();
-                const lastRow = editor.renderer.getLastVisibleRow();
-                const centerRow = (firstRow + lastRow) / 2;
-                editor.setOption('fontSize', newSize + 'px');
-                editor.renderer.updateFull();
-                const newLineHeight = editor.renderer.lineHeight;
-                const editorHeight = editor.renderer.getContainerElement().clientHeight;
-                const newScrollTop = (centerRow * newLineHeight) - (editorHeight / 2);
-                editor.session.setScrollTop(newScrollTop);
-                if (typeof showEditorToast === 'function') {
-                    showEditorToast(`字体大小: ${newSize}px`);
-                }
-                if (window.fontSaveTimer) clearTimeout(window.fontSaveTimer);
-                window.fontSaveTimer = setTimeout(() => {
-                    localStorage.setItem(STORAGE_KEY, newSize);
-                }, 500);
-            }
-        }
-    }, {
-        passive: false
-    });
-    try {
-        editor.selection.on('changeCursor', () => {
-            if (typeof updateEditorLineCol === 'function') updateEditorLineCol();
-        });
-        editor.session.on('change', () => {
-            if (typeof updateEditorLineCol === 'function') updateEditorLineCol();
-        });
-    } catch (e) {}
-    setTimeout(() => {
-        editor.resize(true);
-        editor.renderer.updateFull();
-    }, 50);
-    return editor;
-}
-
-function showEditorToast(text) {
-    let toast = document.getElementById('editor-float-toast');
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'editor-float-toast';
-        toast.style.cssText = 'position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:rgba(0,0,0,0.7); color:#fff; padding:8px 16px; border-radius:20px; font-size:14px; pointer-events:none; z-index:9999; transition:opacity 0.3s;';
-        document.body.appendChild(toast);
-    }
-    toast.textContent = text;
-    toast.style.opacity = '1';
-    clearTimeout(window.editorToastTimer);
-    window.editorToastTimer = setTimeout(() => {
-        toast.style.opacity = '0';
-    }, 1000);
-}
-
-function getAceMode(filename) {
-    const ext = filename.split('.').pop().toLowerCase();
-    const modeMap = {
-        js: 'javascript', json: 'json', html: 'html', css: 'css',
-        py: 'python', java: 'java', c: 'c_cpp', cpp: 'c_cpp',
-        cs: 'csharp', php: 'php', go: 'golang', rs: 'rust',
-        md: 'markdown', xml: 'xml', yaml: 'yaml', sql: 'sql',
-        sh: 'sh', txt: 'text'
-    };
-    return `ace/mode/${modeMap[ext] || 'text'}`;
-}
-
-function updateEditorTheme() {
-    if (!aceEditorInstance) return;
-    const isLight = document.body.classList.contains('light-theme');
-    aceEditorInstance.setTheme(isLight ? 'ace/theme/chrome' : 'ace/theme/twilight');
-}
-
-async function editFile(fileInput) {
-
-    let currentFile = fileInput;
-    if (state.files && state.files.length > 0) {
-        const found = state.files.find(f => f.path === fileInput.path);
-        if (found) currentFile = found;
-    }
-
-    state.editingFile = currentFile;
-    el.editFileName.textContent = currentFile.name;
-    if (el.editFilePath) el.editFilePath.textContent = currentFile.path || '';
-    showEditStatus('', '');
-    showEditModal();
-
-    el.saveEdit.classList.remove('hidden');
-    el.revertEditBtn.classList.remove('hidden');
-    el.saveEdit.disabled = false;
-    el.revertEditBtn.disabled = true;
-    el.saveEdit.style.opacity = '0.6';
-    el.editorOverlay.classList.add('show');
-    if (el.editorModifiedBadge) el.editorModifiedBadge.classList.add('hidden');
-    if (el.editorReadonlyBadge) el.editorReadonlyBadge.classList.add('hidden');
-    if (el.editorLineCol) el.editorLineCol.textContent = 'Ln 1, Col 1';
-
-    try {
-        await initAceEditor();
-        adjustEditorDimensions();
-        updateEditorTheme();
-
-        const isOwner = state.user && state.viewingOwner && (state.viewingOwner.toLowerCase() === state.user.login.toLowerCase());
-
-        aceEditorInstance.setReadOnly(true);
-        aceEditorInstance.setValue('加载中...', -1);
-
-        let content = null;
-        let finalSha = currentFile.sha;
-
-        const recentData = recentlySavedCache.get(currentFile.path);
-        if (recentData && (Date.now() - recentData.timestamp < 60000)) {
-            content = recentData.content;
-            finalSha = recentData.sha;
-        }
-
-        if (content === null && finalSha && window.SimpleDB) {
-            try {
-                const dbContent = await window.SimpleDB.get(`file_content_${finalSha}`);
-                if (typeof dbContent === 'string' && dbContent.length > 0) {
-                    content = dbContent;
-                }
-            } catch (e) {}
-        }
-
-        if (content === null) {
-            const [owner, repo] = state.currentRepo.split('/');
-            const branch = state.currentBranch || 'main';
-            const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${currentFile.path}`;
-            const fetchUrl = typeof getProxiedUrl === 'function' ? getProxiedUrl(rawUrl) : rawUrl;
-
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-                const res = await fetch(fetchUrl + `?t=${Date.now()}`, {
-                    cache: 'no-store',
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
-
-                if (res.ok) {
-                    content = await res.text();
-                } else {
-                    throw new Error(`HTTP ${res.status}`);
-                }
-            } catch (err) {
-
-                const apiRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${currentFile.path}?ref=${branch}`, {
-                    headers: { 'Authorization': `token ${state.token}` }
-                });
-                if (!apiRes.ok) throw new Error('网络加载失败');
-                const apiData = await apiRes.json();
-                content = decodeURIComponent(escape(atob(apiData.content)));
-                finalSha = apiData.sha;
-            }
-        }
-
-        state.originalContent = content || '';
-        state.fileSha = finalSha;
-
-        const mode = getAceMode(currentFile.name);
-        aceEditorInstance.session.setMode(mode);
-        aceEditorInstance.setReadOnly(!isOwner);
-        aceEditorInstance.setValue(state.originalContent, -1);
-        aceEditorInstance.session.getUndoManager().reset();
-
-        if (el.editorReadonlyBadge) el.editorReadonlyBadge.classList.toggle('hidden', isOwner);
-
-        aceEditorInstance.off('change');
-        aceEditorInstance.on('change', checkContentChanges);
-        checkContentChanges();
-        updateEditorLineCol();
-
-        performSmartSilentUpdate(currentFile, state.originalContent);
-
-    } catch (e) {
-        aceEditorInstance.setValue(`加载失败: ${e.message}`, -1);
-        showEditStatus('出错', 'error');
-    } finally {
-        el.editorOverlay.classList.remove('show');
-    }
-}
-
-async function performSmartSilentUpdate(file, currentEditorContent) {
-    try {
-        const [owner, repo] = state.currentRepo.split('/');
-        const timestamp = Date.now();
-
-        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}?ref=${state.currentBranch}&t=${timestamp}`;
-
-        const res = await fetch(url, {
-            headers: {
-                'Authorization': `token ${state.token}`,
-                'Cache-Control': 'no-cache'
-            }
-        });
-
-        if (!res.ok) return;
-
-        const data = await res.json();
-        const cloudContent = decodeURIComponent(escape(atob(data.content)));
-
-        if (cloudContent === currentEditorContent) {
-
-            if (data.sha !== state.fileSha) {
-                state.fileSha = data.sha;
-
-                UpdatedFilesManager.set(file.path, data.sha);
-            }
-            return;
-        }
-
-        if (aceEditorInstance) {
-            const currentVal = aceEditorInstance.getValue();
-
-            if (currentVal === state.originalContent) {
-                const cursor = aceEditorInstance.getCursorPosition();
-                const scrollY = aceEditorInstance.session.getScrollTop();
-
-                aceEditorInstance.setValue(cloudContent, -1);
-                aceEditorInstance.moveCursorToPosition(cursor);
-                aceEditorInstance.session.setScrollTop(scrollY);
-
-                state.originalContent = cloudContent;
-                state.fileSha = data.sha;
-
-                recentlySavedCache.set(file.path, {
-                    content: cloudContent,
-                    timestamp: Date.now(),
-                    sha: data.sha
-                });
-
-                const cacheKey = `file_content_${data.sha}`;
-                if (window.SimpleDB) await SimpleDB.set(cacheKey, cloudContent);
-
-            } else {
-
-                showToast('云端有新版本，因您已编辑而未自动覆盖', 'warning');
-            }
-        }
-    } catch (e) {
-        console.warn('Smart update failed', e);
-    }
-}
-
-async function saveCurrentFileListToCache() {
-    if (!state.currentRepo || !state.currentBranch) return;
-    const cacheKey = `${state.currentRepo}:${state.currentBranch}:${state.currentPath}`;
-    try {
-        const existing = await SimpleDB.get(cacheKey);
-        const record = {
-            data: state.files,
-            etag: existing ? existing.etag : null,
-            timestamp: Date.now()
-        };
-        await SimpleDB.set(cacheKey, record);
-    } catch (e) {}
-}
-
-async function backgroundSilentUpdate(file, currentDisplayedContent) {
-    try {
-        const [owner, repo] = state.currentRepo.split('/');
-        const timestamp = Date.now();
-
-        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}?ref=${state.currentBranch}&t=${timestamp}`;
-
-        const res = await fetch(url, {
-            headers: {
-                'Authorization': `token ${state.token}`
-            }
-        });
-
-        if (res.status === 304) {
-            return;
-        }
-
-        if (res.ok) {
-            const data = await res.json();
-
-            if (data.sha !== state.fileSha) {
-
-                const cloudContent = decodeURIComponent(escape(atob(data.content)));
-
-                if (cloudContent !== currentDisplayedContent) {
-
-                    showToast('云端有新版本，下次打开将自动应用', 'info');
-
-                    if (state.files && state.files.length > 0) {
-                        const fileIndex = state.files.findIndex(f => f.path === file.path);
-                        if (fileIndex !== -1) {
-                            state.files[fileIndex].sha = data.sha;
-                            state.files[fileIndex].size = data.size;
-                        }
-                    }
-
-                    if (typeof recentlySavedCache !== 'undefined') {
-                        recentlySavedCache.delete(file.path);
-                    }
-
-                    const newCacheKey = `file_content_${data.sha}`;
-                    if (window.SimpleDB) {
-                        await SimpleDB.set(newCacheKey, cloudContent);
-                    }
-                }
-            }
-        }
-    } catch (e) {
-        console.warn('Silent update check failed', e);
-    }
-}
-
-function checkContentChanges() {
-    const currentContent = aceEditorInstance ? aceEditorInstance.getValue() : el.fileContent.value;
-    if (typeof currentContent !== 'string') return;
-    const isModified = currentContent !== state.originalContent;
-    el.saveEdit.classList.toggle('modified', isModified);
-    el.saveEdit.disabled = !isModified;
-    el.revertEditBtn.disabled = !isModified;
-    el.saveEdit.style.opacity = isModified ? '1' : '0.6';
-    if (el.editorModifiedBadge) el.editorModifiedBadge.classList.toggle('hidden', !isModified);
-    updateEditorLineCol();
-}
-
-function updateEditorLineCol() {
-    const lineColEl = document.getElementById('editorLineCol');
-    if (!lineColEl) return;
-    if (aceEditorInstance) {
-        const pos = aceEditorInstance.getCursorPosition();
-        lineColEl.textContent = `Ln ${pos.row + 1}, Col ${pos.column + 1}`;
-    } else {
-        const ta = document.getElementById('fileContent');
-        if (ta) {
-            const value = ta.value.substring(0, ta.selectionStart);
-            const lines = value.split('\n');
-            lineColEl.textContent = `Ln ${lines.length}, Col ${lines[lines.length - 1].length + 1}`;
-        }
-    }
-}
-
-async function saveEditedFile() {
-    if (!state.editingFile || !aceEditorInstance) {
-        showToast('编辑器未初始化', 'error');
-        return;
-    }
-    const currentContent = aceEditorInstance.getValue();
-    const saveBtn = el.saveEdit;
-
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i><span>保存中</span>';
-
-    try {
-        const [owner, repo] = state.currentRepo.split('/');
-        const encodedContent = btoa(unescape(encodeURIComponent(currentContent)));
-        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${state.editingFile.path}`;
-
-        let shaToUse = UpdatedFilesManager.get(state.editingFile.path) || state.fileSha || state.editingFile.sha;
-
-        const performSave = async (sha) => {
-            const body = {
-                message: `Update ${state.editingFile.name}`,
-                content: encodedContent,
-                sha: sha,
-                branch: state.currentBranch
-            };
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000);
-
-            try {
-                const r = await fetch(url, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${state.token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(body),
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
-                return r;
-            } catch (err) {
-                clearTimeout(timeoutId);
-                throw err;
-            }
-        };
-
-        let res = await performSave(shaToUse);
-
-        if (res.status === 409) {
-            const getRef = await fetch(url + `?ref=${state.currentBranch}`, {
-                headers: { 'Authorization': `token ${state.token}`, 'Cache-Control': 'no-cache' }
-            });
-            if (getRef.ok) {
-                const latest = await getRef.json();
-                res = await performSave(latest.sha);
-            }
-        }
-
-        if (!res.ok) {
-            const errJson = await res.json().catch(() => ({}));
-            throw new Error(errJson.message || `HTTP ${res.status}`);
-        }
-
-        const result = await res.json();
-        const newSha = result.content.sha;
-        const newSize = result.content.size;
-
-        state.fileSha = newSha;
-        state.originalContent = currentContent;
-        state.editingFile.sha = newSha;
-
-        recentlySavedCache.set(state.editingFile.path, {
-            content: currentContent,
-            timestamp: Date.now(),
-            sha: newSha
-        });
-
-        UpdatedFilesManager.set(state.editingFile.path, newSha);
-
-        if (window.SimpleDB) {
-            await window.SimpleDB.set(`file_content_${newSha}`, currentContent);
-        }
-
-        await updateGlobalCacheState('add', {
-            path: state.editingFile.path,
-            type: 'file',
-            sha: newSha,
-            size: newSize,
-            parentPath: state.currentPath
-        });
-
-        checkContentChanges();
-
-    } catch (e) {
-        showToast('保存失败: ' + e.message, 'error');
-    } finally {
-        saveBtn.disabled = !(aceEditorInstance && aceEditorInstance.getValue() !== state.originalContent);
-        saveBtn.innerHTML = '<i class="fa-solid fa-check"></i><span>保存</span>';
-    }
-}
-
 async function downloadReleaseAsset(asset) {
     showToast(`正在准备下载: ${asset.name}`);
 
@@ -5431,7 +4728,7 @@ function renderContextMenuItems(file) {
         }
 
         const isOwner = currentLogin && owner.toLowerCase() === currentLogin.toLowerCase();
-        if (!isOwner && ['edit', 'rename', 'delete', 'unzip'].includes(item.action)) {
+        if (!isOwner && ['rename', 'delete', 'unzip'].includes(item.action)) {
             return false;
         }
 
@@ -6023,26 +5320,6 @@ async function handleContextMenuAction(action, oldFileObject) {
                 showToast(`复制失败: ${e.message || '应用剪切板权限没给'}`);
                 console.error(e);
             });
-            break;
-        case 'edit':
-            if (state.isSearchResultsView) {
-                showToast('正在获取仓库信息...', 'info');
-                try {
-                    const repoRes = await fetch(`https://api.github.com/repos/${state.currentRepo}`, {
-                        headers: { Authorization: `token ${state.token}` }
-                    });
-                    if (!repoRes.ok) throw new Error('无法获取仓库详情');
-                    const repoData = await repoRes.json();
-
-                    state.currentBranch = repoData.default_branch;
-
-                    editFile(currentFile);
-                } catch (error) {
-                    showToast(`操作失败: ${error.message}`, 'error');
-                }
-            } else {
-                editFile(currentFile);
-            }
             break;
     }
 }
@@ -8643,104 +7920,6 @@ function showCreateRepoModal() {
     uiStateStack.push(hideCreateRepoModal);
 }
 
-function toggleEditorSearch(show) {
-    const { editorSearchPanel, editorSearchInput } = el;
-    if (show) {
-        editorSearchPanel.classList.remove('hidden');
-        editorSearchInput.focus();
-        editorSearchInput.select();
-        performEditorSearch();
-    } else {
-        editorSearchPanel.classList.add('hidden');
-        state.editorSearchState = { query: '', matches: [], currentIndex: -1 };
-        el.editorSearchInput.value = '';
-        updateSearchUI();
-        if (aceEditorInstance) {
-            aceEditorInstance.clearSelection();
-            aceEditorInstance.focus();
-        }
-    }
-}
-
-function performEditorSearch() {
-    const query = el.editorSearchInput.value;
-    if (!aceEditorInstance) return;
-
-    const content = aceEditorInstance.getValue();
-    state.editorSearchState.query = query;
-
-    if (!query) {
-        state.editorSearchState.matches = [];
-        state.editorSearchState.currentIndex = -1;
-    } else {
-        const queryLower = query.toLowerCase();
-        const contentLower = content.toLowerCase();
-        const matches = [];
-        let startIndex = 0;
-        let index;
-        while ((index = contentLower.indexOf(queryLower, startIndex)) > -1) {
-            matches.push(index);
-            startIndex = index + queryLower.length;
-        }
-        state.editorSearchState.matches = matches;
-        state.editorSearchState.currentIndex = matches.length > 0 ? 0 : -1;
-    }
-
-    updateSearchUI();
-    if (state.editorSearchState.currentIndex !== -1) {
-        highlightCurrentMatch();
-    }
-}
-
-function navigateSearchMatches(direction) {
-    const { matches } = state.editorSearchState;
-    const total = matches.length;
-    if (total <= 0) return;
-
-    let newIndex = state.editorSearchState.currentIndex + direction;
-
-    if (newIndex < 0) {
-        newIndex = total - 1;
-    } else if (newIndex >= total) {
-        newIndex = 0;
-    }
-
-    state.editorSearchState.currentIndex = newIndex;
-    updateSearchUI();
-    highlightCurrentMatch();
-}
-
-function highlightCurrentMatch() {
-    const { matches, currentIndex, query } = state.editorSearchState;
-    if (currentIndex === -1 || !aceEditorInstance) return;
-
-    const startCharIndex = matches[currentIndex];
-    const endCharIndex = startCharIndex + query.length;
-
-    const doc = aceEditorInstance.session.getDocument();
-    const startPos = doc.indexToPosition(startCharIndex, 0);
-    const endPos = doc.indexToPosition(endCharIndex, 0);
-
-    const range = new ace.Range(startPos.row, startPos.column, endPos.row, endPos.column);
-
-    aceEditorInstance.selection.setRange(range);
-    aceEditorInstance.centerSelection();
-}
-
-function updateSearchUI() {
-    const { matches, currentIndex } = state.editorSearchState;
-    const total = matches.length;
-
-    if (total > 0) {
-        el.editorSearchMatchCount.textContent = `${currentIndex + 1} / ${total}`;
-    } else {
-        el.editorSearchMatchCount.textContent = '0 / 0';
-    }
-
-    el.editorSearchPrevBtn.disabled = total <= 1;
-    el.editorSearchNextBtn.disabled = total <= 1;
-}
-
 function getErrorMessage(error) {
     const msg = error.message || '';
     if (msg.includes('404')) return '资源不存在 (404)，可能已被删除';
@@ -9923,49 +9102,7 @@ function renderGlobalSearchResults(items) {
                 return;
             }
 
-            if (NON_EDITABLE_EXTS.includes(fileExtension)) {
-                downloadFile(fileObjectForActions);
-                return;
-            }
-
-            state.editingFile = fileObjectForActions;
-            el.editFileName.textContent = `${fileObjectForActions.name}`;
-            if (el.editFilePath) el.editFilePath.textContent = item.path || '';
-            el.fileContent.value = '';
-            showEditStatus('', '');
-            showEditModal();
-            el.saveEdit.classList.add('hidden');
-            if (el.editorModifiedBadge) el.editorModifiedBadge.classList.add('hidden');
-            if (el.editorReadonlyBadge) el.editorReadonlyBadge.classList.add('hidden');
-            try {
-                const repoRes = await fetch(`https://api.github.com/repos/${item.repository.full_name}`, { headers: { Authorization: `token ${state.token}` } });
-                if (!repoRes.ok) throw new Error('无法获取仓库详情');
-                const fullRepoData = await repoRes.json();
-                const branch = fullRepoData.default_branch;
-                const contentRes = await fetch(`https://api.github.com/repos/${item.repository.full_name}/contents/${item.path}?ref=${branch}`, { headers: { Authorization: `token ${state.token}` } });
-                if (!contentRes.ok) throw new Error((await contentRes.json()).message || '加载文件内容失败');
-                const contentData = await contentRes.json();
-                const content = decodeURIComponent(escape(atob(contentData.content)));
-                el.fileContent.value = content;
-                state.originalContent = content;
-                state.fileSha = contentData.sha;
-                state.currentRepo = item.repository.full_name;
-                state.currentBranch = branch;
-                state.viewingOwner = item.repository.owner.login;
-                el.editorOverlay.classList.remove('show');
-                el.fileContent.oninput = checkContentChanges;
-                const isOwner = state.user && state.viewingOwner === state.user.login;
-                el.saveEdit.classList.toggle('hidden', !isOwner);
-                el.revertEditBtn.classList.toggle('hidden', !isOwner);
-                el.fileContent.readOnly = !isOwner;
-                if (el.editorReadonlyBadge) el.editorReadonlyBadge.classList.toggle('hidden', isOwner);
-                checkContentChanges();
-                updateEditorLineCol();
-            } catch (error) {
-                showToast(`打开文件失败: ${error.message}`, 'error');
-                showEditStatus(`错误：${error.message}`, 'error');
-                el.editorOverlay.classList.remove('show');
-            }
+            downloadFile(fileObjectForActions);
         });
 
         itemEl.addEventListener('contextmenu', (e) => {
@@ -10309,12 +9446,12 @@ async function showRepoOverview(repoInput) {
                 const res = await fetch(fetchUrl);
                 if (res.ok) {
                     const content = await res.text();
-                    await LibraryLoader.load(LIBS.MARKED, 'marked');
-if (typeof marked !== 'undefined') {
-    readmeEl.innerHTML = marked.parse(content);
-} else {
-    readmeEl.innerHTML = content.replace(/\n/g, '<br>');
-}
+                    try {
+                        await LibraryLoader.load(LIBS.MARKED, 'marked');
+                        readmeEl.innerHTML = marked.parse(content);
+                    } catch (loadErr) {
+                        readmeEl.innerHTML = content.replace(/\n/g, '<br>');
+                    }
                     const lastSlash = targetPath.lastIndexOf('/');
                     if (lastSlash !== -1) {
                         currentDocDir = targetPath.substring(0, lastSlash);
@@ -10401,9 +9538,13 @@ if (typeof marked !== 'undefined') {
                         const rawReadmeUrl = getProxiedUrl(meta.download_url);
                         const contentRes = await fetch(rawReadmeUrl);
                         if (contentRes.ok) {
-                            const rawMarkdown = await contentRes.text();
-                            if (typeof marked !== 'undefined') readmeHtml = marked.parse(rawMarkdown);
-                            else readmeHtml = rawMarkdown.replace(/\n/g, '<br>');
+                    const rawMarkdown = await contentRes.text();
+                    try {
+                        await LibraryLoader.load(LIBS.MARKED, 'marked');
+                        readmeHtml = marked.parse(rawMarkdown);
+                    } catch (loadErr) {
+                        readmeHtml = rawMarkdown.replace(/\n/g, '<br>');
+                    }
                         } else throw new Error('Proxy fetch failed');
                     } catch (proxyError) {
                         const rawRes = await fetch(meta.url, {
@@ -10413,9 +9554,13 @@ if (typeof marked !== 'undefined') {
                             }
                         });
                         if (rawRes.ok) {
-                            const rawMarkdown = await rawRes.text();
-                            await LibraryLoader.load(LIBS.MARKED, 'marked');
-readmeHtml = marked.parse(rawMarkdown);
+                    const rawMarkdown = await rawRes.text();
+                    try {
+                        await LibraryLoader.load(LIBS.MARKED, 'marked');
+                        readmeHtml = marked.parse(rawMarkdown);
+                    } catch (loadErr) {
+                        readmeHtml = rawMarkdown.replace(/\n/g, '<br>');
+                    }
                         }
                     }
                 } else {
@@ -10624,46 +9769,6 @@ if (el.menuThemeToggle) {
         }
     };
 
-    el.searchInFileBtn.addEventListener('click', () => toggleEditorSearch(true));
-el.editorSearchCloseBtn.addEventListener('click', () => toggleEditorSearch(false));
-
-el.editorSearchInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        if (e.shiftKey) {
-             navigateSearchMatches(-1);
-        } else {
-             navigateSearchMatches(1);
-        }
-    }
-});
-
-el.fileContent.addEventListener('keyup', updateEditorLineCol);
-el.fileContent.addEventListener('click', updateEditorLineCol);
-el.fileContent.addEventListener('select', updateEditorLineCol);
-el.fileContent.addEventListener('input', checkContentChanges);
-
-document.addEventListener('keydown', (e) => {
-    const modal = document.getElementById('editModal');
-    if (!modal || modal.classList.contains('hidden')) return;
-    const isCtrl = e.ctrlKey || e.metaKey;
-    const inEditorSearch = el.editorSearchInput === document.activeElement;
-    if (isCtrl && (e.key === 's' || e.key === 'S')) {
-        e.preventDefault();
-        saveEditedFile();
-    } else if (isCtrl && (e.key === 'f' || e.key === 'F')) {
-        e.preventDefault();
-        toggleEditorSearch(true);
-    } else if (e.key === 'Escape') {
-        if (!el.editorSearchPanel.classList.contains('hidden') && inEditorSearch) {
-            e.preventDefault();
-            toggleEditorSearch(false);
-        } else {
-            e.preventDefault();
-            hideEditModal();
-        }
-    }
-});
     el.fileList.addEventListener('click', (e) => {
         const item = e.target.closest('.file-item');
         if (!item) return;
@@ -10702,7 +9807,7 @@ document.addEventListener('keydown', (e) => {
                 const fileExtension = file.name.split('.').pop()?.toLowerCase();
                 const isMedia = IMAGE_EXTS.includes(fileExtension) || VIDEO_EXTS.includes(fileExtension) || AUDIO_EXTS.includes(fileExtension);
                 if (!isMedia) {
-                   editFile(file);
+                   downloadFile(file);
                 }
             }
         }
@@ -10717,9 +9822,6 @@ document.addEventListener('keydown', (e) => {
         if (!file) return;
         showContextMenu(e, file);
     });
-el.editorSearchInput.addEventListener('input', performEditorSearch);
-el.editorSearchPrevBtn.addEventListener('click', () => navigateSearchMatches(-1));
-el.editorSearchNextBtn.addEventListener('click', () => navigateSearchMatches(1));
 }
 el.setAsSiteCloseBtn.onclick = hideSetAsSiteModal;
 el.setAsSiteCancelBtn.onclick = hideSetAsSiteModal;
@@ -11171,9 +10273,6 @@ el.menuBatchPublishSites.onclick = () => {
     closeSideNav();
     showPublishManagerModal();
 };
-    el.closeEditModal.onclick = hideEditModal;
-    el.cancelEdit.onclick = hideEditModal;
-    el.saveEdit.onclick = saveEditedFile;
     el.backBtn.onclick = goUp;
     el.newFileBtn.onclick = showCreateFileModal;
 
@@ -11276,6 +10375,13 @@ el.menuBatchPublishSites.onclick = () => {
 }
     el.proxyCancelSettingsBtn.addEventListener('click', closeProxySettingsModal);
     el.proxySaveBtn.addEventListener('click', saveProxySettings);
+    document.querySelectorAll('.proxy-preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (el.proxyPrefixInput) {
+                el.proxyPrefixInput.value = btn.dataset.proxy || '';
+            }
+        });
+    });
     el.renameInput.oninput = function() {
         el.renameConfirm.disabled = !el.renameInput.value.trim() || el.renameInput.value.trim() === state.selectedFile?.name;
     };
@@ -11364,7 +10470,15 @@ el.menuBatchPublishSites.onclick = () => {
         e.stopPropagation();
         const repoFullName = releasesButton.dataset.repoFullname;
         if (repoFullName) {
-            fetchAndDisplayReleases(repoFullName);
+            const originalHTML = releasesButton.innerHTML;
+            releasesButton.disabled = true;
+            releasesButton.innerHTML = '<i class="fa fa-spinner fa-spin"></i> 加载中';
+            fetchAndDisplayReleases(repoFullName).finally(() => {
+                if (releasesButton.isConnected) {
+                    releasesButton.disabled = false;
+                    releasesButton.innerHTML = originalHTML;
+                }
+            });
         }
         return;
     }
@@ -11895,46 +11009,6 @@ function initFooterEvents() {
     }
 })();
 
-const selectAllEditorBtn = document.getElementById('selectAllEditorBtn');
-if (selectAllEditorBtn) {
-    selectAllEditorBtn.onclick = function() {
-        if (window.aceEditorInstance) {
-            window.aceEditorInstance.selectAll();
-            window.aceEditorInstance.focus();
-        }
-    };
-}
-
-const revertEditBtn = document.getElementById('revertEditBtn');
-if (revertEditBtn) {
-    revertEditBtn.onclick = function() {
-        if (!state.originalContent && state.originalContent !== '') return;
-
-        const isRawMode = !window.aceEditorInstance;
-
-        showDeleteModal(
-            null,
-            false,
-            '确认撤销更改',
-            '此操作将清除当前所有未保存的修改，并将文件重置为打开时的初始状态。\n\n该操作不可恢复，确定要继续吗？',
-            () => {
-                if (isRawMode) {
-                    el.fileContent.value = state.originalContent;
-                } else if (window.aceEditorInstance) {
-                    window.aceEditorInstance.setValue(state.originalContent, -1);
-                    window.aceEditorInstance.session.getUndoManager().reset();
-                }
-
-                checkContentChanges();
-                showToast('已恢复原始内容', 'success');
-                hideDeleteModal();
-            },
-            '确认重置',
-            'btn-danger'
-        );
-    };
-}
-
 }
 
 async function performRecursiveSearch(query) {
@@ -11983,221 +11057,6 @@ async function performRecursiveSearch(query) {
         el.fileList.innerHTML = `<div class="empty-state"><p>${error.message}</p></div>`;
     }
 }
-
-(function() {
-    const config = {
-        minFontSize: 8,
-        maxFontSize: 40,
-        defaultFontSize: 13,
-        storageKey: 'ace_font_size',
-        scaleSensitivity: 0.8
-    };
-
-    function getSavedFontSize() {
-        return parseInt(localStorage.getItem(config.storageKey)) || config.defaultFontSize;
-    }
-
-    function saveFontSize(size) {
-        localStorage.setItem(config.storageKey, size);
-    }
-
-    function createFontSizeDisplay() {
-        const display = document.createElement('div');
-        display.style.cssText = `
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            z-index: 2000;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.2s;
-            background-color: rgba(0,0,0,0.7);
-            backdrop-filter: blur(4px);
-        `;
-        return display;
-    }
-
-    function showFontSizeTooltip(display, size) {
-        display.textContent = `字体大小: ${size}px`;
-        display.style.opacity = '1';
-        clearTimeout(display.hideTimeout);
-        display.hideTimeout = setTimeout(() => { display.style.opacity = '0'; }, 1200);
-    }
-
-    function initGestureControls() {
-        const observer = new MutationObserver(() => {
-            const editModal = document.getElementById('editModal');
-            const fileContent = document.getElementById('aceEditorContainer');
-            const editorContainer = document.querySelector('.editor-container');
-
-            if (editModal && fileContent && editorContainer && !fileContent.hasGestureControl) {
-                fileContent.hasGestureControl = true;
-
-                const fontSizeDisplay = createFontSizeDisplay();
-                editorContainer.appendChild(fontSizeDisplay);
-
-                let initialDistance = 0;
-                let initialFontSize = 0;
-                let isPinching = false;
-
-                const applyFontSize = (size) => {
-                    if(window.aceEditorInstance) {
-                        window.aceEditorInstance.setOption('fontSize', size + 'px');
-                        window.aceEditorInstance.renderer.updateFull();
-                    }
-                };
-
-                const currentSavedSize = getSavedFontSize();
-                applyFontSize(currentSavedSize);
-
-                function getTouchDistance(touches) {
-                    const dx = touches[0].clientX - touches[1].clientX;
-                    const dy = touches[0].clientY - touches[1].clientY;
-                    return Math.hypot(dx, dy);
-                }
-
-                function updateFontSize(newSize) {
-                    newSize = Math.max(config.minFontSize, Math.min(config.maxFontSize, Math.round(newSize)));
-                    const currentInstanceSize = window.aceEditorInstance ? parseInt(window.aceEditorInstance.getOption('fontSize')) : config.defaultFontSize;
-
-                    if (newSize === currentInstanceSize) return;
-
-                    applyFontSize(newSize);
-                    showFontSizeTooltip(fontSizeDisplay, newSize);
-                    saveFontSize(newSize);
-                }
-
-                fileContent.addEventListener('touchstart', (e) => {
-                    if (e.touches.length === 2) {
-                        e.preventDefault();
-                        isPinching = true;
-                        initialDistance = getTouchDistance(e.touches);
-                        initialFontSize = window.aceEditorInstance ? parseInt(window.aceEditorInstance.getOption('fontSize')) : config.defaultFontSize;
-                    }
-                }, { passive: false });
-
-                fileContent.addEventListener('touchmove', (e) => {
-                    if (isPinching && e.touches.length === 2) {
-                        e.preventDefault();
-                        const currentDistance = getTouchDistance(e.touches);
-                        if (initialDistance > 0) {
-                            const scale = currentDistance / initialDistance;
-                            const delta = (scale - 1) * config.scaleSensitivity;
-                            const newSize = initialFontSize * (1 + delta);
-                            updateFontSize(newSize);
-                        }
-                    }
-                }, { passive: false });
-
-                fileContent.addEventListener('touchend', () => {
-                    if (isPinching) {
-                        isPinching = false;
-                        if(window.aceEditorInstance) {
-                            window.aceEditorInstance.resize(true);
-                        }
-                    }
-                });
-
-                const editModalObserver = new MutationObserver((mutations) => {
-                    mutations.forEach((mutation) => {
-                        if (mutation.attributeName === 'class' && !editModal.classList.contains('hidden')) {
-                            const saved = getSavedFontSize();
-                            applyFontSize(saved);
-                            setTimeout(() => {
-                                if(window.aceEditorInstance) window.aceEditorInstance.resize(true);
-                            }, 100);
-                        }
-                    });
-                });
-                editModalObserver.observe(editModal, { attributes: true });
-            }
-        });
-        observer.observe(document.body, { childList: true, subtree: true });
-    }
-
-})();
-(function() {
-    'use strict';
-    const config = {
-        buttonId: 'toggleMaximizeModal',
-        modalId: 'editModal',
-        maximizedClass: 'maximized',
-        expandIcon: 'fa-expand',
-        compressIcon: 'fa-compress',
-        buttonTitle: { maximize: '最大化', restore: '恢复' }
-    };
-
-    let maximizeButton = null, editModal = null, isToggling = false;
-
-    function performResize() {
-        if (typeof window.adjustEditorDimensions === 'function') {
-            window.adjustEditorDimensions();
-        }
-        if (window.aceEditorInstance) {
-            window.aceEditorInstance.resize(true);
-            window.aceEditorInstance.renderer.updateFull();
-        }
-    }
-
-    function toggleMaximize() {
-        if (!editModal || !maximizeButton || isToggling) return;
-        isToggling = true;
-
-        const icon = maximizeButton.querySelector('i');
-        const isCurrentlyMaximized = editModal.classList.contains(config.maximizedClass);
-
-        if (isCurrentlyMaximized) {
-            editModal.classList.remove(config.maximizedClass);
-            icon.classList.remove(config.compressIcon);
-            icon.classList.add(config.expandIcon);
-            maximizeButton.title = config.buttonTitle.maximize;
-        } else {
-            editModal.classList.add(config.maximizedClass);
-            icon.classList.remove(config.expandIcon);
-            icon.classList.add(config.compressIcon);
-            maximizeButton.title = config.buttonTitle.restore;
-        }
-
-        const newState = !isCurrentlyMaximized;
-        try { localStorage.setItem('editor-maximized', newState.toString()); } catch (e) {}
-
-        performResize();
-
-        setTimeout(performResize, 50);
-        setTimeout(performResize, 300);
-
-        setTimeout(() => { isToggling = false; }, 300);
-    }
-
-    function initializeButton() {
-        if (maximizeButton) return;
-        editModal = document.getElementById(config.modalId);
-        maximizeButton = document.getElementById(config.buttonId);
-        if (!editModal || !maximizeButton) return;
-        maximizeButton.addEventListener('click', toggleMaximize);
-    }
-
-    function init() {
-        const observer = new MutationObserver(() => {
-            if (!maximizeButton || !document.getElementById(config.buttonId)) initializeButton();
-        });
-        observer.observe(document.body, { childList: true, subtree: true });
-
-        initializeButton();
-        initTokenGuide();
-        window.addEventListener('resize', () => {
-            if (!editModal || editModal.classList.contains('hidden')) return;
-            requestAnimationFrame(performResize);
-        });
-    }
-    init();
-})();
 
 function initImageObserver() {
     imageObserver = new IntersectionObserver((entries, observer) => {
@@ -12291,6 +11150,7 @@ async function init() {
     loadContextMenuSettings();
     setupEventListeners();
     initImageObserver();
+    initTokenGuide();
     updateSortDropdownUI();
     initializeActiveToken();
 
