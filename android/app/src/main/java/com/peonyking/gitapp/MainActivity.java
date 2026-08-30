@@ -5,12 +5,20 @@ import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Base64;
+import android.view.Gravity;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.MimeTypeMap;
@@ -22,7 +30,12 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.content.FileProvider;
 
 import android.window.OnBackInvokedCallback;
 import android.window.OnBackInvokedDispatcher;
@@ -57,6 +70,8 @@ public class MainActivity extends Activity {
     private static final int COLOR_DARK = 0xFF04091A;
     private static final int COLOR_LIGHT = 0xFFF0F2F5;
 
+    private static final int REQ_UNKNOWN_SOURCE = 0x2001;
+
     // GitHub OAuth 授权登录配置
     private static final String OAUTH_CLIENT_ID = "Ov23li6NLp7oqOQW5oBG";
     private static final String OAUTH_CLIENT_SECRET = "3743c626a2c25ab73a9ed909dda6b5a00abf7205";
@@ -74,6 +89,7 @@ public class MainActivity extends Activity {
     private String pendingAuthToken = null;
     private boolean oauthFlowActive = false;
     private boolean pageLoaded = false;
+    private boolean isLight = true;
 
     private WebView webView;
     private ValueCallback<Uri[]> filePathCallback;
@@ -83,6 +99,8 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        String savedTheme = getSharedPreferences("gkPrefs", MODE_PRIVATE).getString("app_theme", "light");
+        setTheme("dark".equals(savedTheme) ? R.style.AppTheme : R.style.AppTheme_Light);
         super.onCreate(savedInstanceState);
         webView = new WebView(this);
         setContentView(webView);
@@ -145,7 +163,7 @@ public class MainActivity extends Activity {
         webView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) ->
                 startDownload(url, userAgent, contentDisposition, mimetype));
 
-        applyThemeUi("dark");
+        applyThemeUi(savedTheme);
 
         if (Build.VERSION.SDK_INT >= 33) {
             getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
@@ -156,6 +174,8 @@ public class MainActivity extends Activity {
         webView.loadUrl("https://appassets.androidplatform.net/assets/index.html");
 
         handleLaunchIntent(getIntent());
+
+        checkForUpdate();
     }
 
     @Override
@@ -252,7 +272,12 @@ public class MainActivity extends Activity {
 
     @JavascriptInterface
     public void setTheme(final String theme) {
-        runOnUiThread(() -> applyThemeUi(theme));
+        getSharedPreferences("gkPrefs", MODE_PRIVATE)
+                .edit().putString("app_theme", theme).apply();
+        runOnUiThread(() -> {
+            applyThemeUi(theme);
+            if (currentDownloadUi != null) currentDownloadUi.refreshTheme();
+        });
     }
 
     // ============ GitHub OAuth 授权登录 ============
@@ -349,8 +374,13 @@ public class MainActivity extends Activity {
 
     private void applyThemeUi(String theme) {
         boolean light = theme != null && theme.equals("light");
+        isLight = light;
         int barColor = light ? COLOR_LIGHT : COLOR_DARK;
         getWindow().setStatusBarColor(barColor);
+        if (webView != null) {
+            webView.setBackgroundColor(barColor);
+        }
+        getWindow().getDecorView().setBackgroundColor(barColor);
         if (Build.VERSION.SDK_INT >= 26) {
             getWindow().setNavigationBarColor(barColor);
             int flags = light
@@ -590,6 +620,482 @@ public class MainActivity extends Activity {
             }
         }
         return null;
+    }
+
+    // ============ 远程更新 ============
+
+    private static final String UPDATE_REPO = "PeonyJun/GithubKing";
+    private static final String UPDATE_RELEASES_URL = "https://api.github.com/repos/" + UPDATE_REPO + "/releases/latest";
+    private final String[] APK_DOWNLOAD_PROXIES = {
+            "https://gh-proxy.org/",
+            "https://down.ksx.qzz.io/"
+    };
+
+    private void checkForUpdate() {
+        new Thread(() -> {
+            HttpURLConnection conn = null;
+            String updateInfo = null;
+            try {
+                URL url = new URL(UPDATE_RELEASES_URL);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setConnectTimeout(15000);
+                conn.setReadTimeout(15000);
+                conn.setRequestProperty("Accept", "application/vnd.github+json");
+                conn.setRequestProperty("User-Agent", "GithubKing");
+                int status = conn.getResponseCode();
+                if (status < 200 || status >= 300) {
+                    return;
+                }
+                InputStream is = conn.getInputStream();
+                if (is == null) return;
+                JSONObject rel = new JSONObject(readStream(is));
+                String tag = rel.optString("tag_name", "");
+                String body = rel.optString("body", "");
+                String downloadUrl = null;
+                JSONArray assets = rel.optJSONArray("assets");
+                if (assets != null) {
+                    for (int i = 0; i < assets.length(); i++) {
+                        JSONObject asset = assets.optJSONObject(i);
+                        if (asset == null) continue;
+                        String name = asset.optString("name", "");
+                        if (name.endsWith(".apk")) {
+                            downloadUrl = asset.optString("browser_download_url", "");
+                            break;
+                        }
+                    }
+                }
+                if (tag.isEmpty() || downloadUrl == null || downloadUrl.isEmpty()) return;
+                String currentVersion = BuildConfig.VERSION_NAME;
+                if (compareVersions(tag, currentVersion) <= 0) {
+                    return;
+                }
+                updateInfo = tag + "\u0001" + body + "\u0001" + downloadUrl;
+            } catch (Exception ignored) {
+                return;
+            } finally {
+                if (conn != null) conn.disconnect();
+            }
+            final String info = updateInfo;
+            if (info != null) {
+                runOnUiThread(() -> promptUpdate(info));
+            }
+        }, "update-check").start();
+    }
+
+    private void promptUpdate(String info) {
+        if (webView == null) return;
+        try {
+            String[] parts = info.split("\u0001", 3);
+            final String tag = parts.length > 0 ? parts[0] : "新版本";
+            final String body = parts.length > 1 ? parts[1] : "";
+            final String downloadUrl = parts.length > 2 ? parts[2] : "";
+
+            String currentVersion = BuildConfig.VERSION_NAME;
+
+            LinearLayout root = new LinearLayout(this);
+            root.setOrientation(LinearLayout.VERTICAL);
+            root.setPadding(dp(28), dp(24), dp(28), dp(18));
+
+            TextView title = new TextView(this);
+            title.setText("发现新版本");
+            title.setTextColor(dlgTitle());
+            title.setTextSize(19);
+            title.setTypeface(Typeface.DEFAULT_BOLD);
+            root.addView(title);
+
+            TextView tagView = new TextView(this);
+            tagView.setText(tag);
+            tagView.setTextColor(dlgAccent());
+            tagView.setTextSize(13);
+            tagView.setPadding(0, dp(4), 0, dp(12));
+            root.addView(tagView);
+
+            TextView bodyView = new TextView(this);
+            bodyView.setText(body == null || body.isEmpty() ? "已检测到新版本可用，是否立即更新？" : body);
+            bodyView.setTextColor(dlgBody());
+            bodyView.setTextSize(14);
+            bodyView.setLineSpacing(dp(5), 1.0f);
+            bodyView.setPadding(0, 0, 0, dp(12));
+            root.addView(bodyView);
+
+            TextView curView = new TextView(this);
+            curView.setText("当前版本: v" + currentVersion);
+            curView.setTextColor(dlgSub());
+            curView.setTextSize(12);
+            curView.setPadding(0, 0, 0, dp(16));
+            root.addView(curView);
+
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setGravity(Gravity.CENTER);
+
+            TextView cancelBtn = buildActionButton("暂不更新", false);
+            row.addView(cancelBtn, new LinearLayout.LayoutParams(0, dp(46), 1f) {{ rightMargin = dp(6); }});
+            TextView updateBtn = buildActionButton("立即更新", true);
+            row.addView(updateBtn, new LinearLayout.LayoutParams(0, dp(46), 1f) {{ leftMargin = dp(6); }});
+
+            root.addView(row);
+
+            final AlertDialog dlg = new AlertDialog.Builder(this).setView(root).setCancelable(true).create();
+            dlg.setCanceledOnTouchOutside(true);
+            if (dlg.getWindow() != null) {
+                dlg.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            }
+            updateBtn.setOnClickListener(v -> { dlg.dismiss(); startApkDownload(downloadUrl); });
+            cancelBtn.setOnClickListener(v -> dlg.dismiss());
+            dlg.show();
+            applyDialogStyle(dlg);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private int dlgBg() {
+        return isLight ? 0xFFFFFFFF : 0xFF1B2130;
+    }
+    private int dlgTitle() {
+        return isLight ? 0xFF111827 : 0xFFFFFFFF;
+    }
+    private int dlgAccent() {
+        return isLight ? 0xFF2563EB : 0xFF4C8BF5;
+    }
+    private int dlgBody() {
+        return isLight ? 0xFF475569 : 0xFF8A93A5;
+    }
+    private int dlgSub() {
+        return isLight ? 0xFF6B7280 : 0xFF8A93A5;
+    }
+    private int dlgPrimaryBtnBg() {
+        return 0xFF10B981;
+    }
+    private int dlgPrimaryBtnText() {
+        return 0xFFFFFFFF;
+    }
+    private int dlgSecondaryBtnBg() {
+        return isLight ? 0xFFF3F4F6 : 0x26FFFFFF;
+    }
+    private int dlgSecondaryBtnText() {
+        return isLight ? 0xFF374151 : 0xFFCFD6E3;
+    }
+
+    private TextView buildActionButton(String text, boolean primary) {
+        TextView tv = new TextView(this);
+        tv.setText(text);
+        tv.setGravity(Gravity.CENTER);
+        tv.setTextSize(14);
+        tv.setTypeface(Typeface.DEFAULT_BOLD);
+        tv.setPadding(0, 0, 0, 0);
+        tv.setOnTouchListener(null);
+        GradientDrawable bg = new GradientDrawable();
+        bg.setCornerRadius(dp(12));
+        if (primary) {
+            bg.setColor(dlgPrimaryBtnBg());
+            tv.setTextColor(dlgPrimaryBtnText());
+        } else {
+            bg.setColor(dlgSecondaryBtnBg());
+            tv.setTextColor(dlgSecondaryBtnText());
+        }
+        tv.setBackground(bg);
+        return tv;
+    }
+
+    private void applyDialogStyle(AlertDialog dlg) {
+        try {
+            if (dlg.getWindow() == null) return;
+            GradientDrawable bg = new GradientDrawable();
+            bg.setColor(dlgBg());
+            bg.setCornerRadius(dp(18));
+            dlg.getWindow().setBackgroundDrawable(bg);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void startApkDownload(final String url) {
+        new Thread(() -> {
+            final Handler uiHandler = new Handler(Looper.getMainLooper());
+            final DownloadUi downloadUi = new DownloadUi(uiHandler);
+            uiHandler.post(downloadUi::show);
+            boolean ok = false;
+            File target = new File(getFilesDir(), "GithubKing_new.apk");
+            for (int i = 0; i < APK_DOWNLOAD_PROXIES.length; i++) {
+                String full = APK_DOWNLOAD_PROXIES[i] + url;
+                final int attempt = i;
+                final boolean last = (i == APK_DOWNLOAD_PROXIES.length - 1);
+                try {
+                    uiHandler.post(() -> downloadUi.setStatus("连接下载服务器 (" + (attempt + 1) + "/" + APK_DOWNLOAD_PROXIES.length + ")"));
+                    ok = downloadApk(full, target, downloadUi, uiHandler, last);
+                    if (ok) break;
+                } catch (Exception ignored) {
+                    uiHandler.post(() -> downloadUi.setStatus("下载中断，正在重试..."));
+                }
+            }
+            final boolean success = ok;
+            uiHandler.post(() -> {
+                downloadUi.dismiss();
+                if (success) {
+                    installApk(target);
+                } else {
+                    toast("下载失败，请稍后重试");
+                }
+            });
+        }, "update-download").start();
+    }
+
+    private final java.util.concurrent.atomic.AtomicBoolean updateDownloadCancelled = new java.util.concurrent.atomic.AtomicBoolean(false);
+    private final java.util.concurrent.atomic.AtomicLong lastProgressPost = new java.util.concurrent.atomic.AtomicLong(0);
+    private AlertDialog updateUiDialog;
+    private DownloadUi currentDownloadUi = null;
+
+    private class DownloadUi {
+        private final Handler handler;
+        ProgressBar bar;
+        TextView title;
+        TextView pct;
+        TextView status;
+
+        DownloadUi(Handler handler) {
+            this.handler = handler;
+        }
+
+        void show() {
+            currentDownloadUi = this;
+            LinearLayout root = new LinearLayout(MainActivity.this);
+            root.setOrientation(LinearLayout.VERTICAL);
+            root.setPadding(dp(28), dp(26), dp(28), dp(18));
+
+            title = new TextView(MainActivity.this);
+            title.setText("更新下载中");
+            title.setTextColor(dlgTitle());
+            title.setTextSize(17);
+            title.setTypeface(Typeface.DEFAULT_BOLD);
+            root.addView(title);
+
+            status = new TextView(MainActivity.this);
+            status.setText("准备开始...");
+            status.setTextColor(dlgSub());
+            status.setTextSize(13);
+            status.setPadding(0, dp(6), 0, dp(16));
+            root.addView(status);
+
+            bar = new ProgressBar(MainActivity.this, null, android.R.attr.progressBarStyleHorizontal);
+            bar.setMax(100);
+            bar.setProgress(0);
+            bar.setProgressTintList(android.content.res.ColorStateList.valueOf(dlgAccent()));
+            GradientDrawable progressDrawable = new GradientDrawable();
+            progressDrawable.setColor(dlgAccent());
+            progressDrawable.setCornerRadius(dp(6));
+            GradientDrawable progressTrack = new GradientDrawable();
+            progressTrack.setColor(isLight ? 0xFFE5E7EB : 0xFF2A3140);
+            progressTrack.setCornerRadius(dp(6));
+            bar.setProgressDrawable(new android.graphics.drawable.LayerDrawable(
+                    new android.graphics.drawable.Drawable[]{progressTrack, progressDrawable}));
+            root.addView(bar);
+
+            pct = new TextView(MainActivity.this);
+            pct.setText("0%");
+            pct.setTextColor(dlgTitle());
+            pct.setTextSize(15);
+            pct.setGravity(Gravity.CENTER_HORIZONTAL);
+            pct.setPadding(0, dp(10), 0, 0);
+            root.addView(pct);
+
+            updateUiDialog = new AlertDialog.Builder(MainActivity.this)
+                    .setView(root)
+                    .setCancelable(false)
+                    .setNegativeButton("取消", (d, w) -> updateDownloadCancelled.set(true))
+                    .create();
+            if (updateUiDialog.getWindow() != null) {
+                updateUiDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            }
+            updateUiDialog.show();
+            try {
+                GradientDrawable bg = new GradientDrawable();
+                bg.setColor(dlgBg());
+                bg.setCornerRadius(dp(18));
+                if (updateUiDialog.getWindow() != null) {
+                    updateUiDialog.getWindow().setBackgroundDrawable(bg);
+                }
+            } catch (Exception ignored) {
+            }
+        }
+
+        void setProgress(long done, long total) {
+            if (bar == null) return;
+            int pctVal = total > 0 ? (int) (Math.min(done, total) * 100 / total) : 0;
+            bar.setProgress(pctVal);
+            if (pct != null) pct.setText(pctVal + "%");
+        }
+
+        void setStatus(String s) {
+            if (status != null) status.setText(s);
+        }
+
+        void refreshTheme() {
+            if (updateUiDialog == null) return;
+            int accent = dlgAccent();
+            if (title != null) title.setTextColor(dlgTitle());
+            if (status != null) status.setTextColor(dlgSub());
+            if (pct != null) pct.setTextColor(dlgTitle());
+            if (bar != null) {
+                bar.setProgressTintList(android.content.res.ColorStateList.valueOf(accent));
+                GradientDrawable pd = new GradientDrawable();
+                pd.setColor(accent);
+                pd.setCornerRadius(dp(6));
+                GradientDrawable pt = new GradientDrawable();
+                pt.setColor(isLight ? 0xFFE5E7EB : 0xFF2A3140);
+                pt.setCornerRadius(dp(6));
+                bar.setProgressDrawable(new android.graphics.drawable.LayerDrawable(
+                        new android.graphics.drawable.Drawable[]{pt, pd}));
+            }
+            try {
+                GradientDrawable bgd = new GradientDrawable();
+                bgd.setColor(dlgBg());
+                bgd.setCornerRadius(dp(18));
+                if (updateUiDialog.getWindow() != null) {
+                    updateUiDialog.getWindow().setBackgroundDrawable(bgd);
+                }
+            } catch (Exception ignored) {
+            }
+        }
+
+        void dismiss() {
+            try {
+                if (updateUiDialog != null && updateUiDialog.isShowing()) updateUiDialog.dismiss();
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    private int dp(int v) {
+        return Math.round(getResources().getDisplayMetrics().density * v);
+    }
+
+    private boolean downloadApk(String url, File target, final DownloadUi ui, final Handler uiHandler, final boolean lastAttempt) throws IOException {
+        HttpURLConnection conn = null;
+        try {
+            URL u = new URL(url);
+            conn = (HttpURLConnection) u.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(20000);
+            conn.setReadTimeout(30000);
+            conn.setRequestProperty("User-Agent", "GithubKing");
+            conn.setInstanceFollowRedirects(true);
+            int status = conn.getResponseCode();
+            if (status == 404) {
+                if (!lastAttempt) uiHandler.post(() -> ui.setStatus("服务器响应失败，切换渠道..."));
+                return false;
+            }
+            if (status < 200 || status >= 300) {
+                if (!lastAttempt) uiHandler.post(() -> ui.setStatus("服务器响应异常，切换渠道..."));
+                return false;
+            }
+            long total = conn.getContentLengthLong();
+            InputStream is = conn.getInputStream();
+            if (is == null) return false;
+            OutputStream os = new java.io.FileOutputStream(target);
+            byte[] buf = new byte[16384];
+            long done = 0;
+            int n;
+            long lastPct = -1;
+            while ((n = is.read(buf)) > 0) {
+                if (updateDownloadCancelled.get()) {
+                    os.close();
+                    is.close();
+                    return false;
+                }
+                os.write(buf, 0, n);
+                done += n;
+                int curPct = total > 0 ? (int) (Math.min(done, total) * 100 / total) : 0;
+                long now = System.currentTimeMillis();
+                long last = lastProgressPost.get();
+                if (curPct != lastPct && now - last >= 80) {
+                    lastPct = curPct;
+                    lastProgressPost.set(now);
+                    final long pDone = done;
+                    final long pTotal = total;
+                    uiHandler.post(() -> {
+                        ui.setProgress(pDone, pTotal);
+                        ui.setStatus("正在下载更新包");
+                    });
+                }
+            }
+            os.flush();
+            os.close();
+            is.close();
+            return target.length() > 0;
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+    }
+
+    private void installApk(File apkFile) {
+        if (apkFile == null || !apkFile.exists()) {
+            toast("更新文件不存在");
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= 26) {
+            PackageManager pm = getPackageManager();
+            boolean canInstall = false;
+            try {
+                canInstall = pm.canRequestPackageInstalls();
+            } catch (Exception ignored) {
+            }
+            if (!canInstall) {
+                new AlertDialog.Builder(this)
+                        .setTitle("需要授权安装")
+                        .setMessage("首次更新需允许“安装未知应用”，请在弹出的设置中开启。")
+                        .setPositiveButton("去开启", (d, w) -> openInstallPermissionSettings())
+                        .setNegativeButton("取消", null)
+                        .show();
+                return;
+            }
+        }
+        try {
+            Uri apkUri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", apkFile);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(intent);
+        } catch (Exception e) {
+            toast("无法打开安装: " + e.getMessage());
+        }
+    }
+
+    private void openInstallPermissionSettings() {
+        try {
+            Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                    Uri.parse("package:" + getPackageName()));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } catch (Exception e) {
+            toast("请在系统设置中开启“允许安装未知应用”");
+        }
+    }
+
+    private int compareVersions(String v1, String v2) {
+        String[] a = extractVersionParts(v1);
+        String[] b = extractVersionParts(v2);
+        int n = Math.max(a.length, b.length);
+        for (int i = 0; i < n; i++) {
+            int ai = i < a.length ? parseNum(a[i]) : 0;
+            int bi = i < b.length ? parseNum(b[i]) : 0;
+            if (ai != bi) return Integer.compare(ai, bi);
+        }
+        return 0;
+    }
+
+    private String[] extractVersionParts(String v) {
+        if (v == null) v = "";
+        String cleaned = v.replaceAll("[^0-9.]", "");
+        return cleaned.split("\\.");
+    }
+
+    private int parseNum(String s) {
+        try {
+            return Integer.parseInt(s);
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     // ============ 工具 ============

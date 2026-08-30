@@ -11,37 +11,68 @@
 <body>
 
 		<div id="authScreen">
-    <div class="login-container">
-        <div class="auth-header">
-            <i class="fa-brands fa-github-alt"></i>
-            <h1>Github King</h1>
-            <p>极速 · 优雅 · 全能</p>
+    <div class="login-wrapper">
+        <header class="login-header">
+            <div class="logo-box">
+                <svg viewBox="0 0 24 24" style="width:1.75rem;height:1.75rem;fill:none;stroke:#334155;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+            </div>
+            <h1 style="font-size:16px;font-weight:bold;color:var(--gk-text);margin:0;">Github King</h1>
+            <p style="font-size:10px;font-weight:bold;color:var(--gk-sub);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">安全加密环境已就绪</p>
+        </header>
+
+        <div id="loginSavedAccounts" style="width:100%;margin-bottom:1.5rem;display:flex;flex-direction:column;gap:0.5rem;max-height:160px;overflow-y:auto;"></div>
+
+        <div class="login-tabs">
+            <div id="loginModeSlider"></div>
+            <button type="button" onclick="toggleLoginMode('oauth')" id="btnModeOauth" class="tab-btn-native" data-default-active="true" style="color:var(--gk-text)">
+                <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                <span>官方授权</span>
+            </button>
+            <button type="button" onclick="toggleLoginMode('token')" id="btnModeToken" class="tab-btn-native">
+                <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;"><path d="M2 18v3c0 .6.4 1 1 1h4v-3h3v-3h2l1.4-1.4c.9.9 2.1 1.4 3.6 1.4 2.8 0 5-2.2 5-5s-2.2-5-5-5-5 2.2-5 5c0 1.5.5 2.7 1.4 3.6L2 18Z"></path><circle cx="17" cy="7" r="1"></circle></svg>
+                <span>令牌访问</span>
+            </button>
         </div>
 
-        <div class="auth-form">
-            <input type="text" id="tokenInput" placeholder="Access Token" autocomplete="off" spellcheck="false">
+        <main class="login-main">
+            <div id="paneOauth" class="pane-native">
+                <div class="oauth-card">
+                    <div class="oauth-card-head">
+                        <svg viewBox="0 0 24 24" style="width:1rem;height:1rem;stroke:#10b981;fill:none;stroke-width:2;"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+                        <span>GitHub 授权登录</span>
+                    </div>
+                    <p>已连接GitHub官方授权通道，你的隐私信息将由 <span>官方协议</span> 严格保护，此功能需要访问Github无效果请开启代理至此APP。</p>
+                </div>
+                <button id="oauthBtn" type="button" onclick="startOAuthLogin()" class="btn-oauth-native">
+                    <svg viewBox="0 0 24 24" style="width:1rem;height:1rem;stroke:rgba(255,255,255,0.7);fill:none;stroke-width:2;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                    <span>开启官方安全登录</span>
+                </button>
+                <div class="oauth-foot">
+                    <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#10b981;fill:none;stroke-width:2;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                    <span>已通过 GitHub 安全协议校验</span>
+                </div>
+            </div>
 
-            <div class="auth-buttons-container">
-                <button id="authBtn">
-                    <span>进入系统</span>
+            <div id="paneToken" class="pane-native" style="display:none;">
+                <div class="token-area">
+                    <div class="token-area-head">
+                        <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:#cbd5e1;fill:none;stroke-width:2;"><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"></path><path d="m21 2-9.6 9.6"></path><circle cx="7.5" cy="15.5" r="5.5"></circle></svg>
+                        <span>令牌信息仅本地存储</span>
+                    </div>
+                    <textarea id="tokenInput" rows="3" placeholder="在此输入您的 Access Token (ghp_...)" class="token-input-native"></textarea>
+                </div>
+                <button id="authBtn" type="button" class="token-login-btn">
+                    <svg viewBox="0 0 24 24" style="width:1rem;height:1rem;stroke:#6366f1;fill:none;stroke-width:2;"><path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"></path><path d="M14 13.12c0 2.38 0 6.38-1 8.88"></path><path d="M17.29 21.02c.12-.38.24-.76.36-1.12"></path><path d="M18 12a6 6 0 0 0-12 0c0 1.53-.16 3.1-.5 4.5"></path><path d="M22 12a10 10 0 0 0-20 0"></path></svg>
+                    <span>验证并初始化环境</span>
                     <i class="fa fa-spinner fa-spin hidden"></i>
                 </button>
-                <button class="auth-button" id="manageAccountsBtn">
-                    <span>账号管理</span>
-                </button>
+                <div class="token-guide-link" id="showTokenGuideBtn" onclick="var m=document.getElementById('tokenGuideModal');if(m)m.classList.remove('hidden');" style="cursor:pointer">
+                    <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#6366f1;fill:none;stroke-width:2;"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" x2="12.01" y1="17" y2="17"></line></svg>
+                    <span>如何获取 TOKEN？</span>
+                </div>
             </div>
-        </div>
-
-        <div class="auth-helper-links">
-    <button id="showTokenGuideBtn" class="text-btn">
-        <i class="fa-regular fa-circle-question"></i> 如何获取令牌 Access Token？
-    </button>
-
-</div>
-<div  class="" style="font-size: 8px; text-align: center; color: #4b5563;">
-        ©️ 2025 牡丹君 全能仓库管理器
+        </main>
     </div>
-</div>
 
 </div>
 
@@ -564,6 +595,10 @@
         <input id="accountNameInput" type="text" placeholder="设置一个名称" autocomplete="off">
 
         <input id="accountTokenInput" type="text" placeholder="粘贴你的GitHub访问令牌" autocomplete="off">
+
+        <button id="oauthAddAccountBtn" type="button" class="btn btn-primary" style="width:100%;margin-top:0.6rem;">
+            <span>Github授权登陆</span>
+        </button>
 
         <div id="addEditAccountError" class="text-red-400"></div>
 
@@ -2302,25 +2337,25 @@ function rewriteReadmeImages(html, repoFullName, branch) {
         const [owner, repo] = (repoFullName || '').split('/');
         return html.replace(/<img([^>]*)\bsrc\s*=\s*["']([^"']+)["']([^>]*)>/gi, (match, before, src, after) => {
             let finalSrc = src;
-            if (src.startsWith('http')) {
-                finalSrc = getProxiedUrl(src);
+            if (src.startsWith('http') || src.startsWith('//')) {
+                finalSrc = src;
             } else if (owner && repo) {
                 const base = `https://raw.githubusercontent.com/${owner}/${repo}/${branch || 'HEAD'}/`;
                 const cleaned = src.replace(/^\.\//, '').replace(/^\/+/, '');
                 const encoded = cleaned.split('/').map(encodeURIComponent).join('/');
-                finalSrc = getProxiedUrl(base + encoded);
+                finalSrc = base + encoded;
             }
             return `<img${before}src="${finalSrc}"${after}>`;
         }).replace(/(\b(?:srcset|data-src)\s*=\s*["'])([^"']+)(["'])/gi, (match, pre, val, post) => {
             const parts = val.split(',').map(p => {
                 const seg = p.trim().split(/\s+/);
-                if (seg[0].startsWith('http')) {
-                    seg[0] = getProxiedUrl(seg[0]);
+                if (seg[0].startsWith('http') || seg[0].startsWith('//')) {
+                    seg[0] = seg[0];
                 } else if (owner && repo) {
                     const base = `https://raw.githubusercontent.com/${owner}/${repo}/${branch || 'HEAD'}/`;
                     const cleaned = seg[0].replace(/^\.\//, '').replace(/^\/+/, '');
                     const encoded = cleaned.split('/').map(encodeURIComponent).join('/');
-                    seg[0] = getProxiedUrl(base + encoded);
+                    seg[0] = base + encoded;
                 }
                 return seg.join(' ');
             });
@@ -2439,6 +2474,10 @@ function setActiveAccount(accountId) {
 function renderAccountList() {
     const container = el.accountListContainer;
     container.innerHTML = '';
+
+    if (window.renderLoginSavedAccounts) {
+        window.renderLoginSavedAccounts();
+    }
 
     if (state.accounts.length === 0) {
         el.accountListEmpty.classList.remove('hidden');
@@ -2694,6 +2733,9 @@ function showAuth() {
     el.app.classList.add('hidden');
     document.documentElement.classList.remove('app-visible-loading');
     document.documentElement.classList.add('auth-visible-loading');
+    if (window.renderLoginSavedAccounts) {
+        window.renderLoginSavedAccounts();
+    }
 }
 
 function showApp() {
@@ -4044,7 +4086,6 @@ async function navigateToRepo(repoData, branch, path = '', updateHistory = true)
     el.multiSelectToggleBtn.classList.remove('hidden');
     el.sortToggleBtn.classList.remove('hidden');
     updateGlobalSearchVisibility();
-    el.fileList.innerHTML = '<div class="loading-spinner"><div class="spinner"></div></div>';
     renderPathNav();
     fetchBranches(repoData).then(renderBranchSwitcher);
     const cacheKey = `full_tree_cache:${repoData.full_name}:${branch}`;
@@ -4066,7 +4107,7 @@ async function navigateToRepo(repoData, branch, path = '', updateHistory = true)
     if (!loadedFromCache && !state.repoTreeCache) {
         loadRecursiveRepoTree();
     }
-    fetchFiles(false, false);
+    fetchFiles(false, true);
     updatePaginationUI();
 }
 
@@ -9650,7 +9691,7 @@ async function showRepoOverview(repoInput) {
             }
         }
     };
-    const renderRepoUI = (data, readmeContent = null) => {
+    const renderRepoUI = (data, readmeContent = undefined) => {
         avatar.src = data.owner.avatar_url;
         nameEl.innerHTML = `<span style="opacity:0.7; font-weight:400; font-size:0.9em">${data.owner.login} /</span><br>${data.name}`;
         descEl.textContent = data.description || '暂无描述';
@@ -9709,7 +9750,7 @@ async function showRepoOverview(repoInput) {
                     const lastSlash = meta.path.lastIndexOf('/');
                     if (lastSlash !== -1) currentDocDir = meta.path.substring(0, lastSlash);
                     try {
-                        const rawReadmeUrl = getProxiedUrl(meta.download_url);
+                        const rawReadmeUrl = meta.download_url;
                         const contentRes = await fetch(rawReadmeUrl);
                         if (contentRes.ok) {
                     const rawMarkdown = await contentRes.text();
@@ -10016,7 +10057,7 @@ document.addEventListener('click', (e) => {
     }
 });
 
-el.manageAccountsBtn.addEventListener('click', showAccountManagerModal);
+el.manageAccountsBtn && el.manageAccountsBtn.addEventListener('click', showAccountManagerModal);
 el.menuSwitchAccount.addEventListener('click', () => {
     closeSideNav();
     showAccountManagerModal();
@@ -10027,6 +10068,22 @@ el.showAddAccountModalBtn.addEventListener('click', () => showAddEditAccountModa
 el.closeAddEditAccountModalBtn.addEventListener('click', closeAddEditAccountModal);
 el.addEditAccountCancelBtn.addEventListener('click', closeAddEditAccountModal);
 el.addEditAccountSaveBtn.addEventListener('click', handleSaveAccount);
+
+window.oauthAddAccount = false;
+function handleOAuthAddAccount() {
+    window.oauthAddAccount = true;
+    if (typeof startOAuthLogin === 'function') {
+        startOAuthLogin();
+        if (!(window.AndroidBridge && typeof window.AndroidBridge.startGithubAuth === 'function')) {
+            setTimeout(() => { window.oauthAddAccount = false; }, 1000);
+        }
+    } else {
+        window.oauthAddAccount = false;
+        showToast('当前环境不支持授权登录', 'error');
+    }
+}
+const oauthAddBtn = document.getElementById('oauthAddAccountBtn');
+if (oauthAddBtn) oauthAddBtn.addEventListener('click', handleOAuthAddAccount);
 
 document.getElementById('repoDetailsCloseBtn').onclick = hideRepoDetailsModal;
 el.repoDetailsModal.onclick = (e) => {
@@ -10268,6 +10325,216 @@ el.accountTokenInput.addEventListener('input', validateAccountForm);
             showCreateFolderModal();
         }
     };
+
+    // ===== 登录页：官方授权 & 模式切换 & 已存账号快捷登录 =====
+    const OAUTH_CLIENT_ID = 'Ov23li6NLp7oqOQW5oBG';
+    const OAUTH_REDIRECT = 'gk://login';
+    const OAUTH_SCOPES = [
+        'repo', 'repo:status', 'repo_deployment', 'public_repo', 'repo:invite',
+        'security_events', 'admin:repo_hook', 'write:repo_hook', 'read:repo_hook',
+        'admin:org', 'write:org', 'read:org', 'admin:public_key', 'write:public_key',
+        'read:public_key', 'admin:org_hook', 'gist', 'notifications', 'user',
+        'read:user', 'user:email', 'user:follow', 'project', 'read:project',
+        'delete_repo', 'write:packages', 'read:packages', 'delete:packages',
+        'admin:gpg_key', 'write:gpg_key', 'read:gpg_key', 'workflow'
+    ].join(',');
+
+    function toggleLoginMode(type) {
+        const btnO = document.getElementById('btnModeOauth');
+        const btnT = document.getElementById('btnModeToken');
+        const paneO = document.getElementById('paneOauth');
+        const paneT = document.getElementById('paneToken');
+        const slider = document.getElementById('loginModeSlider');
+        const showPane = (el) => {
+            if (!el) return;
+            el.classList.remove('pane-anim');
+            el.style.display = 'flex';
+            void el.offsetWidth;
+            el.classList.add('pane-anim');
+        };
+        if (type === 'oauth') {
+            if (slider) slider.style.transform = 'translateX(0)';
+            if (btnO) { btnO.style.color = 'var(--gk-text)'; }
+            if (btnT) { btnT.style.color = 'var(--gk-sub)'; }
+            showPane(paneO);
+            if (paneT) { paneT.style.display = 'none'; }
+        } else {
+            if (slider) slider.style.transform = 'translateX(100%)';
+            if (btnT) { btnT.style.color = 'var(--gk-text)'; }
+            if (btnO) { btnO.style.color = 'var(--gk-sub)'; }
+            showPane(paneT);
+            if (paneO) { paneO.style.display = 'none'; }
+        }
+    }
+
+    function setOAuthBtnState(html, disabled) {
+        const btn = document.getElementById('oauthBtn');
+        if (!btn) return;
+        btn.innerHTML = html;
+        btn.disabled = !!disabled;
+    }
+
+    function startOAuthLogin() {
+        if (window.AndroidBridge && typeof window.AndroidBridge.startGithubAuth === 'function') {
+            setOAuthBtnState(
+                '<i class="fa fa-spinner fa-spin"></i><span>授权中...</span>',
+                true
+            );
+            window.AndroidBridge.startGithubAuth();
+            return;
+        }
+        const url = `https://github.com/login/oauth/authorize?client_id=${OAUTH_CLIENT_ID}&redirect_uri=${encodeURIComponent(OAUTH_REDIRECT)}&scope=${encodeURIComponent(OAUTH_SCOPES)}`;
+        window.open(url, '_blank');
+    }
+
+    window.onReceiveAuthToken = function(token) {
+        if (!token) {
+            setOAuthBtnState(
+                '<i class="fa fa-github"></i><span>开启官方安全登录</span>',
+                false
+            );
+            window.oauthAddAccount = false;
+            showToast('授权失败或已取消', 'error');
+            return;
+        }
+        if (window.oauthAddAccount) {
+            window.oauthAddAccount = false;
+            el.accountTokenInput.value = token;
+            handleSaveAccount();
+            showToast('授权成功，账号已添加', 'success');
+            return;
+        }
+        oauthLoginWithToken(token);
+        setOAuthBtnState(
+            '<i class="fa fa-github"></i><span>开启官方安全登录</span>',
+            false
+        );
+    };
+
+    async function oauthLoginWithToken(token) {
+        setOAuthBtnState(
+            '<i class="fa fa-spinner fa-spin"></i><span>正在验证...</span>',
+            true
+        );
+        try {
+            const res = await fetch('https://api.github.com/user', {
+                headers: { Authorization: `token ${token}` }
+            });
+            if (!res.ok) throw new Error('令牌无效或已过期');
+            const userData = await res.json();
+            let existingAccount = state.accounts.find(acc => acc.token === token);
+            if (!existingAccount) {
+                existingAccount = {
+                    id: `gh_${Date.now()}`,
+                    name: `${userData.login}`,
+                    token: token
+                };
+                state.accounts.push(existingAccount);
+                saveAccounts();
+            }
+            setActiveAccount(existingAccount.id);
+            state.shouldAnimateList = true;
+            await Promise.all([fetchUserInfo(), fetchRepos(true)]);
+            setTimeout(showApp, 1000);
+        } catch (error) {
+            showToast(error.message || '授权登录失败', 'error');
+        } finally {
+            setOAuthBtnState(
+                '<i class="fa fa-github"></i><span>开启官方安全登录</span>',
+                false
+            );
+        }
+    }
+
+    function renderLoginSavedAccounts() {
+        const container = document.getElementById('loginSavedAccounts');
+        if (!container) return;
+        const saved = Array.isArray(state.accounts) ? state.accounts.slice() : [];
+        if (saved.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+        container.innerHTML = saved.map(acc => {
+            const initial = (acc.name && acc.name.charAt(0)) ? acc.name.charAt(0).toUpperCase() : 'G';
+            const avatar = (acc.avatar_url || '').replace(/^"/g, '');
+            const avatarCss = avatar
+                ? `style="background-image:url('${avatar}')"`
+                : `style="background-image:none"`;
+            return `
+                <div class="login-saved-account" data-account-id="${escAttr(acc.id)}" onclick="quickLoginAccount('${escAttr(acc.id)}')">
+                    <div class="acc-avatar" ${avatarCss}><span>${escHtml(initial)}</span></div>
+                    <div class="acc-meta">
+                        <span class="acc-name">${escHtml(acc.name)}</span>
+                        <span class="acc-hint">点击快速登录</span>
+                    </div>
+                    <i class="fa fa-chevron-right acc-arrow"></i>
+                </div>`;
+        }).join('');
+        container.style.display = 'flex';
+    }
+
+    window.quickLoginAccount = async function(accountId) {
+        const acc = (state.accounts || []).find(a => a.id === accountId);
+        if (!acc) return;
+        const card = document.querySelector(`[data-account-id="${escapeHtml(accountId)}"]`);
+        if (card) card.classList.add('acc-loading');
+        el.tokenInput.value = acc.token;
+        setActiveAccount(acc.id);
+        state.shouldAnimateList = true;
+        try {
+            document.getElementById('loginSavedAccounts').style.display = 'none';
+            showApp();
+            updateUserUI();
+            el.repoList.innerHTML = '<div class="loading-spinner"><div class="spinner"></div></div>';
+            await Promise.allSettled([
+                fetchUserInfo(),
+                fetchRepos(true, true),
+                fetchStarredRepos(true, true)
+            ]);
+            state.myRepos = [...state.repos];
+            renderRepoList();
+            smartPreloadCNAMEs();
+            renderLoginSavedAccounts();
+            setTimeout(() => { updateAllProxySwitchUI(); }, 1000);
+        } catch (e) {
+            if (card) card.classList.remove('acc-loading');
+            showToast('快速登录失败: ' + (e.message || ''), 'error');
+            renderLoginSavedAccounts();
+        }
+    };
+
+    setupEventListeners2_oauth();
+    function setupEventListeners2_oauth() {
+        const btnO = document.getElementById('btnModeOauth');
+        const slider = document.getElementById('loginModeSlider');
+        if (slider && btnO && btnO.getAttribute('data-default-active') === 'true') {
+            toggleLoginMode('oauth');
+        }
+        renderLoginSavedAccounts();
+    }
+
+    // ===== 帮助函数（快速登录用） =====
+    function escHtml(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, c => (
+            { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+        ));
+    }
+    function escAttr(s) {
+        return escHtml(s);
+    }
+
+    window.toggleLoginMode = toggleLoginMode;
+    window.startOAuthLogin = startOAuthLogin;
+    window.renderLoginSavedAccounts = renderLoginSavedAccounts;
+
+    const tiEl = document.getElementById('tokenInput');
+    const authScrEl = document.getElementById('authScreen');
+    if (tiEl && authScrEl) {
+        tiEl.addEventListener('focus', () => {
+            const sy = authScrEl.scrollTop;
+            setTimeout(() => { authScrEl.scrollTop = sy; }, 0);
+        });
+    }
 
 el.authBtn.addEventListener('click', async () => {
     const token = el.tokenInput.value.trim();
@@ -11067,6 +11334,19 @@ function initFooterEvents() {
                     </div>
                 </div>
 
+                <div class="group-card" id="qqGroupCard">
+                    <div class="group-icon">
+                        <i class="fa-solid fa-people-group"></i>
+                    </div>
+                    <div class="group-info">
+                        <div class="group-name">交流 / 反馈 QQ 群</div>
+                        <div class="group-contact">
+                            <i class="fa-brands fa-qq"></i> 833861469
+                            <span class="group-copy-hint">点击复制群号</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="honor-section">
                     <div class="honor-title">Hall of Fame</div>
                     <div class="honor-grid" id="honorGrid"></div>
@@ -11136,6 +11416,9 @@ function initFooterEvents() {
         });
 
         modal.querySelector('.author-card').onclick = () => handleCopyQQ('1473460411');
+
+        const qqGroupCard = modal.querySelector('#qqGroupCard');
+        if (qqGroupCard) qqGroupCard.onclick = () => handleCopyQQ('833861469');
 
         modal.querySelector('.hub-close-btn').onclick = () => {
             modal.classList.add('hidden');

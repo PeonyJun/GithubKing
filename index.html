@@ -10404,14 +10404,47 @@ el.accountTokenInput.addEventListener('input', validateAccountForm);
             showToast('授权成功，账号已添加', 'success');
             return;
         }
-        el.tokenInput.value = token;
-        toggleLoginMode('token');
-        el.authBtn.click();
+        oauthLoginWithToken(token);
         setOAuthBtnState(
             '<i class="fa fa-github"></i><span>开启官方安全登录</span>',
             false
         );
     };
+
+    async function oauthLoginWithToken(token) {
+        setOAuthBtnState(
+            '<i class="fa fa-spinner fa-spin"></i><span>正在验证...</span>',
+            true
+        );
+        try {
+            const res = await fetch('https://api.github.com/user', {
+                headers: { Authorization: `token ${token}` }
+            });
+            if (!res.ok) throw new Error('令牌无效或已过期');
+            const userData = await res.json();
+            let existingAccount = state.accounts.find(acc => acc.token === token);
+            if (!existingAccount) {
+                existingAccount = {
+                    id: `gh_${Date.now()}`,
+                    name: `${userData.login}`,
+                    token: token
+                };
+                state.accounts.push(existingAccount);
+                saveAccounts();
+            }
+            setActiveAccount(existingAccount.id);
+            state.shouldAnimateList = true;
+            await Promise.all([fetchUserInfo(), fetchRepos(true)]);
+            setTimeout(showApp, 1000);
+        } catch (error) {
+            showToast(error.message || '授权登录失败', 'error');
+        } finally {
+            setOAuthBtnState(
+                '<i class="fa fa-github"></i><span>开启官方安全登录</span>',
+                false
+            );
+        }
+    }
 
     function renderLoginSavedAccounts() {
         const container = document.getElementById('loginSavedAccounts');

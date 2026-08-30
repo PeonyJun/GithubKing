@@ -83,193 +83,334 @@ main {
     border-bottom: 1px solid #1f2937;
 }
 
+:root {
+    --gk-bg: radial-gradient(ellipse at bottom, #1b2c4f 0, #04091a 100%);
+    --gk-surface: #1b2130;
+    --gk-surface-2: #232b3d;
+    --gk-border: rgba(255, 255, 255, 0.08);
+    --gk-text: #e7eaf0;
+    --gk-sub: #8a93a5;
+    --gk-slider: #2b3a50;
+    --gk-track: rgba(148, 163, 184, 0.12);
+}
+
+body.light-theme {
+    --gk-bg: #f0f2f5;
+    --gk-surface: #ffffff;
+    --gk-surface-2: #f6f8fa;
+    --gk-border: #e2e8f0;
+    --gk-text: #1e293b;
+    --gk-sub: #64748b;
+    --gk-slider: #ffffff;
+    --gk-track: rgba(226, 232, 240, 0.8);
+}
+
 #authScreen {
-    position: relative;
+    position: fixed;
+    inset: 0;
+    background: var(--gk-bg);
+    z-index: 1000;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 1rem;
-
-    background: transparent;
-    overflow: hidden;
-    z-index: 1;
+    justify-content: flex-start;
+    padding-top: 10vh;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    transition: opacity 0.3s;
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
-#authScreen::before {
-    content: "";
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
-    animation: lightBreath 15s infinite ease-in-out;
-    z-index: -1;
-    pointer-events: none;
+#tokenGuideModal.modal-overlay {
+    z-index: 1200;
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
-@keyframes lightBreath {
-    0% { transform: scale(0.8) translate(0, 0); opacity: 0.3; }
-    50% { transform: scale(1.1) translate(20px, -20px); opacity: 0.6; }
-    100% { transform: scale(0.8) translate(0, 0); opacity: 0.3; }
-}
-
-.login-container {
+.login-wrapper {
     width: 100%;
     max-width: 320px;
     display: flex;
     flex-direction: column;
+}
+
+.login-header {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
-    z-index: 10;
+    margin-bottom: 1.5rem;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    position: static;
+    background: transparent;
 }
 
-.auth-header {
-    text-align: center;
-    margin-bottom: 0.5rem;
+.logo-box {
+    width: 3.5rem;
+    height: 3.5rem;
+    background: transparent;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    margin-bottom: 1rem;
 }
 
-.auth-header i {
-    font-size: 2.2rem;
-    color: #e0e7ff;
-    margin-bottom: 0.8rem;
-    filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
+.logo-box svg {
+    width: 1.75rem;
+    height: 1.75rem;
 }
 
-.auth-header h1 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #f3f4f6;
-    letter-spacing: 0.15em;
+.login-header h1 {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--gk-text);
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.auth-header p {
-    font-size: 0.7rem;
+.login-header p {
+    font-size: 10px;
+    font-weight: bold;
     color: #94a3b8;
-    letter-spacing: 0.3em;
-    margin-top: 6px;
     text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
 }
 
-.auth-form {
-    width: 100%;
-    background: rgba(30, 41, 59, 0.65);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    padding: 2rem 1.8rem;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow:
-        0 20px 50px -10px rgba(0, 0, 0, 0.5),
-        0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+.login-tabs {
+    position: relative;
+    background: var(--gk-track);
+    padding: 4px;
+    border-radius: 9999px;
     display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
-    transform: translateY(0);
-    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    margin-bottom: 2rem;
+    border: 1px solid var(--gk-border);
 }
 
-.auth-form:hover {
-    transform: translateY(-3px);
-    box-shadow:
-        0 25px 60px -10px rgba(0, 0, 0, 0.6),
-        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-    border-color: rgba(255, 255, 255, 0.15);
-}
-
-#tokenInput {
-    width: 100%;
-    padding: 0.8rem 0;
-    font-size: 0.85rem;
-    color: #e0e7ff;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid #475569;
-    border-radius: 0;
-    text-align: center;
-    transition: all 0.3s ease;
-    font-family: monospace;
-}
-
-#tokenInput::placeholder {
-    color: #64748b;
-    font-size: 0.8rem;
-    letter-spacing: 0.05em;
-    font-family: Arial, sans-serif;
-    transition: color 0.3s ease;
-}
-
-#tokenInput:focus {
-    border-bottom-color: #818cf8;
-    box-shadow: 0 1px 0 0 #818cf8;
-}
-
-#tokenInput:focus::placeholder {
-    color: transparent;
-}
-
-.auth-buttons-container {
+.tab-btn-native {
+    position: relative;
+    z-index: 10;
+    flex: 1;
+    padding: 0.75rem 0;
+    font-size: 11px;
+    font-weight: 700;
     display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    margin-top: 0.5rem;
-
-}
-
-#authBtn,
-.auth-button {
-    width: 100%;
-    padding: 0.7rem;
-    border: none;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin: 0;
-    display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 0.5rem;
+    border: none;
+    background: none;
+    color: var(--gk-sub);
+    cursor: pointer;
+    font-family: inherit;
 }
 
-#authBtn {
-    background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
-    color: #fff;
-    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+#loginModeSlider {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: calc(50% - 4px);
+    height: calc(100% - 8px);
+    background: var(--gk-slider);
+    border-radius: 9999px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 1;
 }
 
-#authBtn:hover {
-    background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+.login-main {
+    position: relative;
+    width: 100%;
 }
 
-#authBtn:active {
-    transform: scale(0.98);
+.pane-native {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-.auth-button {
-    background: rgba(255, 255, 255, 0.05);
-    color: #94a3b8;
-    border: 1px solid transparent;
+.pane-anim {
+    animation: loginPaneFadeIn 0.28s ease;
 }
 
-.auth-button:hover {
-    color: #e2e8f0;
-    background: rgba(255, 255, 255, 0.1);
+@keyframes loginPaneFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.oauth-card {
+    background: var(--gk-surface);
+    border: 1px solid var(--gk-border);
+    border-radius: 24px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.oauth-card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.oauth-card-head span {
+    font-size: 11px;
+    font-weight: bold;
+    color: var(--gk-sub);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.oauth-card p {
+    font-size: 12px;
+    color: var(--gk-sub);
+    line-height: 1.7;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.oauth-card p span {
+    color: #10b981;
+    font-weight: 500;
+}
+
+.btn-oauth-native {
+    width: 100%;
+    background: #10b981;
+    color: #ffffff;
+    height: 54px;
+    border-radius: 1rem;
+    font-size: 13px;
+    font-weight: 700;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.oauth-foot {
+    margin-top: 1.25rem;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.oauth-foot span {
+    font-size: 10px;
+    font-weight: bold;
+    color: var(--gk-sub);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.token-area {
+    background: var(--gk-surface);
+    padding: 4px;
+    border-radius: 22px;
+    border: 1px solid var(--gk-border);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.token-area-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem 0;
+}
+
+.token-area-head span {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--gk-sub);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.token-input-native {
+    width: 100%;
+    background: transparent;
+    padding: 0.75rem 1rem;
+    border: none;
+    outline: none;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--gk-text);
+    resize: none;
+    box-sizing: border-box;
+}
+
+.token-input-native::placeholder {
+    color: #aeb6c4;
+}
+
+.token-login-btn {
+    width: 100%;
+    height: 54px;
+    background: var(--gk-surface-2);
+    border: 1px solid var(--gk-border);
+    color: var(--gk-text);
+    border-radius: 1rem;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.token-guide-link {
+    margin-top: 1.25rem;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.token-guide-link span {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--gk-sub);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .auth-helper-links {
-    margin-top: 1.5rem;
+    margin-top: 1rem;
     display: flex;
     justify-content: center;
+    width: 100%;
+}
+
+
+.login-copyright {
+    margin-top: 0.5rem;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 500;
+    color: #9ca3af;
+    letter-spacing: 0.02em;
     width: 100%;
 }
 
@@ -286,11 +427,84 @@ main {
     align-items: center;
     gap: 6px;
     font-weight: 500;
+    font-family: inherit;
 }
 
 .text-btn:hover {
-    color: #94a3b8;
+    color: #334155;
     text-decoration: none;
+}
+
+/* ===== 登录页：已存账号快捷登录 ===== */
+.login-saved-account {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--gk-surface);
+    border: 1px solid var(--gk-border);
+    border-radius: 16px;
+    padding: 0.55rem 0.8rem;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+.login-saved-account:hover {
+    border-color: var(--gk-border);
+    background: var(--gk-surface-2);
+}
+.login-saved-account .acc-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--gk-surface-2);
+    border: 1px solid var(--gk-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gk-sub);
+    font-size: 0.9rem;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+.login-saved-account .acc-avatar span {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gk-sub);
+}
+.login-saved-account .acc-meta {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+.login-saved-account .acc-name {
+    font-size: 0.83rem;
+    font-weight: 700;
+    color: var(--gk-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.login-saved-account .acc-hint {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--gk-sub);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.login-saved-account .acc-arrow {
+    color: var(--gk-sub);
+    font-size: 0.75rem;
+}
+.login-saved-account.acc-loading {
+    opacity: 0.7;
+    pointer-events: none;
 }
 
 .token-guide-content {
@@ -336,81 +550,6 @@ main {
 .auth-glass-modal h3 {
     color: #f1f5f9 !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-body.light-theme #authScreen {
-    background-color: #f7f9fc;
-    background-image:
-        radial-gradient(at 0% 0%, hsla(210,100%,96%,1) 0, transparent 50%),
-        radial-gradient(at 100% 100%, hsla(220,100%,96%,1) 0, transparent 50%);
-}
-
-body.light-theme #authScreen::before {
-    background: linear-gradient(120deg, #ffffff 0%, #f1f5f9 100%);
-    opacity: 0.6;
-}
-
-body.light-theme .auth-header i {
-    color: #4f46e5;
-    filter: none;
-}
-
-body.light-theme .auth-header h1 {
-    color: #1e293b;
-    text-shadow: none;
-}
-
-body.light-theme .auth-header p {
-    color: #64748b;
-}
-
-body.light-theme .auth-form {
-    background: rgba(255, 255, 255, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.9);
-    box-shadow:
-        0 10px 40px -10px rgba(0, 0, 0, 0.08),
-        0 2px 10px rgba(255, 255, 255, 0.5) inset;
-}
-
-body.light-theme #tokenInput {
-    color: #1e293b;
-    border-bottom-color: #cbd5e1;
-}
-
-body.light-theme #tokenInput::placeholder {
-    color: #94a3b8;
-}
-
-body.light-theme #tokenInput:focus {
-    border-bottom-color: #4f46e5;
-}
-
-body.light-theme #authBtn {
-    background: #1e293b;
-    box-shadow: 0 4px 12px rgba(30, 41, 59, 0.15);
-}
-
-body.light-theme #authBtn:hover {
-    background: #0f172a;
-    box-shadow: 0 6px 16px rgba(30, 41, 59, 0.2);
-}
-
-body.light-theme .auth-button {
-    background: transparent;
-    color: #64748b;
-}
-
-body.light-theme .auth-button:hover {
-    color: #334155;
-    background: rgba(0, 0, 0, 0.05);
-}
-
-body.light-theme .text-btn {
-    color: #64748b;
-}
-
-body.light-theme .text-btn:hover {
-    color: #1e293b;
 }
 
 body.light-theme .auth-glass-modal {
@@ -4472,10 +4611,10 @@ body.light-theme .badge {
     line-height: 1.6;
      white-space: normal;  word-break: break-word;  overflow-wrap: break-word;
     position: relative;
+    flex: 1 1 0;
+    min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    min-height: 25vh;
-    max-height: 48vh;
     padding: 0 5px;
     white-space: normal;
 }
@@ -4525,9 +4664,12 @@ body.light-theme .badge {
 }
 
 .repo-overview-body {
-    flex: 1;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    min-height: 0;
     padding: 0rem 1.2rem;
-    overflow-y: auto;
+    overflow: hidden;
 
     background: rgba(17, 24, 39, 0.5);
 }
@@ -4541,6 +4683,7 @@ body.light-theme .badge {
 }
 
 .repo-overview-footer {
+    margin-top: auto;
     padding: 1rem;
     display: flex;
     gap: 1rem;
@@ -4566,8 +4709,10 @@ body.light-theme .repo-overview-card {
 }
 
 #repoOverviewModal .repo-overview-card {
-    height: 100vh;
-    max-height: 100vh;
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
     border-radius: 0;
     border: none;
     box-shadow: none;
@@ -5293,3 +5438,70 @@ body.light-theme .ce-save-btn {
         padding: 0.4rem 0.55rem;
     }
 }
+
+/* ---------- 交流 / 反馈 QQ 群卡片 ---------- */
+.group-card {
+    margin: 0 20px 14px 20px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.18), rgba(41, 128, 185, 0.12));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: transform 0.25s ease, background 0.25s ease;
+}
+.group-card:active {
+    transform: scale(0.98);
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.3), rgba(41, 128, 185, 0.2));
+}
+.group-icon {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+}
+.group-info {
+    flex: 1;
+    min-width: 0;
+}
+.group-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.group-contact {
+    font-size: 0.85rem;
+    color: #93c5fd;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.5px;
+}
+.group-copy-hint {
+    font-size: 0.7rem;
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.15);
+    padding: 2px 7px;
+    border-radius: 999px;
+    margin-left: auto;
+    white-space: nowrap;
+}
+body.light-theme .group-card {
+    border-color: rgba(59, 130, 246, 0.25);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(6, 182, 212, 0.08));
+}
+body.light-theme .group-name { color: #1f2937; }
+body.light-theme .group-contact { color: #2563eb; }
