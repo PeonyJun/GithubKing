@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="./vendor/font-awesome/css/all.min.css">
 </head>
-<body>
+<body class="light-theme">
 
 		<div id="authScreen">
     <div class="login-wrapper">
@@ -107,10 +107,6 @@
     <button id="viewStarredBtn" class="btn-icon" title="查看星标仓库">
         <i class="fa-regular fa-star"></i>
     </button>
-
-    <button id="sideNavToggleBtn" title="菜单">
-        <i class="fa-regular fa-user"></i>
-    </button>
 </div>
 			</header>
 
@@ -124,67 +120,6 @@
 					<div class="ptr-spinner spinner"></div>
 				</div>
 
-				<div id="toolbar" class="hidden">
-					<div class="toolbar-left">
-						<input id="searchInput" placeholder="搜索文件/文件夹..." class="hidden">
-					</div>
-					<button id="searchToggleBtn" class="btn-icon" title="搜索">
-						<i class="fa fa-search">
-						</i>
-					</button>
-					<button id="proxyQuickToggle" title="代理状态">
-						<i class="fa fa-power-off">
-						</i>
-					</button>
-					<div class="toolbar-right">
-						<div class="custom-select-container">
-							<button id="sortToggleBtn" class="btn-icon" title="排序">
-							<i class="fa-solid fa-up-down"></i>
-							</button>
-
-							<div id="customSortDropdown" class="hidden custom-dropdown">
-    <div class="dropdown-item" data-priority="dirs_first">
-        <i class="fa-solid fa-folder" style="width: 16px; color: #fbbf24;"></i>
-        <span>文件夹置顶</span>
-    </div>
-    <div class="dropdown-item" data-priority="files_first">
-        <i class="fa-solid fa-file" style="width: 16px; color: #60a5fa;"></i>
-        <span>文件置顶</span>
-    </div>
-    <div class="dropdown-divider"></div>
-    <div class="dropdown-item" data-value="type_name_asc">
-        <i class="fa-solid fa-wand-magic-sparkles" style="width: 16px; color: #a78bfa;"></i>
-        <span>智能排序 (推荐)</span>
-    </div>
-    <div class="dropdown-item" data-value="name_asc">
-        <i class="fa-solid fa-arrow-down-a-z" style="width: 16px; color: #34d399;"></i>
-        <span>名称 (A → Z)</span>
-    </div>
-    <div class="dropdown-item" data-value="name_desc">
-        <i class="fa-solid fa-arrow-down-z-a" style="width: 16px; color: #34d399;"></i>
-        <span>名称 (Z → A)</span>
-    </div>
-
-    <div class="dropdown-item" data-value="size_desc">
-        <i class="fa-solid fa-arrow-down-wide-short" style="width: 16px; color: #fb923c;"></i>
-        <span>大小 (大 → 小)</span>
-    </div>
-    <div class="dropdown-item" data-value="size_asc">
-        <i class="fa-solid fa-arrow-down-short-wide" style="width: 16px; color: #fb923c;"></i>
-        <span>大小 (小 → 大)</span>
-    </div>
-</div>
-						</div>
-						<button id="multiSelectToggleBtn" class="btn-icon" title="多项选择">
-						<i class="fa-regular fa-circle-check"></i>
-						</button>
-						<button id="viewToggleBtn" title="切换视图">
-							<i class="fa fa-th-large">
-							</i>
-						</button>
-					</div>
-				</div>
-
 				<div id="repoList">
 					<div class="loading-spinner">
 						<div class="spinner">
@@ -195,6 +130,96 @@
 				<div id="fileList" class="hidden">
 					<div class="loading-spinner">
 						<div class="spinner">
+						</div>
+					</div>
+				</div>
+
+				<div id="publishPage" class="hidden">
+					<div class="gk-page-head">
+						<span class="gk-page-title">部署</span>
+					</div>
+					<div id="publishManageList" class="gk-stack gk-stack-lg">
+						<div class="gk-loading"><div class="spinner"></div></div>
+					</div>
+				</div>
+
+				<div id="settingsPage" class="hidden">
+					<div class="settings-page-header">
+						<span class="settings-page-title">设置</span>
+					</div>
+					<div class="settings-account-card" id="settingsAccountCard">
+						<div id="settingsAvatarContainer" title="点击更换头像">
+							<i id="settingsAvatarPlaceholder" class="fa fa-github"></i>
+							<img id="settingsAvatar" src="" alt="User Avatar" class="fa fa-github hidden">
+						</div>
+						<div class="settings-account-meta">
+							<span id="settingsUserName" class="settings-user-name">未登录</span>
+							<span id="settingsUserLogin" class="settings-user-login"></span>
+						</div>
+						<i class="fa fa-chevron-right settings-card-arrow"></i>
+					</div>
+
+					<div class="settings-group">
+						<div class="settings-group-title">账户</div>
+						<div class="settings-card" id="settingsCardAccounts" data-action="accounts">
+							<i class="fa fa-exchange settings-card-icon" style="color:#60a5fa;"></i>
+							<div class="settings-card-text"><span class="settings-card-main">账号切换管理</span><span class="settings-card-sub">管理并切换已保存的 GitHub 账号</span></div>
+							<i class="fa fa-chevron-right settings-card-arrow"></i>
+						</div>
+						<div class="settings-card" id="settingsCardLogout" data-action="logout">
+							<i class="fa fa-sign-out settings-card-icon" style="color:#f87171;"></i>
+							<div class="settings-card-text"><span class="settings-card-main">退出登录</span><span class="settings-card-sub">退出当前账号</span></div>
+							<i class="fa fa-chevron-right settings-card-arrow"></i>
+						</div>
+					</div>
+
+					<div class="settings-group">
+						<div class="settings-group-title">显示</div>
+						<div class="settings-card" id="settingsCardViewMode" data-action="viewmode">
+							<i class="fa-regular fa-rectangle-list settings-card-icon" style="color:#a78bfa;"></i>
+							<div class="settings-card-text"><span class="settings-card-main">列表界面格式</span><span class="settings-card-sub">列表 / 网格显示文件</span></div>
+							<i class="fa fa-chevron-right settings-card-arrow"></i>
+						</div>
+						<div class="settings-card" id="settingsCardSort" data-action="sort">
+							<i class="fa-solid fa-up-down settings-card-icon" style="color:#34d399;"></i>
+							<div class="settings-card-text"><span class="settings-card-main">排序</span><span class="settings-card-sub">调整文件/文件夹排序方式</span></div>
+							<i class="fa fa-chevron-right settings-card-arrow"></i>
+						</div>
+						<div class="settings-card" id="settingsCardTheme" data-action="theme">
+							<i class="fa-regular fa-sun settings-card-icon" id="settingsThemeIcon" style="color:#f59e0b;"></i>
+							<div class="settings-card-text"><span class="settings-card-main">启用深色主题</span><span class="settings-card-sub" id="settingsThemeSub">浅色模式</span></div>
+							<label class="switch settings-theme-switch" title="切换深色主题">
+								<input type="checkbox" id="settingsThemeToggle">
+								<span class="slider round"></span>
+							</label>
+						</div>
+					</div>
+
+					<div class="settings-group">
+						<div class="settings-group-title">网络</div>
+						<div class="settings-card" id="settingsCardProxy" data-action="proxy">
+							<i class="fa-solid fa-gears settings-card-icon" style="color:#60a5fa;"></i>
+							<div class="settings-card-text"><span class="settings-card-main">网络代理</span><span class="settings-card-sub">设置访问与下载代理前缀</span></div>
+							<i class="fa fa-chevron-right settings-card-arrow"></i>
+						</div>
+					</div>
+
+					<div class="settings-group">
+						<div class="settings-group-title">菜单</div>
+						<div class="settings-card" id="settingsCardMenuConfig" data-action="menuconfig">
+							<i class="fa-regular fa-hand-pointer settings-card-icon" style="color:#34d399;"></i>
+							<div class="settings-card-text"><span class="settings-card-main">菜单配置</span><span class="settings-card-sub">自定义长按菜单项</span></div>
+							<i class="fa fa-chevron-right settings-card-arrow"></i>
+						</div>
+						<div class="settings-card" id="settingsCardGuide" data-action="guide">
+							<i class="fa-regular fa-circle-question settings-card-icon" style="color:#60a5fa;"></i>
+							<div class="settings-card-text"><span class="settings-card-main">使用指南</span><span class="settings-card-sub">查看功能说明与用法</span></div>
+							<i class="fa fa-chevron-right settings-card-arrow"></i>
+						</div>
+						<div class="settings-card" id="settingsCardFeedback" data-action="feedback">
+							<i class="fa fa-heart settings-card-icon" style="color:#f87171;"></i>
+							<div class="settings-card-text"><span class="settings-card-main">反馈</span><span class="settings-card-sub">意见与建议，感谢支持</span></div>
+							<i class="fa fa-chevron-right settings-card-arrow"></i>
 						</div>
 					</div>
 				</div>
@@ -236,34 +261,14 @@
 
 			<input type="file" id="fileUploadInput" multiple class="hidden">
 
-			<div id="mainOverlay"></div>
-<aside id="sideNav">
-    <div class="user-profile-header">
-        <div id="avatarContainer" title="点击更换头像">
-            <i id="userAvatarPlaceholder" class="fa fa-github"></i>
-            <img id="userAvatar" src="" alt="User Avatar" class="fa fa-github hidden">
-        </div>
-        <span id="userName">name</span>
-    </div>
-
-    <ul class="side-nav-main">
-        <li><a href="javascript:void(0);" id="menuProxySettings"><i class="fa-solid fa-gears"></i>代理设置</a></li>
-        <li><a href="javascript:void(0);" id="menuContextMenuSettings"><i class="fa-regular fa-hand-pointer"></i>菜单设置</a></li>
-
-        <li><a href="javascript:void(0);" id="menuBatchPublishSites"><i class="fa-solid fa-layer-group"></i>网站部署</a></li>
-
-    </ul>
-
-    <ul class="side-nav-bottom">
-
-    <li><a href="javascript:void(0);" id="menuThemeToggle"><i class="fa-solid fa-cloud"></i>切换主题</a></li>
-
-        <li><a href="javascript:void(0);" id="menuSwitchAccount"><i class="fa fa-exchange"></i>切换账号</a></li>
-
-        <li><a href="javascript:void(0);" id="menuUsageGuide"><i class="fa-regular fa-circle-question"></i>使用指南</a></li>
-        <li><a href="javascript:void(0);" id="menuLogout"><i class="fa fa-sign-out"></i>退出登录</a></li>
-    </ul>
-</aside>
+			<div id="settingsSheetBackdrop" class="settings-sheet-backdrop hidden"></div>
+			<div id="settingsSheet" class="settings-sheet hidden">
+				<div class="settings-sheet-handle"></div>
+				<div class="settings-sheet-header">
+					<span id="settingsSheetTitle" class="settings-sheet-title"></span>
+				</div>
+				<div id="settingsSheetBody" class="settings-sheet-body"></div>
+			</div>
 
 			<footer>
 			<canvas id="nav-spectrum"></canvas>
@@ -282,6 +287,16 @@
     </button>
     <button id="uploadBtn" title="上传文件" class="hidden">
         <i class="fa-solid fa-arrows-up-down"></i>
+    </button>
+
+    <button id="bnStar" title="星标" class="hidden">
+        <i class="fa-regular fa-star"></i>
+    </button>
+    <button id="bnDeploy" title="部署" class="hidden">
+        <i class="fa-regular fa-paper-plane"></i>
+    </button>
+    <button id="bnMine" title="设置" class="hidden">
+        <i class="fa-solid fa-gear"></i>
     </button>
 </footer>
 
@@ -432,30 +447,24 @@
 				</div>
 			</div>
 
-<div id="setAsSiteModal" class="modal-overlay hidden">
-    <div class="modal-form-container">
-        <h3>
-            <span class="modal-title-text">发布主网站</span>
-            <button class="btn-icon-sm" id="setAsSiteCloseBtn" title="关闭"><i class="fa fa-times"></i></button>
-        </h3>
-        <p>选择一个分支作为您网站的发布源。</p>
-        <div class="form-group">
-            <label for="setAsSiteBranchSelector">选择分支:</label>
-            <div id="setAsSiteBranchSelector" class="custom-branch-select-wrapper">
-                <button class="custom-branch-select-trigger">
-                    <span></span>
-                    <i class="fa fa-chevron-down"></i>
-                </button>
-                <div class="custom-branch-select-options">
+<div id="publishBranchSheet" class="sheet-overlay hidden">
+	<div class="sheet-panel">
+		<div class="sheet-title">选择发布分支</div>
+		<div class="sheet-sub" id="publishBranchRepoName"></div>
+		<div id="publishBranchList" class="sheet-options"></div>
+	</div>
+</div>
 
-                </div>
-            </div>
-        </div>
-        <div class="modal-buttons">
-            <button id="setAsSiteCancelBtn" class="btn btn-cancel">取消</button>
-            <button id="setAsSiteConfirmBtn" class="btn btn-primary">确认发布</button>
-        </div>
-    </div>
+<div id="publishDomainSheet" class="sheet-overlay hidden">
+	<div class="sheet-panel">
+		<div class="sheet-title">绑定自定义域名</div>
+		<div class="sheet-sub" id="publishDomainRepoName"></div>
+		<input id="publishDomainInput" class="sheet-input" type="text" placeholder="例如: docs.example.com" autocomplete="off" spellcheck="false">
+		<div id="publishDomainError" class="sheet-error hidden"></div>
+		<div class="sheet-row">
+			<button id="publishDomainSaveBtn" class="btn gk-btn-primary">保存</button>
+		</div>
+	</div>
 </div>
 
 		<div id="uploadPanel" class="hidden">
@@ -469,7 +478,7 @@
 			</div>
 		</div>
 
-<div id="proxySettingsModal" class="modal-overlay hidden">
+<div id="proxySettingsModal" class="modal-overlay bottom-sheet hidden">
     <div class="modal-form-container">
 
         <h3>
@@ -479,9 +488,6 @@
                     <input type="checkbox" id="proxyGlobalEnableToggle">
                     <span class="slider round"></span>
                 </label>
-                <button id="proxyCancelSettingsBtn" class="btn-icon-sm" title="关闭设置">
-                    <i class="fa fa-times"></i>
-                </button>
             </div>
         </h3>
 
@@ -540,11 +546,10 @@
 			</div>
 		</div>
 
-<div id="contextMenuSettingsModal" class="modal-overlay hidden">
+<div id="contextMenuSettingsModal" class="modal-overlay bottom-sheet hidden">
     <div class="modal-form-container">
         <h3>
             <span class="modal-title-text">长按菜单项设置</span>
-            <button class="btn-icon-sm" id="contextMenuSettingsCloseBtn" title="关闭"><i class="fa fa-times"></i></button>
         </h3>
         <p style="font-size:0.7rem; margin-top:-0.4rem; margin-bottom:0.4rem;">选择在长按时希望看到的快捷操作</p>
         <div class="context-menu-settings-tabs">
@@ -561,11 +566,10 @@
 
     <input type="file" id="avatarUploadInput" class="hidden" accept="image/*">
 
-<div id="accountManagerModal" class="modal-overlay hidden">
+<div id="accountManagerModal" class="modal-overlay bottom-sheet hidden">
     <div class="modal-form-container">
         <h3>
             <span class="modal-title-text">账号管理</span>
-            <button class="btn-icon-sm" id="closeAccountManagerModalBtn" title="关闭"><i class="fa fa-times"></i></button>
         </h3>
 
         <div id="accountListContainer" class="scmz">
@@ -611,33 +615,6 @@
     </div>
 </div>
 
-<div id="publishManagerModal" class="modal-overlay hidden">
-    <div class="modal-form-container">
-       <h3>
-    <span class="modal-title-text">网站管理</span>
-    <div style="display: flex; align-items: center;">
-        <button class="btn-icon-sm" id="showPublishHelpBtn" title="帮助说明" style="margin-right: 0.5rem;"><i class="fa fa-question-circle"></i></button>
-        <button class="btn-icon-sm" id="closePublishManagerBtn" title="关闭"><i class="fa fa-times"></i></button>
-    </div>
-</h3>
-
-        <div id="publishManageList" class="publish-list">
-
-        </div>
-
-        <div class="modal-buttons">
-                    <div class="modal-buttons publish-manager-tabs">
-            <button id="officialConfigTabBtn" class="btn btn-tab active">
-                官方配置
-            </button>
-            <button id="customDomainTabBtn" class="btn btn-tab">
-                 自定义域名
-            </button>
-        </div>
-        </div>
-    </div>
-</div>
-
 <div id="forkRepoModal" class="modal-overlay hidden">
     <div class="modal-form-container">
         <h3>
@@ -679,95 +656,10 @@
 				</div>
 			</div>
 
-<div id="customDomainModal" class="modal-overlay hidden">
-    <div class="modal-form-container">
-        <h3>
-            <span class="modal-title-text">配置自定义域名</span>
-            <button class="btn-icon-sm" id="closeCustomDomainModalBtn" title="关闭"><i class="fa fa-times"></i></button>
-        </h3>
-        <p id="customDomainRepoName" style="font-size: 0.8rem; color: #a2a7c7; margin-bottom: 0.8rem;"></p>
-        <input id="customDomainInput" type="text" placeholder="例如: 123.baidu.com" autocomplete="off">
-        <div id="customDomainError" class="text-red-400" style="font-size: 0.75rem; margin-top: -0.4rem; margin-bottom: 0.4rem; display: none;"></div>
-        <div class="modal-buttons">
-            <button id="customDomainCancelBtn" class="btn btn-cancel">取消</button>
-            <button id="customDomainSaveBtn" class="btn btn-primary" disabled>
-                <span>确认</span><i class="fa fa-spinner fa-spin hidden"></i>
-            </button>
-        </div>
-    </div>
-</div>
-
-<div id="publishHelpModal" class="modal-overlay hidden">
-    <div class="publish-help-dialog">
-        <div class="publish-help-header">
-            <h3><i class="fa-regular fa-circle-question"></i> 网站部署功能指南</h3>
-            <button class="btn-icon-sm" id="closePublishHelpBtn" title="关闭"><i class="fa fa-times"></i></button>
-        </div>
-        <div class="publish-help-content scmz">
-
-            <h4 style="color: #f87171;"><i class="fa-solid fa-triangle-exclamation"></i> 核心规则：域名使用限制</h4>
-            <p style="font-weight: bold;">
-                自定义域名同一时间只能用于主站或项目网站之一，不能同时使用。为其中一类配置域名，会导致另一类的自定义域名失效。请务必提前规划。
-            </p>
-
-            <h4><i class="fa-solid fa-bolt"></i> 功能概览</h4>
-            <p>
-                此功能利用 GitHub Pages 服务，将您的公开仓库一键发布为可公开访问的静态网站。它分为两个管理面板：
-            </p>
-            <ul>
-                <li><b>官方配置：</b> 在此管理所有公开仓库的发布状态。您可以将任何仓库发布为项目网站，或将特定仓库设为您的个人主站。发布的网站将通过 GitHub 官方域名 (<code>*.github.io</code>) 访问。</li>
-                <li><b>自定义域名：</b> 在此为您已经发布的网站绑定您自己的域名，让访问更专业、更便捷。</li>
-            </ul>
-
-            <h4><i class="fa-solid fa-sitemap"></i> 操作流程</h4>
-            <ul>
-                 <li><b>发布为主站：</b> 在“官方配置”面板中，找到您想作为主站的仓库，点击“发布为主站”按钮。程序会自动将其重命名为 <code>您的用户名.github.io</code> 并发布。</li>
-                 <li><b>发布为项目：</b> 对于其他公开仓库，点击“发布项目”按钮，即可将其发布。</li>
-                 <li><b>配置自定义域名：</b> 切换到“自定义域名”面板，找到已发布的网站，点击“配置域名”并按提示操作。</li>
-                 <li><b>复制链接：</b> 在任一面板中，直接点击已发布的仓库条目，即可快速复制其对应的访问链接。</li>
-            </ul>
-
-            <h4><i class="fa-solid fa-link"></i> 自定义域名配置指南</h4>
-            <p>
-                要成功绑定您的域名，通常需要以下两个步骤：
-            </p>
-            <p><strong>第 1 步：在您的域名提供商处添加解析记录</strong></p>
-            <ul>
-                <li><b>记录类型：</b> 选择 <code>CNAME</code></li>
-                <li><b>主机记录：</b> 填入您想使用的前缀，例如 <code>www</code> 或 <code>blog</code>。</li>
-                <li><b>记录值 (指向)：</b> 填入您的 GitHub Pages 主站地址，格式为 <code>您的用户名.github.io</code>。
-                    <ul style="margin-top:0.4rem;">
-                        <li>例如：<code>rjdsq.github.io</code></li>
-                    </ul>
-                </li>
-            </ul>
-             <p style="margin-top:0.8rem;">
-                <strong>第 2 步 (必须)：将您的域名添加到 Cloudflare</strong>
-            </p>
-            <p>
-                为确保您的网站在中国大陆地区能被稳定访问并自动启用 HTTPS，强烈建议将您的域名添加到免费的 Cloudflare 服务中。
-            </p>
-            <ul>
-                <li><b>配置地址：</b><code style="user-select: text;">https://dash.cloudflare.com</code></li>
-                <li><b>操作建议：</b> 登录后，直接添加您的顶级域名（例如 <code>baidu.com</code>），Cloudflare 会自动引导您完成后续设置。</li>
-            </ul>
-
-            <h4><i class="fa-solid fa-clipboard-list"></i> 重要提示</h4>
-            <ul>
-                <li><b>仓库要求：</b> 只有<b>公开 (Public)</b> 仓库才能被发布为网站。</li>
-                <li><b>主站唯一性：</b> 一个 GitHub 账号只能拥有一个主站，其仓库名必须严格遵守 <code>用户名.github.io</code> 的格式。</li>
-                <li><b>取消发布：</b> 对于项目网站，此操作会禁用其 GitHub Pages 功能；对于主站，为安全起见，程序会将其重命名为一个备份名称来使其下线，您的文件不会丢失。</li>
-                <li><b>CNAME 文件：</b> 成功配置自定义域名后，系统会在您的仓库根目录下创建一个名为 <code>CNAME</code> 的文件，请不要手动删除或修改它。</li>
-            </ul>
-        </div>
-    </div>
-</div>
-
-<div id="usageGuideModal" class="modal-overlay hidden">
+<div id="usageGuideModal" class="modal-overlay bottom-sheet hidden">
     <div class="publish-help-dialog">
         <div class="publish-help-header">
             <h3><i class="fa-solid fa-book-open"></i> 全能使用手册</h3>
-            <button class="btn-icon-sm" id="closeUsageGuideBtn" title="关闭"><i class="fa fa-times"></i></button>
         </div>
         <div class="publish-help-content scmz">
             <p style="margin-bottom: 1rem;  font-size: 0.85rem;">
@@ -1544,7 +1436,6 @@ const state = {
     currentRelease: null,
     viewingReleasesForRepo: null,
 
-    publishManagerActiveTab: 'official',
     configuringDomainRepoFullName: null,
 
     publicSearchPage: 1,
@@ -1630,6 +1521,7 @@ const CONTEXT_MENU_DEFINITIONS = {
     ],
 
     folder: [
+        { action: 'multiSelect', icon: 'fa-regular fa-circle-check', text: '多选' },
         { action: 'copyPagesLink', icon: 'fa-globe', text: '网站链接' },
         { action: 'copyGitHubLink', icon: 'fa-link', text: '仓库链接' },
         { action: 'rename', icon: 'fa-pencil', text: '重命名' },
@@ -1639,6 +1531,7 @@ const CONTEXT_MENU_DEFINITIONS = {
 
     file: [
         { action: 'goToDirectory', icon: 'fa-regular fa-folder-open', text: '进入目录' },
+        { action: 'multiSelect', icon: 'fa-regular fa-circle-check', text: '多选' },
         { action: 'rename', icon: 'fa-pencil', text: '重命名' },
         { action: 'download', icon: 'fa-download', text: '代理下载' },
         { action: 'copyPagesLink', icon: 'fa-link', text: '网站链接' },
@@ -1670,68 +1563,44 @@ main: document.querySelector('main'),
      branchSwitcherContainer: document.getElementById('branchSwitcherContainer'),
     backBtn: document.getElementById('backBtn'),
     newFolderBtn: document.getElementById('newFolderBtn'),
-    uploadBtn: document.getElementById('uploadBtn'),
-    sideNav: document.getElementById('sideNav'),
+     uploadBtn: document.getElementById('uploadBtn'),
 
-    newReleaseBtn: document.getElementById('newReleaseBtn'),
-    mainOverlay: document.getElementById('mainOverlay'),
-    sideNavToggleBtn: document.getElementById('sideNavToggleBtn'),
-    menuUsageGuide: document.getElementById('menuUsageGuide'),
-    usageGuideModal: document.getElementById('usageGuideModal'),
-    closeUsageGuideBtn: document.getElementById('closeUsageGuideBtn'),
+     newReleaseBtn: document.getElementById('newReleaseBtn'),
+     usageGuideModal: document.getElementById('usageGuideModal'),
     contextMenu: document.getElementById('contextMenu'),
     contextMenuItems: document.getElementById('contextMenuItems'),
     toast: document.getElementById('toast'),
     toastMessage: document.getElementById('toastMessage'),
     uploadPanel: document.getElementById('uploadPanel'),
     uploadItems: document.getElementById('uploadItems'),
-    setAsSiteModal: document.getElementById('setAsSiteModal'),
-setAsSiteCloseBtn: document.getElementById('setAsSiteCloseBtn'),
-setAsSiteCancelBtn: document.getElementById('setAsSiteCancelBtn'),
-setAsSiteConfirmBtn: document.getElementById('setAsSiteConfirmBtn'),
     fileUploadInput: document.getElementById('fileUploadInput'),
     mainLoader: document.getElementById('mainLoader'),
-    repoDetailsModal: document.getElementById('repoDetailsModal'),
-    menuLogout: document.getElementById('menuLogout'),
-    menuProxySettings: document.getElementById('menuProxySettings'),
+     repoDetailsModal: document.getElementById('repoDetailsModal'),
 
-    menuBatchPublishSites: document.getElementById('menuBatchPublishSites'),
-    newFileBtn: document.getElementById('newFileBtn'),
+     newFileBtn: document.getElementById('newFileBtn'),
 
-     publishManageList: document.getElementById('publishManageList'),
-       customDomainTabBtn: document.getElementById('customDomainTabBtn'),
+    publishManageList: document.getElementById('publishManageList'),
+    publishBranchSheet: document.getElementById('publishBranchSheet'),
+    publishBranchRepoName: document.getElementById('publishBranchRepoName'),
+    publishBranchList: document.getElementById('publishBranchList'),
+    publishDomainSheet: document.getElementById('publishDomainSheet'),
+    publishDomainRepoName: document.getElementById('publishDomainRepoName'),
+    publishDomainInput: document.getElementById('publishDomainInput'),
+    publishDomainError: document.getElementById('publishDomainError'),
+    publishDomainSaveBtn: document.getElementById('publishDomainSaveBtn'),
 
     releaseManagerModal: document.getElementById('releaseManagerModal'),
-    closeReleaseManagerBtn: document.getElementById('closeReleaseManagerBtn'),
-    releaseTagNameInput: document.getElementById('releaseTagNameInput'),
-    releaseNameInput: document.getElementById('releaseNameInput'),
-    releaseBodyInput: document.getElementById('releaseBodyInput'),
-    releasePrerelease: document.getElementById('releasePrerelease'),
-    submitReleaseBtn: document.getElementById('submitReleaseBtn'),
-    cancelReleaseBtn: document.getElementById('cancelReleaseBtn'),
-
-    customDomainModal: document.getElementById('customDomainModal'),
-    closeCustomDomainModalBtn: document.getElementById('closeCustomDomainModalBtn'),
-    customDomainRepoName: document.getElementById('customDomainRepoName'),
-    customDomainInput: document.getElementById('customDomainInput'),
-    customDomainError: document.getElementById('customDomainError'),
-    customDomainCancelBtn: document.getElementById('customDomainCancelBtn'),
-    customDomainSaveBtn: document.getElementById('customDomainSaveBtn'),
-menuUsageGuide: document.getElementById('menuUsageGuide'),
-    preUploadModal: document.getElementById('preUploadModal'),
     preUploadList: document.getElementById('preUploadList'),
     preUploadAddBtn: document.getElementById('preUploadAddBtn'),
     preUploadStartBtn: document.getElementById('preUploadStartBtn'),
     preUploadClearBtn: document.getElementById('preUploadClearBtn'),
-    customDomainTabBtn: document.getElementById('customDomainTabBtn'),
     toolbar: document.getElementById('toolbar'),
     searchInput: document.getElementById('searchInput'),
     viewToggleBtn: document.getElementById('viewToggleBtn'),
     proxyQuickToggle: document.getElementById('proxyQuickToggle'),
     proxySettingsModal: document.getElementById('proxySettingsModal'),
-    userName: document.getElementById('userName'),
+    userName: document.getElementById('settingsUserName'),
     proxyGlobalEnableToggle: document.getElementById('proxyGlobalEnableToggle'),
-    proxyCancelSettingsBtn: document.getElementById('proxyCancelSettingsBtn'),
     proxySaveBtn: document.getElementById('proxySaveBtn'),
     proxyPrefixInput: document.getElementById('proxyPrefixInput'),
     proxyDownloadInput: document.getElementById('proxyDownloadInput'),
@@ -1771,10 +1640,10 @@ menuUsageGuide: document.getElementById('menuUsageGuide'),
     searchToggleBtn: document.getElementById('searchToggleBtn'),
     sortToggleBtn: document.getElementById('sortToggleBtn'),
     customSortDropdown: document.getElementById('customSortDropdown'),
-    avatarContainer: document.getElementById('avatarContainer'),
+    avatarContainer: document.getElementById('settingsAvatarContainer'),
     avatarUploadInput: document.getElementById('avatarUploadInput'),
-    userAvatar: document.getElementById('userAvatar'),
-    userAvatarPlaceholder: document.getElementById('userAvatarPlaceholder'),
+    userAvatar: document.getElementById('settingsAvatar'),
+    userAvatarPlaceholder: document.getElementById('settingsAvatarPlaceholder'),
     multiSelectToggleBtn: document.getElementById('multiSelectToggleBtn'),
     multiSelectBar: document.getElementById('multi-select-bar'),
     cancelSelectBtn: document.getElementById('cancel-select-btn'),
@@ -1782,16 +1651,12 @@ menuUsageGuide: document.getElementById('menuUsageGuide'),
     invertSelectBtn: document.getElementById('invert-select-btn'),
     downloadBtn: document.getElementById('download-btn'),
     deleteBtn: document.getElementById('delete-btn'),
-    selectedCountSpan: document.getElementById('selected-count'),
-    menuContextMenuSettings: document.getElementById('menuContextMenuSettings'),
-    contextMenuSettingsModal: document.getElementById('contextMenuSettingsModal'),
-    contextMenuSettingsCloseBtn: document.getElementById('contextMenuSettingsCloseBtn'),
+     selectedCountSpan: document.getElementById('selected-count'),
+     contextMenuSettingsModal: document.getElementById('contextMenuSettingsModal'),
     contextMenuSettingsContent: document.getElementById('contextMenuSettingsContent'),
      currentRepo: document.getElementById('currentRepo'),
-    manageAccountsBtn: document.getElementById('manageAccountsBtn'),
-    menuSwitchAccount: document.getElementById('menuSwitchAccount'),
-    accountManagerModal: document.getElementById('accountManagerModal'),
-    closeAccountManagerModalBtn: document.getElementById('closeAccountManagerModalBtn'),
+     manageAccountsBtn: document.getElementById('manageAccountsBtn'),
+     accountManagerModal: document.getElementById('accountManagerModal'),
     accountListContainer: document.getElementById('accountListContainer'),
     accountListEmpty: document.getElementById('accountListEmpty'),
     showAddAccountModalBtn: document.getElementById('showAddAccountModalBtn'),
@@ -1802,15 +1667,31 @@ menuUsageGuide: document.getElementById('menuUsageGuide'),
     accountTokenInput: document.getElementById('accountTokenInput'),
     addEditAccountError: document.getElementById('addEditAccountError'),
     addEditAccountCancelBtn: document.getElementById('addEditAccountCancelBtn'),
-    addEditAccountSaveBtn: document.getElementById('addEditAccountSaveBtn'),
-    menuThemeToggle: document.getElementById('menuThemeToggle'),
-    publishManagerModal: document.getElementById('publishManagerModal'),
-    closePublishManagerBtn: document.getElementById('closePublishManagerBtn'),
-    publishManageList: document.getElementById('publishManageList'),
-    officialConfigTabBtn: document.getElementById('officialConfigTabBtn'),
-    showPublishHelpBtn: document.getElementById('showPublishHelpBtn'),
-    publishHelpModal: document.getElementById('publishHelpModal'),
-    closePublishHelpBtn: document.getElementById('closePublishHelpBtn')
+     addEditAccountSaveBtn: document.getElementById('addEditAccountSaveBtn'),
+     settingsPage: document.getElementById('settingsPage'),
+     settingsAccountCard: document.getElementById('settingsAccountCard'),
+     settingsAvatarContainer: document.getElementById('settingsAvatarContainer'),
+     settingsAvatarPlaceholder: document.getElementById('settingsAvatarPlaceholder'),
+     settingsAvatar: document.getElementById('settingsAvatar'),
+     settingsUserName: document.getElementById('settingsUserName'),
+     settingsUserLogin: document.getElementById('settingsUserLogin'),
+     settingsCardAccounts: document.getElementById('settingsCardAccounts'),
+     settingsCardLogout: document.getElementById('settingsCardLogout'),
+     settingsCardViewMode: document.getElementById('settingsCardViewMode'),
+     settingsCardSort: document.getElementById('settingsCardSort'),
+     settingsCardTheme: document.getElementById('settingsCardTheme'),
+     settingsThemeIcon: document.getElementById('settingsThemeIcon'),
+     settingsThemeSub: document.getElementById('settingsThemeSub'),
+     settingsThemeToggle: document.getElementById('settingsThemeToggle'),
+     settingsCardProxy: document.getElementById('settingsCardProxy'),
+     settingsCardMenuConfig: document.getElementById('settingsCardMenuConfig'),
+     settingsCardGuide: document.getElementById('settingsCardGuide'),
+     settingsCardFeedback: document.getElementById('settingsCardFeedback'),
+     settingsSheet: document.getElementById('settingsSheet'),
+     settingsSheetBackdrop: document.getElementById('settingsSheetBackdrop'),
+     settingsSheetTitle: document.getElementById('settingsSheetTitle'),
+     settingsSheetBody: document.getElementById('settingsSheetBody'),
+     publishPage: document.getElementById('publishPage')
 
 };
 
@@ -1843,12 +1724,8 @@ function handleNativeBack() {
     return 'exit';
 }
 
-const themeManager = {
+ const themeManager = {
     apply(theme) {
-        const themeToggle = document.getElementById('menuThemeToggle');
-        if (!themeToggle) return;
-        const icon = themeToggle.querySelector('i');
-
         document.documentElement.classList.remove('light-theme-loading');
 
         const oldThemeMeta = document.querySelector('meta[name="theme-color"]');
@@ -1869,13 +1746,11 @@ const themeManager = {
 
         if (theme === 'light') {
             document.body.classList.add('light-theme');
-            if (icon) icon.className = 'fa-regular fa-moon';
             newThemeMeta.setAttribute('content', '#f0f2f5');
             newAppleMeta.setAttribute('content', 'default');
         } else {
             document.body.classList.remove('light-theme');
-            if (icon) icon.className = 'fa-solid fa-cloud';
-            newThemeMeta.setAttribute('content', '#04091a');
+            newThemeMeta.setAttribute('content', '#0d1117');
             newAppleMeta.setAttribute('content', 'black-translucent');
         }
 
@@ -1883,6 +1758,8 @@ const themeManager = {
             document.head.appendChild(newThemeMeta);
             document.head.appendChild(newAppleMeta);
         }, 0);
+
+        try { if (typeof syncSettingsThemeUI === 'function') syncSettingsThemeUI(); } catch(e) {}
 
         if (window.AndroidBridge && typeof window.AndroidBridge.setTheme === 'function') {
             try { window.AndroidBridge.setTheme(theme); } catch (e) {}
@@ -1908,6 +1785,16 @@ const themeManager = {
         }
     }
 };
+
+function syncSettingsThemeUI() {
+    if (!el.settingsThemeToggle && !el.settingsThemeSub && !el.settingsThemeIcon) return;
+    const isLight = document.body.classList.contains('light-theme');
+    if (el.settingsThemeToggle) el.settingsThemeToggle.checked = !isLight;
+    if (el.settingsThemeSub) el.settingsThemeSub.textContent = isLight ? '浅色模式' : '深色模式';
+    if (el.settingsThemeIcon) {
+        el.settingsThemeIcon.className = isLight ? 'fa-regular fa-sun settings-card-icon' : 'fa-solid fa-cloud settings-card-icon';
+    }
+}
 
 function loadSearchHistory() {
     try {
@@ -2706,7 +2593,9 @@ function toggleView(showRepoList) {
         el.main.classList.remove('has-toolbar');
         el.repoList.classList.remove('hidden');
         el.fileList.classList.add('hidden');
-        el.toolbar.classList.add('hidden');
+        if (el.publishPage) el.publishPage.classList.add('hidden');
+        if (el.settingsPage) el.settingsPage.classList.add('hidden');
+        if (el.toolbar) el.toolbar.classList.add('hidden');
         el.pathNavContainer.classList.add('hidden');
         el.branchSwitcherContainer.classList.add('hidden');
 
@@ -2715,7 +2604,9 @@ function toggleView(showRepoList) {
         el.main.classList.add('has-toolbar');
         el.repoList.classList.add('hidden');
         el.fileList.classList.remove('hidden');
-        el.toolbar.classList.remove('hidden');
+        if (el.publishPage) el.publishPage.classList.add('hidden');
+        if (el.settingsPage) el.settingsPage.classList.add('hidden');
+        if (el.toolbar) el.toolbar.classList.remove('hidden');
         el.pathNavContainer.classList.remove('hidden');
         el.branchSwitcherContainer.classList.remove('hidden');
 
@@ -3656,12 +3547,11 @@ async function refreshAssetsList() {
 
 function showRepoListView() {
     state.isSearchResultsView = false;
-    el.searchToggleBtn.classList.remove('hidden');
-    el.multiSelectToggleBtn.classList.remove('hidden');
-    el.sortToggleBtn.classList.remove('hidden');
     state.shouldAnimateList = true;
     el.repoList.classList.remove('hidden');
     el.fileList.classList.add('hidden');
+    if (el.publishPage) el.publishPage.classList.add('hidden');
+    if (el.settingsPage) el.settingsPage.classList.add('hidden');
     el.pathNavContainer.classList.add('hidden');
     el.branchSwitcherContainer.classList.add('hidden');
 
@@ -4082,9 +3972,6 @@ async function navigateToRepo(repoData, branch, path = '', updateHistory = true)
     }
     el.currentRepo.textContent = displayName;
     toggleView(false);
-    el.searchToggleBtn.classList.remove('hidden');
-    el.multiSelectToggleBtn.classList.remove('hidden');
-    el.sortToggleBtn.classList.remove('hidden');
     updateGlobalSearchVisibility();
     renderPathNav();
     fetchBranches(repoData).then(renderBranchSwitcher);
@@ -4670,16 +4557,20 @@ function updateSortDropdownUI() {
 }
 
 function closeSideNav() {
-    el.sideNav.classList.remove('open');
-    el.mainOverlay.classList.remove('open');
+    const sideNav = document.getElementById('sideNav');
+    const mainOverlay = document.getElementById('mainOverlay');
+    if (sideNav) sideNav.classList.remove('open');
+    if (mainOverlay) mainOverlay.classList.remove('open');
 }
 
 function hideSortDropdown() {
+    if (!el.customSortDropdown) return;
     el.customSortDropdown.classList.add('hidden');
     removeFromStack(hideSortDropdown);
 }
 
 function showSortDropdown() {
+    if (!el.customSortDropdown) return;
     el.customSortDropdown.classList.remove('hidden');
     uiStateStack.push(hideSortDropdown);
 }
@@ -5645,7 +5536,8 @@ async function handleRepoContextMenuAction(action, repo) {
 }
 
 async function batchUnpublishSites() {
-    const reposToUnpublish = state.repos.filter(r => r.has_pages && r.name !== `${state.user.login}.github.io`);
+    const repos = Array.isArray(state.repos) ? state.repos : [];
+    const reposToUnpublish = repos.filter(r => r.has_pages && r.name !== `${state.user.login}.github.io`);
 
     if (reposToUnpublish.length === 0) {
         showToast('没有可下线的网站');
@@ -5675,7 +5567,8 @@ async function batchUnpublishSites() {
 }
 
 async function batchPublishSites() {
-    const reposToPublish = state.repos.filter(r => !r.private && r.name !== `${state.user.login}.github.io` && !r.has_pages);
+    const repos = Array.isArray(state.repos) ? state.repos : [];
+    const reposToPublish = repos.filter(r => !r.private && r.name !== `${state.user.login}.github.io` && !r.has_pages);
 
     if (reposToPublish.length === 0) {
         showToast('没有可发布的仓库');
@@ -5727,11 +5620,11 @@ function findNextAvailableBackupName() {
 let repoToSetAsSite = null;
 let branchToPublish = null;
 
-function hideSetAsSiteModal() {
-    el.setAsSiteModal.classList.add('hidden');
+function closePublishBranchSheet() {
+    el.publishBranchSheet.classList.add('hidden');
     repoToSetAsSite = null;
     branchToPublish = null;
-    removeFromStack(hideSetAsSiteModal);
+    removeFromStack(closePublishBranchSheet);
 }
 
 const ImagePersistence = {
@@ -5906,7 +5799,7 @@ function updateSingleRepoInStateAndUI(updatedRepoObject) {
 
     localStorage.setItem('cached_repos', JSON.stringify(state.repos));
 
-    if (!el.publishManagerModal.classList.contains('hidden')) {
+    if (el.publishPage && !el.publishPage.classList.contains('hidden')) {
         renderPublishManagerLists();
     }
     if (!el.repoList.classList.contains('hidden')) {
@@ -5916,22 +5809,14 @@ function updateSingleRepoInStateAndUI(updatedRepoObject) {
 
 async function showPublishBranchSelectorModal(repo, publishType) {
     repoToSetAsSite = repo;
-    branchToPublish = repo.default_branch;
+    branchToPublish = null;
 
-    const modalTitle = el.setAsSiteModal.querySelector('.modal-title-text');
-    modalTitle.textContent = (publishType === 'mainSite') ? '发布主网站' : '发布项目网站';
+    el.publishBranchRepoName.textContent = repo.full_name;
+    el.publishBranchList.innerHTML = '<div class="sheet-loading">加载分支中…</div>';
+    el.publishBranchSheet.classList.remove('hidden');
+    uiStateStack.push(closePublishBranchSheet);
 
-    el.setAsSiteModal.classList.remove('hidden');
-    uiStateStack.push(hideSetAsSiteModal);
-
-    const selectorWrapper = document.getElementById('setAsSiteBranchSelector');
-    const triggerText = selectorWrapper.querySelector('span');
-    const optionsPanel = selectorWrapper.querySelector('.custom-branch-select-options');
-    const confirmBtn = el.setAsSiteConfirmBtn;
-
-    triggerText.textContent = '加载分支中...';
-    optionsPanel.innerHTML = '';
-    confirmBtn.disabled = true;
+    let activeSheetType = publishType;
 
     try {
         const res = await fetch(`https://api.github.com/repos/${repo.full_name}/branches`, {
@@ -5940,174 +5825,151 @@ async function showPublishBranchSelectorModal(repo, publishType) {
         if (!res.ok) throw new Error('获取分支列表失败');
 
         const branches = (await res.json()).reverse();
+        el.publishBranchList.innerHTML = '';
+
         if (branches.length === 0) {
-            triggerText.textContent = '无可用分支';
+            el.publishBranchList.innerHTML = '<div class="sheet-empty">无可用分支</div>';
             return;
         }
 
-        confirmBtn.disabled = false;
-        triggerText.textContent = branchToPublish;
-
         branches.forEach(branch => {
             const option = document.createElement('div');
-            option.className = 'custom-branch-select-option';
-            if (branch.name === branchToPublish) option.classList.add('selected');
+            option.className = 'sheet-option';
             option.textContent = branch.name;
-            option.dataset.branchName = branch.name;
             option.addEventListener('click', () => {
                 branchToPublish = branch.name;
-                triggerText.textContent = branch.name;
-                const currentSelected = optionsPanel.querySelector('.selected');
-                if (currentSelected) currentSelected.classList.remove('selected');
-                option.classList.add('selected');
-                selectorWrapper.classList.remove('open');
+                closePublishBranchSheet();
+                runPublishByType(repoToSetAsSite, branchToPublish, activeSheetType);
             });
-            optionsPanel.appendChild(option);
+            el.publishBranchList.appendChild(option);
         });
     } catch (error) {
-        triggerText.textContent = '加载失败';
+        el.publishBranchList.innerHTML = '<div class="sheet-empty">加载失败</div>';
         showToast(error.message);
     }
+}
 
-    confirmBtn.onclick = async () => {
-        const repoToProcess = repoToSetAsSite;
-        const branchToUse = branchToPublish;
-        if (!repoToProcess || !branchToUse) return;
+async function runPublishByType(repoToProcess, branchToUse, publishType) {
+    if (!repoToProcess || !branchToUse) return;
 
-        hideSetAsSiteModal();
-
-        if (publishType === 'projectSite') {
-            const buttonInManager = document.querySelector(`.project-action-btn[data-repo-fullname="${repoToProcess.full_name}"]`);
-            if (buttonInManager) {
-                buttonInManager.textContent = '处理中...';
-                buttonInManager.disabled = true;
-            }
-            const result = await publishProjectSite(repoToProcess, branchToUse);
-            if (!result.success) showToast(result.message, 'error');
-            if (result.success) {
-                const repoInState = state.repos.find(r => r.id === repoToProcess.id);
-                if (repoInState) repoInState.has_pages = true;
-            }
-            renderPublishManagerLists();
-        } else if (publishType === 'mainSite') {
-            const mainSiteButton = document.querySelector(`.set-as-main-site-btn[data-repo-fullname="${repoToProcess.full_name}"]`);
-            if (mainSiteButton) {
-                mainSiteButton.textContent = '处理中...';
-                mainSiteButton.disabled = true;
-            }
-
-            el.mainLoader.classList.remove('hidden');
-            const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-            async function enablePagesWithRetry(repo, branch, maxAttempts = 2, delayBetweenAttempts = 4000) {
-                for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-                    showToast(`正在配置网站`, 'info');
-                    try {
-                        const pagesRes = await fetch(`https://api.github.com/repos/${repo.full_name}/pages`, {
-                            method: 'POST',
-                            headers: { 'Authorization': `token ${state.token}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ source: { branch: branch, path: "/" } })
-                        });
-
-                        if (pagesRes.ok || pagesRes.status === 409) {
-                            return { success: true };
-                        }
-
-                        const updateRes = await fetch(`https://api.github.com/repos/${repo.full_name}/pages`, {
-                            method: 'PUT',
-                            headers: { 'Authorization': `token ${state.token}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ source: { branch: branch, path: "/" } })
-                        });
-
-                        if (updateRes.ok) {
-                            return { success: true };
-                        }
-
-                        if (attempt < maxAttempts) {
-                            await delay(delayBetweenAttempts);
-                            continue;
-                        }
-
-                        throw new Error(`API错误: ${updateRes.status}`);
-
-                    } catch (error) {
-                        if (attempt >= maxAttempts) {
-                            throw error;
-                        }
-                        await delay(delayBetweenAttempts);
-                    }
-                }
-                 throw new Error('配置网站失败');
-            }
-
-            const MAX_SETUP_ATTEMPTS = 3;
-            let finalError = null;
-
-            for (let setupAttempt = 1; setupAttempt <= MAX_SETUP_ATTEMPTS; setupAttempt++) {
-                try {
-                    showToast(`设置主站 (${setupAttempt}/${MAX_SETUP_ATTEMPTS})`, 'info', 7000);
-                    const mainSiteName = `${state.user.login}.github.io`;
-                    await fetchRepos(true, false);
-                    const existingMainSite = state.repos.find(r => r.name === mainSiteName);
-
-                    if (existingMainSite && existingMainSite.id !== repoToProcess.id) {
-                        if (existingMainSite.has_pages) {
-                            await disablePages(existingMainSite);
-                        }
-                        const backupName = findNextAvailableBackupName();
-                        await fetch(`https://api.github.com/repos/${existingMainSite.full_name}`, {
-                            method: 'PATCH', headers: { 'Authorization': `token ${state.token}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ name: backupName })
-                        });
-                    }
-
-                    if (repoToProcess.name !== mainSiteName) {
-                        await fetch(`https://api.github.com/repos/${repoToProcess.full_name}`, {
-                            method: 'PATCH', headers: { 'Authorization': `token ${state.token}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ name: mainSiteName })
-                        });
-                    }
-
-                    await delay(6000);
-                    await fetchRepos(true, false);
-                    const finalRepoToPublish = state.repos.find(r => r.name === mainSiteName);
-
-                    if (!finalRepoToPublish) {
-                         throw new Error('主站信息同步失败');
-                    }
-
-                    const result = await enablePagesWithRetry(finalRepoToPublish, branchToUse);
-
-                    if (!result.success) {
-                        throw new Error('配置网站失败，请稍后在GitHub官网手动开启Pages');
-                    }
-
-                    await delay(2000);
-                    finalError = null;
-                    break;
-
-                } catch (e) {
-                    finalError = e;
-                    if (setupAttempt < MAX_SETUP_ATTEMPTS) {
-                        showToast(`${e.message}，自动重试中`, 'info');
-                        await delay(1000);
-                    }
-                }
-            }
-
-            if (finalError) {
-                 showToast(`操作失败: ${finalError.message}`, 'error');
-                 if (mainSiteButton) {
-                     mainSiteButton.textContent = '发布为主站';
-                     mainSiteButton.disabled = false;
-                 }
-            }
-
-            await fetchRepos(true, false);
-            el.mainLoader.classList.add('hidden');
-            renderPublishManagerLists();
+    if (publishType === 'projectSite') {
+        showToast('正在发布…', 'info');
+        const result = await publishProjectSite(repoToProcess, branchToUse);
+        if (!result.success) showToast(result.message, 'error');
+        if (result.success) {
+            const repoInState = state.repos.find(r => r.id === repoToProcess.id);
+            if (repoInState) repoInState.has_pages = true;
+            showToast('发布成功', 'success');
         }
-    };
+        renderPublishManagerLists();
+    } else if (publishType === 'mainSite') {
+        el.mainLoader.classList.remove('hidden');
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        async function enablePagesWithRetry(repo, branch, maxAttempts = 2, delayBetweenAttempts = 4000) {
+            for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+                showToast(`正在配置网站`, 'info');
+                try {
+                    const pagesRes = await fetch(`https://api.github.com/repos/${repo.full_name}/pages`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `token ${state.token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ source: { branch: branch, path: "/" } })
+                    });
+
+                    if (pagesRes.ok || pagesRes.status === 409) {
+                        return { success: true };
+                    }
+
+                    const updateRes = await fetch(`https://api.github.com/repos/${repo.full_name}/pages`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `token ${state.token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ source: { branch: branch, path: "/" } })
+                    });
+
+                    if (updateRes.ok) {
+                        return { success: true };
+                    }
+
+                    if (attempt < maxAttempts) {
+                        await delay(delayBetweenAttempts);
+                        continue;
+                    }
+
+                    throw new Error(`API错误: ${updateRes.status}`);
+
+                } catch (error) {
+                    if (attempt >= maxAttempts) {
+                        throw error;
+                    }
+                    await delay(delayBetweenAttempts);
+                }
+            }
+             throw new Error('配置网站失败');
+        }
+
+        const MAX_SETUP_ATTEMPTS = 3;
+        let finalError = null;
+
+        for (let setupAttempt = 1; setupAttempt <= MAX_SETUP_ATTEMPTS; setupAttempt++) {
+            try {
+                showToast(`设置主站 (${setupAttempt}/${MAX_SETUP_ATTEMPTS})`, 'info', 7000);
+                const mainSiteName = `${state.user.login}.github.io`;
+                await fetchRepos(true, false);
+                const existingMainSite = state.repos.find(r => r.name === mainSiteName);
+
+                if (existingMainSite && existingMainSite.id !== repoToProcess.id) {
+                    if (existingMainSite.has_pages) {
+                        await disablePages(existingMainSite);
+                    }
+                    const backupName = findNextAvailableBackupName();
+                    await fetch(`https://api.github.com/repos/${existingMainSite.full_name}`, {
+                        method: 'PATCH', headers: { 'Authorization': `token ${state.token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: backupName })
+                    });
+                }
+
+                if (repoToProcess.name !== mainSiteName) {
+                    await fetch(`https://api.github.com/repos/${repoToProcess.full_name}`, {
+                        method: 'PATCH', headers: { 'Authorization': `token ${state.token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: mainSiteName })
+                    });
+                }
+
+                await delay(6000);
+                await fetchRepos(true, false);
+                const finalRepoToPublish = (Array.isArray(state.repos) ? state.repos : []).find(r => r.name === mainSiteName);
+
+                if (!finalRepoToPublish) {
+                     throw new Error('主站信息同步失败');
+                }
+
+                const result = await enablePagesWithRetry(finalRepoToPublish, branchToUse);
+
+                if (!result.success) {
+                    throw new Error('配置网站失败，请稍后在GitHub官网手动开启Pages');
+                }
+
+                await delay(2000);
+                finalError = null;
+                break;
+
+            } catch (e) {
+                finalError = e;
+                if (setupAttempt < MAX_SETUP_ATTEMPTS) {
+                    showToast(`${e.message}，自动重试中`, 'info');
+                    await delay(1000);
+                }
+            }
+        }
+
+        if (finalError) {
+             showToast(`操作失败: ${finalError.message}`, 'error');
+        }
+
+        await fetchRepos(true, false);
+        el.mainLoader.classList.add('hidden');
+        renderPublishManagerLists();
+    }
 }
 
 let uploadClickTimer = null;
@@ -7382,14 +7244,14 @@ function toggleMultiSelectMode(enable) {
     if (enable) {
         fileListEl.classList.add('multi-select-mode');
         el.multiSelectBar.classList.add('active');
-        toggleBtn.classList.add('active');
-        toggleBtn.title = '取消多选';
+        if (toggleBtn) toggleBtn.classList.add('active');
+        if (toggleBtn) toggleBtn.title = '取消多选';
         uiStateStack.push(closeMultiSelect);
     } else {
         fileListEl.classList.remove('multi-select-mode');
         el.multiSelectBar.classList.remove('active');
-        toggleBtn.classList.remove('active');
-        toggleBtn.title = '多项选择';
+        if (toggleBtn) toggleBtn.classList.remove('active');
+        if (toggleBtn) toggleBtn.title = '多项选择';
         fileListEl.querySelectorAll('.file-item.selected').forEach(item => {
             item.classList.remove('selected');
         });
@@ -8398,26 +8260,17 @@ async function unpublishSite(repo) {
     }
 }
 
-function renderPublishManagerLists() {
-
-    if (state.publishManagerActiveTab === 'official') {
-        el.officialConfigTabBtn.classList.add('active');
-        el.customDomainTabBtn.classList.remove('active');
-    } else {
-        el.officialConfigTabBtn.classList.remove('active');
-        el.customDomainTabBtn.classList.add('active');
-    }
+   async function renderPublishManagerLists() {
 
     const listEl = el.publishManageList;
-
-    const previousScrollTop = listEl.scrollTop;
+    const repos = Array.isArray(state.repos) ? state.repos : [];
 
     let syncDomainCache = {};
     try {
         syncDomainCache = JSON.parse(localStorage.getItem('sync_domain_cache') || '{}');
     } catch (e) {}
 
-    state.repos.forEach(repo => {
+    repos.forEach(repo => {
         if (repo.has_pages && !repo.customDomain && syncDomainCache[repo.full_name]) {
             repo.customDomain = syncDomainCache[repo.full_name];
         }
@@ -8426,201 +8279,353 @@ function renderPublishManagerLists() {
     let mainSiteRepo = null;
     if (state.user && state.user.login) {
         const mainSiteName = `${state.user.login}.github.io`;
-        mainSiteRepo = state.repos.find(r => r.name === mainSiteName);
-    }
-    const mainSiteExists = !!mainSiteRepo;
-    const isActiveTabOfficial = state.publishManagerActiveTab === 'official';
-    let reposToRender;
-
-    if (isActiveTabOfficial) {
-        const otherPublicRepos = state.repos.filter(r => !r.private && (!mainSiteRepo || r.id !== mainSiteRepo.id));
-        const publishedRepos = otherPublicRepos.filter(r => r.has_pages);
-        const unpublishedRepos = otherPublicRepos.filter(r => !r.has_pages);
-        publishedRepos.sort((a, b) => a.name.localeCompare(b.name));
-        unpublishedRepos.sort((a, b) => a.name.localeCompare(b.name));
-        reposToRender = mainSiteRepo ? [mainSiteRepo, ...publishedRepos, ...unpublishedRepos] : [...publishedRepos, ...unpublishedRepos];
-    } else {
-
-        let publishedRepos = state.repos.filter(r => r.has_pages || r.customDomain);
-        if (mainSiteRepo && (mainSiteRepo.has_pages || mainSiteRepo.customDomain)) {
-
-            if (!publishedRepos.find(r => r.id === mainSiteRepo.id)) {
-                publishedRepos.push(mainSiteRepo);
-            }
-        }
-
-        let otherRepos = publishedRepos.filter(r => !mainSiteRepo || r.id !== mainSiteRepo.id);
-
-        otherRepos.sort((a, b) => {
-            const aHasDomain = !!a.customDomain;
-            const bHasDomain = !!b.customDomain;
-            if (aHasDomain && !bHasDomain) return -1;
-            if (!aHasDomain && bHasDomain) return 1;
-            return a.name.localeCompare(b.name);
-        });
-
-        reposToRender = mainSiteRepo ? [mainSiteRepo, ...otherRepos] : otherRepos;
+        mainSiteRepo = repos.find(r => r.name === mainSiteName);
     }
 
     listEl.innerHTML = '';
+    const fragment = document.createDocumentFragment();
 
-    if (reposToRender.length === 0) {
-        const emptyMessage = isActiveTabOfficial
-            ? '没有可管理的公开项目'
-            : '没有已发布的项目网站';
-        listEl.innerHTML = `<p class="publish-list-empty">${emptyMessage}</p>`;
-    } else {
-        const fragment = document.createDocumentFragment();
-        const mainSiteHasCustomDomain = mainSiteRepo && mainSiteRepo.customDomain;
-        const projectSiteHasDomain = state.repos.some(r => r.has_pages && r.customDomain && (!mainSiteRepo || r.id !== mainSiteRepo.id));
+    state.publishRows = [];
 
-        let newCacheData = { ...syncDomainCache };
-        let cacheChanged = false;
+    function sectionTitle(text) {
+        const h = document.createElement('div');
+        h.className = 'gk-section-title';
+        h.textContent = text;
+        return h;
+    }
 
-        reposToRender.forEach(repo => {
+    function row(repo, status, url) {
+        const item = document.createElement('div');
+        item.className = 'gk-row';
+        item.dataset.fullname = repo.full_name;
 
-            if (repo.customDomain) {
-                if (newCacheData[repo.full_name] !== repo.customDomain) {
-                    newCacheData[repo.full_name] = repo.customDomain;
-                    cacheChanged = true;
-                }
-            }
+        const left = document.createElement('div');
+        left.className = 'gk-row-main';
+        const name = document.createElement('div');
+        name.className = 'gk-row-name';
+        name.textContent = repo.name;
+        name.title = repo.name;
+        const sub = document.createElement('div');
+        sub.className = 'gk-row-sub';
+        left.append(name, sub);
 
-            const item = document.createElement('div');
-            item.className = 'publish-item';
+        const right = document.createElement('div');
+        right.className = 'gk-row-actions';
 
-            if (repo.has_pages) {
-                item.classList.add('is-published');
-                item.title = '点击复制网站链接';
-            }
-
-            if (isActiveTabOfficial) {
-                const isPublished = repo.has_pages;
-                const isMainSite = mainSiteRepo && repo.id === mainSiteRepo.id;
-                let actionButtonHTML = '';
-
-                if (isMainSite) {
-                    if (isPublished && !repo.customDomain) {
-                        actionButtonHTML = `<button class="btn btn-unpublish btn-sm main-site-action-btn">取消主站</button>`;
-                    }
-                } else {
-                    if (isPublished) {
-                        if (!repo.customDomain) {
-                            actionButtonHTML = `<button class="btn btn-unpublish btn-sm project-action-btn">取消项目</button>`;
-                        }
-                    } else {
-                        actionButtonHTML = `<button class="btn btn-primary btn-sm project-action-btn">发布项目</button>`;
-                    }
-                }
-
-                const showSetAsMainSiteButton = !isMainSite && !repo.customDomain && !mainSiteExists;
-
-                item.innerHTML = `
-                    <span class="repo-name" title="${repo.name}">${repo.name}</span>
-                    <div class="publish-item-actions">
-                        ${showSetAsMainSiteButton ? `<button class="btn btn-secondary btn-sm set-as-main-site-btn" data-repo-fullname="${repo.full_name}">发布为主站</button>` : ''}
-                        ${actionButtonHTML}
-                    </div>
-                `;
-
-                if (isMainSite) {
-                    const btn = item.querySelector('.main-site-action-btn');
-                    if (btn) btn.onclick = () => showUnpublishMainSiteModal(repo);
-                } else {
-                    const btn = item.querySelector('.project-action-btn');
-                    if (btn) {
-                        if (isPublished) {
-                            btn.onclick = () => {
-                                showDeleteModal(null, false, '确认取消发布', `确定要取消发布 "${repo.name}" 吗？`, async () => {
-                                    btn.textContent = '处理中...'; btn.disabled = true;
-                                    const res = await unpublishSite(repo);
-                                    if(!res.success) showToast(res.message, 'error');
-                                    if(res.success) {
-                                        const r = state.repos.find(x => x.id === repo.id);
-                                        if(r) r.has_pages = false;
-                                        renderPublishManagerLists();
-                                    }
-                                }, '确认取消', 'btn-danger', undefined, '已取消发布');
-                            };
-                        } else {
-                            btn.dataset.repoFullname = repo.full_name;
-                            btn.onclick = () => showPublishBranchSelectorModal(repo, 'projectSite');
-                        }
-                    }
-                }
-
-            } else {
-
-                const isMainSite = mainSiteRepo && repo.id === mainSiteRepo.id;
-                let showConfigureButton = false;
-                if(isMainSite) {
-                    showConfigureButton = !projectSiteHasDomain;
-                } else {
-                    showConfigureButton = !mainSiteHasCustomDomain;
-                }
-
-                let actionButtonsHTML = '';
-                if (repo.customDomain) {
-                    actionButtonsHTML += `<button class="btn btn-unpublish btn-sm remove-domain-btn" data-repo-fullname="${repo.full_name}">取消绑定</button>`;
-                }
-                if (showConfigureButton) {
-                    actionButtonsHTML += `<button class="btn btn-primary btn-sm configure-domain-btn" data-repo-fullname="${repo.full_name}">配置域名</button>`;
-                }
-
-                item.innerHTML = `
-                    <div class="repo-info-wrapper">
-                        <span class="repo-name" title="${repo.name}">${repo.name}</span>
-                        ${repo.customDomain ? `<p class="repo-domain-display">${repo.customDomain}</p>` : ''}
-                    </div>
-                    <div class="publish-item-actions">
-                        ${actionButtonsHTML}
-                    </div>
-                `;
-            }
-
-            item.addEventListener('click', (e) => {
-                if (e.target.closest('button')) return;
-
-                if (state.publishManagerActiveTab === 'official') {
-                    if (!repo.has_pages) {
-                        showToast('未发布静态网页'); return;
-                    }
-                    const isMain = state.user && repo.name === `${state.user.login}.github.io`;
-                    const url = isMain ? `https://${repo.owner.login}.github.io/` : `https://${repo.owner.login}.github.io/${repo.name}/`;
-                    navigator.clipboard.writeText(url).then(() => showToast('链接已复制')).catch(() => showToast('复制失败'));
-                } else {
-                    if (repo.customDomain) {
-                        navigator.clipboard.writeText(`https://${repo.customDomain}`).then(() => showToast('域名已复制'));
-                    } else {
-                        showToast('未配置域名');
-                    }
-                }
+        if (url) {
+            const u = document.createElement('span');
+            u.className = 'gk-row-url' + (status === 'main' ? ' main' : '');
+            u.textContent = url;
+            u.title = url;
+            u.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navigator.clipboard.writeText(url).then(() => showToast('链接已复制'));
             });
+            sub.appendChild(u);
+        }
 
-            fragment.appendChild(item);
+        if (status === 'main') {
+            const clone = document.createElement('button');
+            clone.className = 'gk-btn gk-btn-ghost gk-btn-sm';
+            clone.textContent = '取消主站';
+            clone.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showUnpublishMainSiteModal(repo);
+            });
+            right.appendChild(clone);
+        } else if (status === 'published') {
+            const domainBtn = document.createElement('button');
+            domainBtn.className = 'gk-btn gk-btn-ghost gk-btn-sm';
+            domainBtn.textContent = repo.customDomain ? '解绑域名' : '绑定域名';
+            domainBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (repo.customDomain) showRemoveCustomDomainConfirmation(repo);
+                else showCustomDomainModal(repo.full_name);
+            });
+            right.appendChild(domainBtn);
+            const unpub = document.createElement('button');
+            unpub.className = 'gk-btn gk-btn-ghost gk-btn-sm danger';
+            unpub.textContent = '下线';
+            unpub.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showDeleteModal(null, false, '确认下线', `确定要下线 "${repo.name}" 吗？`, async () => {
+                    const res = await unpublishSite(repo);
+                    if (!res.success) showToast(res.message, 'error');
+                    if (res.success) {
+                        const r = state.repos.find(x => x.id === repo.id);
+                        if (r) r.has_pages = false;
+                        renderPublishManagerLists();
+                    }
+                }, '确认下线', 'btn-danger', undefined, '已下线');
+            });
+            right.appendChild(unpub);
+        } else {
+            const isMainRepo = mainSiteRepo && repo.id === mainSiteRepo.id;
+            const publish = document.createElement('button');
+            publish.className = 'gk-btn gk-btn-primary gk-btn-sm';
+            publish.textContent = isMainRepo ? '发布主站' : '发布';
+            publish.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showPublishBranchSelectorModal(repo, isMainRepo ? 'mainSite' : 'projectSite');
+            });
+            right.appendChild(publish);
+            if (!mainSiteRepo) {
+                const asMain = document.createElement('button');
+                asMain.className = 'gk-btn gk-btn-ghost gk-btn-sm';
+                asMain.textContent = '设为主站';
+                asMain.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showPublishBranchSelectorModal(repo, 'mainSite');
+                });
+                right.appendChild(asMain);
+            }
+        }
+
+        item.append(left, right);
+        return item;
+    }
+
+    let any = false;
+
+    if (mainSiteRepo) {
+        fragment.appendChild(sectionTitle('我的主站'));
+        const hasPages = mainSiteRepo.has_pages;
+        fragment.appendChild(row(mainSiteRepo, hasPages ? 'main' : 'unpublished', hasPages ? siteUrl(mainSiteRepo) : null));
+        any = true;
+    }
+
+    const publishedRepos = repos.filter(r => r.has_pages && (!mainSiteRepo || r.id !== mainSiteRepo.id));
+    publishedRepos.sort((a, b) => a.name.localeCompare(b.name));
+    if (publishedRepos.length > 0) {
+        fragment.appendChild(sectionTitle('已发布项目'));
+        publishedRepos.forEach(repo => {
+            fragment.appendChild(row(repo, 'published', repo.customDomain ? `https://${repo.customDomain}` : siteUrl(repo)));
+        });
+        any = true;
+    }
+
+    const unpublishedRepos = repos.filter(r => !r.private && !r.has_pages && (!mainSiteRepo || r.id !== mainSiteRepo.id));
+    unpublishedRepos.sort((a, b) => a.name.localeCompare(b.name));
+    if (unpublishedRepos.length > 0) {
+        fragment.appendChild(sectionTitle('可发布仓库'));
+        unpublishedRepos.forEach(repo => {
+            fragment.appendChild(row(repo, 'unpublished', null));
+        });
+        any = true;
+    }
+
+    if (!any) {
+        const empty = document.createElement('div');
+        empty.className = 'gk-empty';
+        empty.textContent = '暂无可用仓库';
+        fragment.appendChild(empty);
+    }
+
+    listEl.appendChild(fragment);
+ }
+
+async function showCustomDomainModal(repoFullName) {
+    state.configuringDomainRepoFullName = repoFullName;
+    const repoName = repoFullName.split('/')[1];
+    const repoToUpdate = state.repos.find(r => r.full_name === repoFullName);
+
+    el.publishDomainRepoName.textContent = repoFullName;
+    el.publishDomainInput.value = '';
+    el.publishDomainError.classList.add('hidden');
+    el.publishDomainSheet.classList.remove('hidden');
+    uiStateStack.push(closePublishDomainSheet);
+
+    el.publishDomainInput.disabled = true;
+
+    try {
+        const url = `https://api.github.com/repos/${repoFullName}/contents/CNAME`;
+        const response = await fetch(url, {
+            headers: { 'Authorization': `token ${state.token}` }
         });
 
-        listEl.appendChild(fragment);
+        if (response.ok) {
+            const data = await response.json();
+            const currentDomain = atob(data.content);
+            el.publishDomainInput.value = currentDomain;
+            if (repoToUpdate) repoToUpdate.customDomain = currentDomain;
+        } else {
 
-        if (cacheChanged) {
-            localStorage.setItem('sync_domain_cache', JSON.stringify(newCacheData));
+            if (repoToUpdate) repoToUpdate.customDomain = null;
         }
+
+    } catch (error) {
+        console.error('获取CNAME文件失败:', error);
+        el.publishDomainInput.placeholder = '加载域名失败，请重试';
+    } finally {
+        el.publishDomainInput.disabled = false;
+        el.publishDomainInput.focus();
     }
+}
 
-    if (previousScrollTop > 0) {
-        listEl.scrollTop = previousScrollTop;
+function closePublishDomainSheet() {
+    el.publishDomainSheet.classList.add('hidden');
+    state.configuringDomainRepoFullName = null;
+    el.publishDomainInput.value = '';
+    el.publishDomainError.classList.add('hidden');
+    removeFromStack(closePublishDomainSheet);
+}
+
+async function handleSaveCustomDomain() {
+    const domain = el.publishDomainInput.value.trim();
+    if (!domain || !state.configuringDomainRepoFullName) return;
+
+    el.publishDomainSaveBtn.disabled = true;
+    el.publishDomainError.classList.add('hidden');
+
+    try {
+        const [owner, repoName] = state.configuringDomainRepoFullName.split('/');
+        const filePath = 'CNAME';
+        const url = `https://api.github.com/repos/${owner}/${repoName}/contents/${filePath}`;
+
+        let existingFileSha = null;
+        try {
+            const checkRes = await fetch(url, { headers: { 'Authorization': `token ${state.token}` } });
+            if (checkRes.ok) {
+                existingFileSha = (await checkRes.json()).sha;
+            }
+        } catch (e) {}
+
+        const encodedContent = btoa(unescape(encodeURIComponent(domain)));
+        const requestBody = {
+            message: `feat: Set custom domain to ${domain}`,
+            content: encodedContent,
+            branch: state.repos.find(r => r.full_name === state.configuringDomainRepoFullName)?.default_branch || 'main'
+        };
+
+        if (existingFileSha) {
+            requestBody.sha = existingFileSha;
+        }
+
+        const res = await fetch(url, {
+            method: 'PUT',
+            headers: { 'Authorization': `token ${state.token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.message || '配置域名失败');
+        }
+
+        const repoToUpdate = state.repos.find(r => r.full_name === state.configuringDomainRepoFullName);
+        if (repoToUpdate) {
+            repoToUpdate.customDomain = domain;
+            try {
+                const CACHE_KEY = 'custom_domains_cache';
+                let cachedDomains = (await SimpleDB.get(CACHE_KEY)) || {};
+                cachedDomains[repoToUpdate.full_name] = domain;
+                await SimpleDB.set(CACHE_KEY, cachedDomains);
+            } catch (e) {}
+        }
+
+        closePublishDomainSheet();
+        showToast('域名已绑定', 'success');
+        renderPublishManagerLists();
+
+    } catch (error) {
+        el.publishDomainError.textContent = `错误: ${error.message}`;
+        el.publishDomainError.classList.remove('hidden');
+    } finally {
+        el.publishDomainSaveBtn.disabled = false;
     }
 }
 
-function showPublishHelpModal() {
-    el.publishHelpModal.classList.remove('hidden');
-    uiStateStack.push(hidePublishHelpModal);
+function showRemoveCustomDomainConfirmation(repo) {
+    showDeleteModal(
+        null,
+        false,
+        '确认取消域名绑定',
+        `确定要为仓库 "${repo.name}" 取消自定义域名绑定吗？<br><br>此操作将从您的仓库中删除 CNAME 文件。`,
+        async () => {
+            await handleRemoveCustomDomain(repo);
+        },
+        '确认取消',
+        'btn-danger',
+        undefined,
+        '已取消绑定'
+    );
 }
 
-function hidePublishHelpModal() {
-    el.publishHelpModal.classList.add('hidden');
-    removeFromStack(hidePublishHelpModal);
+async function handleRemoveCustomDomain(repo) {
+    try {
+        const [owner, repoName] = repo.full_name.split('/');
+        const url = `https://api.github.com/repos/${owner}/${repoName}/contents/CNAME`;
+
+        const checkRes = await fetch(url + `?ref=${repo.default_branch}`, {
+            headers: { 'Authorization': `token ${state.token}` }
+        });
+
+        if (!checkRes.ok) {
+            if (checkRes.status === 404) {
+                showToast('域名配置不存在');
+                repo.customDomain = null;
+                try {
+                    const CACHE_KEY = 'custom_domains_cache';
+                    let cachedDomains = (await SimpleDB.get(CACHE_KEY)) || {};
+                    delete cachedDomains[repo.full_name];
+                    await SimpleDB.set(CACHE_KEY, cachedDomains);
+                } catch (e) {}
+                renderPublishManagerLists();
+                return;
+            }
+            throw new Error('无法获取当前的域名配置');
+        }
+
+        const fileData = await checkRes.json();
+        const existingFileSha = fileData.sha;
+
+        const res = await fetch(url, {
+            method: 'DELETE',
+            headers: { 'Authorization': `token ${state.token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message: `build: Remove custom domain`,
+                sha: existingFileSha,
+                branch: repo.default_branch
+            })
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.message || '取消绑定失败');
+        }
+
+        repo.customDomain = null;
+        try {
+            const CACHE_KEY = 'custom_domains_cache';
+            let cachedDomains = (await SimpleDB.get(CACHE_KEY)) || {};
+            delete cachedDomains[repo.full_name];
+            await SimpleDB.set(CACHE_KEY, cachedDomains);
+        } catch (e) {}
+
+        renderPublishManagerLists();
+
+    } catch (error) {
+        showToast(`操作失败: ${error.message}`, 'error');
+        console.error(error);
+    }
 }
+ function autoGrow(element) {
+     element.style.height = 'auto';
+     element.style.height = (element.scrollHeight) + 'px';
+ }
+
+ function siteUrl(repo) {
+     const isMain = state.user && repo.name === `${state.user.login}.github.io`;
+     return isMain ? `https://${repo.owner.login}.github.io/` : `https://${repo.owner.login}.github.io/${repo.name}/`;
+ }
+
+ function handleDeployListClick(e) {
+     // Web 后备，优先就近读取子按钮绑定
+     const url = e.target.closest('.gk-row-url');
+     if (url) {
+         navigator.clipboard.writeText(url.textContent).catch(() => {});
+     }
+  }
 
 function showUsageGuideModal() {
     hideMainMenuPopup();
@@ -8633,26 +8638,266 @@ function hideUsageGuideModal() {
     removeFromStack(hideUsageGuideModal);
 }
 
-async function showPublishManagerModal() {
-    hideMainMenuPopup();
-    state.publishManagerActiveTab = 'official';
-    el.publishManagerModal.classList.remove('hidden');
-    uiStateStack.push(hidePublishManagerModal);
+ async function showPublishManagerModal() {
+     hideMainMenuPopup();
+     pushPublishPageHistory();
+     showPublishPage();
+     if (!state.repos || state.repos.length === 0) {
+         try { await fetchRepos(true, false); } catch (e) { console.error('刷新仓库列表失败', e); }
+     }
+     await renderPublishPageData();
+ }
 
-    el.publishManageList.innerHTML = '<div class="loading-spinner"><i class="fa fa-spinner fa-spin"></i></div>';
+ function pushPublishPageHistory() {
+     history.pushState({ view: 'publish_manager' }, '', window.location.pathname);
+ }
 
-    const CACHE_KEY = 'custom_domains_cache';
-    try {
-        const cachedDomains = (await SimpleDB.get(CACHE_KEY)) || {};
-        state.repos.forEach(repo => {
-            if (repo.has_pages && cachedDomains[repo.full_name] !== undefined) {
-                repo.customDomain = cachedDomains[repo.full_name];
-            }
-        });
-    } catch (e) {}
+ function showPublishPage() {
+     state.currentView = 'publish_manager';
+     state.isSearchResultsView = false;
+     el.repoList.classList.add('hidden');
+     el.fileList.classList.add('hidden');
+     el.pathNavContainer.classList.add('hidden');
+     el.branchSwitcherContainer.classList.add('hidden');
+     if (el.toolbar) el.toolbar.classList.add('hidden');
+     if (el.publishPage) el.publishPage.classList.remove('hidden');
+     if (el.settingsPage) el.settingsPage.classList.add('hidden');
+     el.currentRepo.textContent = '部署';
 
-    renderPublishManagerLists();
-}
+     const globalSearchContainer = document.getElementById('globalSearchContainer');
+     const globalSearchToggleBtn = document.getElementById('globalSearchToggleBtn');
+     if (globalSearchContainer && !globalSearchContainer.classList.contains('hidden')) {
+         globalSearchContainer.classList.add('hidden');
+         if (globalSearchToggleBtn) globalSearchToggleBtn.classList.remove('active');
+     }
+
+     el.main.classList.remove('has-toolbar');
+     updatePaginationUI();
+ }
+
+ async function renderPublishPageData() {
+     if (el.publishManageList) {
+         el.publishManageList.innerHTML = '<div class="gk-loading"><div class="spinner"></div></div>';
+     }
+
+     const CACHE_KEY = 'custom_domains_cache';
+     try {
+         const cachedDomains = (await SimpleDB.get(CACHE_KEY)) || {};
+         (Array.isArray(state.repos) ? state.repos : []).forEach(repo => {
+             if (repo.has_pages && cachedDomains[repo.full_name] !== undefined) {
+                 repo.customDomain = cachedDomains[repo.full_name];
+             }
+         });
+     } catch (e) {}
+
+     renderPublishManagerLists();
+ }
+
+ function leavePublishPage() {
+     if (el.publishPage) el.publishPage.classList.add('hidden');
+     if (!el.repoList.classList.contains('hidden')) {
+         state.shouldAnimateList = false;
+         renderRepoList();
+     } else {
+         showRepoListView();
+     }
+     updatePaginationUI();
+ }
+
+  function hidePublishManagerModal() {
+      el.publishPage.classList.add('hidden');
+      removeFromStack(hidePublishManagerModal);
+      leavePublishPage();
+  }
+
+
+  function pushSettingsPageHistory() {
+      history.pushState({ view: 'settings' }, '', window.location.pathname);
+  }
+
+  function showSettingsPage() {
+      state.currentView = 'settings';
+      state.isSearchResultsView = false;
+      el.repoList.classList.add('hidden');
+      el.fileList.classList.add('hidden');
+      el.pathNavContainer.classList.add('hidden');
+      el.branchSwitcherContainer.classList.add('hidden');
+      if (el.toolbar) el.toolbar.classList.add('hidden');
+      if (el.publishPage) el.publishPage.classList.add('hidden');
+      if (el.settingsPage) el.settingsPage.classList.remove('hidden');
+
+      const sc = document.getElementById('globalSearchContainer');
+      const sctb = document.getElementById('globalSearchToggleBtn');
+      if (sc && !sc.classList.contains('hidden')) {
+          sc.classList.add('hidden');
+          if (sctb) sctb.classList.remove('active');
+      }
+
+      el.main.classList.remove('has-toolbar');
+      renderSettingsPageData();
+      updatePaginationUI();
+  }
+
+  function renderSettingsPageData() {
+      if (state.user) {
+          el.settingsUserName.textContent = state.user.login || state.user.name || '未登录';
+          el.settingsUserLogin.textContent = state.user.login ? '@' + state.user.login : '';
+      }
+  }
+
+  function leaveSettingsPage() {
+      if (el.settingsPage) el.settingsPage.classList.add('hidden');
+      if (!el.repoList.classList.contains('hidden')) {
+          state.shouldAnimateList = false;
+          renderRepoList();
+      } else {
+          showRepoListView();
+      }
+      updatePaginationUI();
+  }
+
+  function hideSettingsPage() {
+      if (el.settingsPage) el.settingsPage.classList.add('hidden');
+      removeFromStack(hideSettingsPage);
+      leaveSettingsPage();
+  }
+
+
+  function openSettingsSheet(title, opts) {
+      el.settingsSheetTitle.textContent = title;
+      el.settingsSheetBody.innerHTML = opts.content || '';
+      el.settingsSheet.classList.remove('hidden');
+      if (el.settingsSheetBackdrop) el.settingsSheetBackdrop.classList.remove('hidden');
+      try {
+          if (uiStateStack.indexOf(closeSettingsSheet) === -1) uiStateStack.push(closeSettingsSheet);
+      } catch(e) {}
+      if (typeof opts.wire === 'function') {
+          setTimeout(opts.wire, 0);
+      }
+  }
+  function closeSettingsSheet() {
+      el.settingsSheet.classList.add('hidden');
+      if (el.settingsSheetBackdrop) el.settingsSheetBackdrop.classList.add('hidden');
+      el.settingsSheetBody.innerHTML = '';
+  }
+
+  function showSettingsSheetViewMode() {
+      const current = state.viewMode === 'grid' ? 'grid' : 'list';
+      openSettingsSheet('列表界面格式', {
+          content:
+              '<div class="settings-option-list">' +
+              '<div class="settings-option" data-view="list"><i class="fa-regular fa-rectangle-list"></i><span>列表视图</span><i class="fa fa-check settings-option-check' + (current !== 'grid' ? '' : ' hidden') + '"></i></div>' +
+              '<div class="settings-option" data-view="grid"><i class="fa-regular fa-table-cells-large"></i><span>网格视图</span><i class="fa fa-check settings-option-check' + (current === 'grid' ? '' : ' hidden') + '"></i></div>' +
+              '</div>',
+          wire: function(){
+              el.settingsSheetBody.querySelectorAll('.settings-option').forEach(function(opt){
+                  opt.addEventListener('click', function(){
+                      const v = opt.dataset.view;
+                      state.viewMode = v;
+                      try { localStorage.setItem('view_mode', state.viewMode); } catch(e) {}
+                      if (typeof updateFileListViewMode === 'function') updateFileListViewMode();
+                      closeSettingsSheet();
+                  });
+              });
+          }
+      });
+  }
+
+  function showSettingsSheetSort() {
+      const items = [
+          { value: 'type_name_asc', icon: 'fa-wand-magic-sparkles', label: '智能排序 (推荐)' },
+          { value: 'name_asc', icon: 'fa-arrow-down-a-z', label: '名称 (A → Z)' },
+          { value: 'name_desc', icon: 'fa-arrow-down-z-a', label: '名称 (Z → A)' }
+      ];
+      let html = '<div class="settings-option-list">';
+      items.forEach(function(it){
+          const sel = state.sortBy === it.value;
+          html += '<div class="settings-option" data-value="' + it.value + '"><i class="fa-solid ' + it.icon + '"></i><span>' + it.label + '</span><i class="fa fa-check settings-option-check' + (sel ? '' : ' hidden') + '"></i></div>';
+      });
+      const prioHtml =
+          '<div class="settings-sheet-divider"></div>' +
+          '<div class="settings-sheet-label">优先级</div>' +
+          '<div class="settings-option-list">' +
+          '<div class="settings-option" data-priority="dirs_first"><i class="fa-solid fa-folder"></i><span>文件夹置顶</span><i class="fa fa-check settings-option-check' + (state.directorySortPriority !== 'files_first' ? '' : ' hidden') + '"></i></div>' +
+          '<div class="settings-option" data-priority="files_first"><i class="fa-solid fa-file"></i><span>文件置顶</span><i class="fa fa-check settings-option-check' + (state.directorySortPriority === 'files_first' ? '' : ' hidden') + '"></i></div>' +
+          '</div>';
+      openSettingsSheet('排序', {
+          content: html + prioHtml,
+          wire: function(){
+              el.settingsSheetBody.querySelectorAll('.settings-option').forEach(function(opt){
+                  opt.addEventListener('click', function(){
+                      if (opt.dataset.value) {
+                          state.sortBy = opt.dataset.value;
+                          try { localStorage.setItem('sort_by', state.sortBy); } catch(e) {}
+                      }
+                      if (opt.dataset.priority) {
+                          state.directorySortPriority = opt.dataset.priority;
+                          try { localStorage.setItem('directory_sort_priority', state.directorySortPriority); } catch(e) {}
+                      }
+                      if (typeof updateSortDropdownUI === 'function') updateSortDropdownUI();
+                      if (typeof applyFiltersAndSort === 'function') applyFiltersAndSort();
+                      if (typeof renderFileList === 'function') renderFileList();
+                      closeSettingsSheet();
+                  });
+              });
+          }
+      });
+  }
+
+  function showSettingsSheetTheme() {
+      const isLight = document.body.classList.contains('light-theme');
+      openSettingsSheet('主题切换', {
+          content:
+              '<div class="settings-option-list">' +
+              '<div class="settings-option" data-theme="dark"><i class="fa-solid fa-cloud"></i><span>深色模式</span><i class="fa fa-check settings-option-check' + (!isLight ? '' : ' hidden') + '"></i></div>' +
+              '<div class="settings-option" data-theme="light"><i class="fa-regular fa-sun"></i><span>浅色模式</span><i class="fa fa-check settings-option-check' + (isLight ? '' : ' hidden') + '"></i></div>' +
+              '</div>',
+          wire: function(){
+              el.settingsSheetBody.querySelectorAll('.settings-option').forEach(function(opt){
+                  opt.addEventListener('click', function(){
+                      const t = opt.dataset.theme;
+                      if (typeof themeManager !== 'undefined' && themeManager.apply) {
+                          themeManager.apply(t);
+                      }
+                      try { localStorage.setItem('app_theme', t); } catch(e) {}
+                      closeSettingsSheet();
+                  });
+              });
+          }
+      });
+  }
+
+  function showSettingsSheetLogout() {
+      openSettingsSheet('退出登录', {
+          content:
+              '<div class="settings-sheet-actions">' +
+              '<button class="btn btn-danger btn-block" id="settingsLogoutConfirmBtn"><i class="fa fa-sign-out"></i> 确认退出登录</button>' +
+              '<button class="btn btn-cancel btn-block" id="settingsLogoutCancelBtn">取消</button>' +
+              '</div>',
+          wire: function(){
+              document.getElementById('settingsLogoutConfirmBtn').addEventListener('click', function(){
+                  closeSettingsSheet();
+                  setTimeout(function(){ if (typeof window.openLogoutConfirm === 'function') window.openLogoutConfirm(); }, 50);
+              });
+              document.getElementById('settingsLogoutCancelBtn').addEventListener('click', closeSettingsSheet);
+          }
+      });
+  }
+
+  function showSettingsFeedback() {
+      if (typeof window.renderHub === 'function') {
+          window.renderHub();
+          const modal = document.getElementById('feedbackModal');
+          if (modal) {
+              modal.classList.remove('hidden');
+              if (window.uiStateStack) window.uiStateStack.push(function(){
+                  document.getElementById('feedbackModal').classList.add('hidden');
+              });
+          }
+      } else {
+          showToast('反馈功能暂不可用', 'error');
+      }
+  }
 
 async function smartPreloadCNAMEs() {
     const pagesRepos = state.repos.filter(r => r.has_pages);
@@ -8673,7 +8918,7 @@ async function smartPreloadCNAMEs() {
         }
     });
 
-    if (hasInitialCacheUpdate && !document.getElementById('publishManagerModal').classList.contains('hidden')) {
+    if (hasInitialCacheUpdate && el.publishPage && !el.publishPage.classList.contains('hidden')) {
         renderPublishManagerLists();
     }
 
@@ -8719,7 +8964,7 @@ async function smartPreloadCNAMEs() {
             }));
 
             if (batchChanged) {
-                if (!document.getElementById('publishManagerModal').classList.contains('hidden')) {
+                if (el.publishPage && !el.publishPage.classList.contains('hidden')) {
                     renderPublishManagerLists();
                 }
             }
@@ -8735,16 +8980,6 @@ async function smartPreloadCNAMEs() {
     };
 
     runFetch();
-}
-
-function hidePublishManagerModal() {
-    el.publishManagerModal.classList.add('hidden');
-    removeFromStack(hidePublishManagerModal);
-
-    if (!el.repoList.classList.contains('hidden')) {
-        state.shouldAnimateList = false;
-        renderRepoList();
-    }
 }
 
 function parseGithubUrl(url) {
@@ -8845,6 +9080,9 @@ function updatePaginationUI() {
     const uploadBtn = el.uploadBtn;
     const newReleaseBtn = el.newReleaseBtn;
     const footer = document.querySelector('footer');
+    const bnStar = document.getElementById('bnStar');
+    const bnDeploy = document.getElementById('bnDeploy');
+    const bnMine = document.getElementById('bnMine');
 
     [backBtn, newFolderBtn, newFileBtn, uploadBtn, newReleaseBtn].forEach(btn => {
         btn.classList.add('hidden');
@@ -8853,8 +9091,21 @@ function updatePaginationUI() {
         btn.innerHTML = '';
         btn.title = '';
     });
-    footer.style.display = '';
+    if (bnStar) bnStar.classList.remove('active');
+    if (bnDeploy) bnDeploy.classList.remove('active');
+    if (bnMine) bnMine.classList.remove('active');
 
+    const isHomeListView = state.currentView === 'own_repos'
+        || state.currentView === 'starred_repos'
+        || state.currentView === 'other_user_repos'
+        || state.currentView === 'publish_manager'
+        || !state.currentView;
+
+    if (!isHomeListView && bnStar) bnStar.classList.add('hidden');
+    if (!isHomeListView && bnDeploy) bnDeploy.classList.add('hidden');
+    if (!isHomeListView && bnMine) bnMine.classList.add('hidden');
+
+    footer.style.display = '';
     switch (state.currentView) {
 
         case 'public_search_results':
@@ -8958,18 +9209,78 @@ function updatePaginationUI() {
         case 'starred_repos':
         case 'other_user_repos':
         case 'own_repos':
+        case 'publish_manager':
+        case 'settings':
         default:
             const isOwnRepos = state.currentView === 'own_repos' || !state.currentView;
+            const isPublishPage = state.currentView === 'publish_manager';
+            const isSettingsPage = state.currentView === 'settings';
 
+            // 本地导航函数：优先使用已暴露的 window 版本，否则用内联实现，避免作用域/加载时序问题
+            const gotoOwnRepos = () => {
+                if (typeof window.goToOwnRepos === 'function') { window.goToOwnRepos(); return; }
+                state.repoListScrollPosition = 0;
+                history.pushState({ view: 'own_repos' }, '', window.location.pathname);
+                state.currentRepo = null;
+                state.currentPath = '';
+                state.currentView = 'own_repos';
+                el.currentRepo.textContent = '选择仓库';
+                state.repos = [...state.myRepos];
+                showRepoListView();
+                renderRepoList(state.repos);
+                fetchRepos(true, false);
+                updatePaginationUI();
+                updateHomeStarredButtonState();
+            };
+            const gotoStarredRepos = () => {
+                if (typeof window.goToStarredRepos === 'function') { window.goToStarredRepos(); return; }
+                state.repoListScrollPosition = 0;
+                history.pushState({ view: 'starred_repos' }, '', window.location.pathname);
+                state.currentView = 'starred_repos';
+                el.currentRepo.textContent = '星标仓库';
+                showRepoListView();
+                fetchStarredRepos();
+                updatePaginationUI();
+                updateHomeStarredButtonState();
+            };
+
+            if (bnStar) {
+                bnStar.classList.remove('hidden');
+                bnStar.classList.toggle('active', state.currentView === 'starred_repos');
+                bnStar.onclick = () => {
+                    if (state.currentView === 'starred_repos') return;
+                    gotoStarredRepos();
+                };
+            }
+            if (bnDeploy) {
+                bnDeploy.classList.remove('hidden');
+                bnDeploy.classList.toggle('active', isPublishPage);
+                bnDeploy.onclick = () => {
+                    if (isPublishPage) return;
+                    closeSideNav();
+                    showPublishManagerModal();
+                };
+            }
+            if (bnMine) {
+                bnMine.classList.remove('hidden');
+                bnMine.classList.toggle('active', isSettingsPage);
+                bnMine.onclick = () => {
+                    if (state.currentView === 'settings') return;
+                    showSettingsPage();
+                    pushSettingsPageHistory();
+                };
+            }
+
+            // 第一格 = 仓库列表tab：在「我的仓库」界面点击=新建仓库，其它界面点击=切回仓库列表
+            newFolderBtn.classList.remove('hidden');
+            newFolderBtn.innerHTML = '<i class="fa-regular fa-folder-open"></i>';
+            backBtn.classList.add('hidden');
             if (isOwnRepos) {
-                newFolderBtn.classList.remove('hidden');
-                newFolderBtn.innerHTML = '<i class="fa-regular fa-folder-open"></i>';
                 newFolderBtn.title = '新建仓库';
                 newFolderBtn.onclick = showCreateRepoModal;
             } else {
-                backBtn.classList.remove('hidden');
-                backBtn.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
-                backBtn.onclick = goUp;
+                newFolderBtn.title = '我的仓库';
+                newFolderBtn.onclick = gotoOwnRepos;
             }
 
             let repoSource = state.repos;
@@ -8985,19 +9296,12 @@ function updatePaginationUI() {
 
             const totalRepoPages = Math.ceil((repoSource || []).length / state.REPOS_PER_PAGE) || 1;
 
-            if (totalRepoPages > 1) {
-                if (!isOwnRepos) {
-                    newFolderBtn.classList.remove('hidden');
-                    newFolderBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
-                    newFolderBtn.title = '上一页';
-                    newFolderBtn.onclick = handlePrevRepoPage;
-                    newFolderBtn.classList.toggle('disabled', currentRepoPage <= 1);
-                } else if (currentRepoPage > 1) {
-
-                     backBtn.classList.remove('hidden');
-                     backBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
-                     backBtn.title = '上一页';
-                     backBtn.onclick = handlePrevRepoPage;
+            if (!isPublishPage && totalRepoPages > 1) {
+                if (currentRepoPage > 1) {
+                    backBtn.classList.remove('hidden');
+                    backBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
+                    backBtn.title = '上一页';
+                    backBtn.onclick = handlePrevRepoPage;
                 }
 
                 newFileBtn.classList.remove('hidden');
@@ -9185,9 +9489,6 @@ async function searchGlobalFiles(query) {
     if (!query) return;
 
     toggleView(false);
-    el.searchToggleBtn.classList.add('hidden');
-    el.multiSelectToggleBtn.classList.add('hidden');
-    el.sortToggleBtn.classList.add('hidden');
     state.currentView = 'search_results';
     updateHomeStarredButtonState();
     updateGlobalSearchVisibility();
@@ -9968,12 +10269,6 @@ function initTokenGuide() {
 
 function setupEventListeners() {
 
-function autoGrow(element) {
-
-        element.style.height = 'auto';
-        element.style.height = (element.scrollHeight) + 'px';
-    }
-
     if (el.createRepoDescInput) {
         el.createRepoDescInput.addEventListener('input', function() {
             autoGrow(this);
@@ -9992,18 +10287,14 @@ el.currentRepo.addEventListener('click', () => {
     }
 });
 
-if (el.menuThemeToggle) {
-    el.menuThemeToggle.onclick = () => {
-        themeManager.toggle();
-    };
-
-    el.showPublishHelpBtn.onclick = showPublishHelpModal;
-    el.closePublishHelpBtn.onclick = hidePublishHelpModal;
-    el.publishHelpModal.onclick = (e) => {
-        if (e.target === el.publishHelpModal) {
-            hidePublishHelpModal();
-        }
-    };
+{
+    el.publishBranchSheet.addEventListener('click', (e) => {
+        if (e.target === el.publishBranchSheet) closePublishBranchSheet();
+    });
+    el.publishDomainSheet.addEventListener('click', (e) => {
+        if (e.target === el.publishDomainSheet) closePublishDomainSheet();
+    });
+    el.publishManageList.addEventListener('click', handleDeployListClick);
 
     el.fileList.addEventListener('click', (e) => {
         const item = e.target.closest('.file-item');
@@ -10063,27 +10354,20 @@ if (el.menuThemeToggle) {
         showContextMenu(e, file);
     });
 }
-el.setAsSiteCloseBtn.onclick = hideSetAsSiteModal;
-el.setAsSiteCancelBtn.onclick = hideSetAsSiteModal;
-
-const setAsSiteSelector = document.getElementById('setAsSiteBranchSelector');
-setAsSiteSelector.querySelector('.custom-branch-select-trigger').addEventListener('click', (e) => {
-    e.stopPropagation();
-    setAsSiteSelector.classList.toggle('open');
+el.publishDomainSaveBtn.onclick = handleSaveCustomDomain;
+el.publishDomainInput.addEventListener('input', () => {
+    el.publishDomainError.classList.add('hidden');
 });
-
-document.addEventListener('click', (e) => {
-    if (!setAsSiteSelector.contains(e.target)) {
-        setAsSiteSelector.classList.remove('open');
-    }
+el.publishDomainInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleSaveCustomDomain();
 });
 
 el.manageAccountsBtn && el.manageAccountsBtn.addEventListener('click', showAccountManagerModal);
-el.menuSwitchAccount.addEventListener('click', () => {
-    closeSideNav();
-    showAccountManagerModal();
+el.accountManagerModal.addEventListener('click', (e) => {
+    if (e.target === el.accountManagerModal) {
+        closeAccountManagerModal();
+    }
 });
-el.closeAccountManagerModalBtn.addEventListener('click', closeAccountManagerModal);
 el.showAddAccountModalBtn.addEventListener('click', () => showAddEditAccountModal());
 
 el.closeAddEditAccountModalBtn.addEventListener('click', closeAddEditAccountModal);
@@ -10115,199 +10399,6 @@ el.repoDetailsModal.onclick = (e) => {
 
 let configuringDomainRepoFullName = null;
 
-async function showCustomDomainModal(repoFullName) {
-    state.configuringDomainRepoFullName = repoFullName;
-    const repoName = repoFullName.split('/')[1];
-    const repoToUpdate = state.repos.find(r => r.full_name === repoFullName);
-
-    el.customDomainRepoName.textContent = `为仓库 "${repoName}" 设置域名`;
-    el.customDomainInput.value = '';
-    el.customDomainSaveBtn.disabled = true;
-    const saveSpan = el.customDomainSaveBtn.querySelector('span');
-    if (saveSpan) saveSpan.textContent = '确认';
-    const saveSpinner = el.customDomainSaveBtn.querySelector('i');
-    if (saveSpinner) saveSpinner.classList.add('hidden');
-    el.customDomainError.style.display = 'none';
-    el.customDomainModal.classList.remove('hidden');
-    uiStateStack.push(hideCustomDomainModal);
-
-    el.customDomainInput.disabled = true;
-
-    try {
-        const url = `https://api.github.com/repos/${repoFullName}/contents/CNAME`;
-        const response = await fetch(url, {
-            headers: { 'Authorization': `token ${state.token}` }
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            const currentDomain = atob(data.content);
-            el.customDomainInput.value = currentDomain;
-            if (repoToUpdate) repoToUpdate.customDomain = currentDomain;
-        } else {
-
-            if (repoToUpdate) repoToUpdate.customDomain = null;
-        }
-
-    } catch (error) {
-        console.error('获取CNAME文件失败:', error);
-        el.customDomainInput.placeholder = '加载域名失败，请重试';
-    } finally {
-        el.customDomainInput.disabled = false;
-        el.customDomainInput.dispatchEvent(new Event('input'));
-    }
-}
-
-function hideCustomDomainModal() {
-    el.customDomainModal.classList.add('hidden');
-    state.configuringDomainRepoFullName = null;
-    removeFromStack(hideCustomDomainModal);
-}
-
-async function handleSaveCustomDomain() {
-    const domain = el.customDomainInput.value.trim();
-    if (!domain || !state.configuringDomainRepoFullName) return;
-
-    const saveBtn = el.customDomainSaveBtn;
-    const spinner = saveBtn.querySelector('i');
-    saveBtn.disabled = true;
-    spinner.classList.remove('hidden');
-    el.customDomainError.style.display = 'none';
-
-    try {
-        const [owner, repoName] = state.configuringDomainRepoFullName.split('/');
-        const filePath = 'CNAME';
-        const url = `https://api.github.com/repos/${owner}/${repoName}/contents/${filePath}`;
-
-        let existingFileSha = null;
-        try {
-            const checkRes = await fetch(url, { headers: { 'Authorization': `token ${state.token}` } });
-            if (checkRes.ok) {
-                existingFileSha = (await checkRes.json()).sha;
-            }
-        } catch (e) {}
-
-        const encodedContent = btoa(unescape(encodeURIComponent(domain)));
-        const requestBody = {
-            message: `feat: Set custom domain to ${domain}`,
-            content: encodedContent,
-            branch: state.repos.find(r => r.full_name === state.configuringDomainRepoFullName)?.default_branch || 'main'
-        };
-
-        if (existingFileSha) {
-            requestBody.sha = existingFileSha;
-        }
-
-        const res = await fetch(url, {
-            method: 'PUT',
-            headers: { 'Authorization': `token ${state.token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestBody)
-        });
-
-        if (!res.ok) {
-            const errorData = await res.json();
-            throw new Error(errorData.message || '配置域名失败');
-        }
-
-        const repoToUpdate = state.repos.find(r => r.full_name === state.configuringDomainRepoFullName);
-        if (repoToUpdate) {
-            repoToUpdate.customDomain = domain;
-            try {
-                const CACHE_KEY = 'custom_domains_cache';
-                let cachedDomains = (await SimpleDB.get(CACHE_KEY)) || {};
-                cachedDomains[repoToUpdate.full_name] = domain;
-                await SimpleDB.set(CACHE_KEY, cachedDomains);
-            } catch (e) {}
-        }
-
-        hideCustomDomainModal();
-        renderPublishManagerLists();
-
-    } catch (error) {
-        el.customDomainError.textContent = `错误: ${error.message}`;
-        el.customDomainError.style.display = 'block';
-        const failSpan = saveBtn.querySelector('span');
-        if (failSpan) failSpan.textContent = '保存失败';
-    } finally {
-        saveBtn.disabled = false;
-        spinner.classList.add('hidden');
-    }
-}
-
-function showRemoveCustomDomainConfirmation(repo) {
-    showDeleteModal(
-        null,
-        false,
-        '确认取消域名绑定',
-        `确定要为仓库 "${repo.name}" 取消自定义域名绑定吗？<br><br>此操作将从您的仓库中删除 CNAME 文件。`,
-        async () => {
-            await handleRemoveCustomDomain(repo);
-        },
-        '确认取消',
-        'btn-danger',
-        undefined,
-        '已取消绑定'
-    );
-}
-
-async function handleRemoveCustomDomain(repo) {
-    try {
-        const [owner, repoName] = repo.full_name.split('/');
-        const url = `https://api.github.com/repos/${owner}/${repoName}/contents/CNAME`;
-
-        const checkRes = await fetch(url + `?ref=${repo.default_branch}`, {
-            headers: { 'Authorization': `token ${state.token}` }
-        });
-
-        if (!checkRes.ok) {
-            if (checkRes.status === 404) {
-                showToast('域名配置不存在');
-                repo.customDomain = null;
-                try {
-                    const CACHE_KEY = 'custom_domains_cache';
-                    let cachedDomains = (await SimpleDB.get(CACHE_KEY)) || {};
-                    delete cachedDomains[repo.full_name];
-                    await SimpleDB.set(CACHE_KEY, cachedDomains);
-                } catch (e) {}
-                renderPublishManagerLists();
-                return;
-            }
-            throw new Error('无法获取当前的域名配置');
-        }
-
-        const fileData = await checkRes.json();
-        const existingFileSha = fileData.sha;
-
-        const res = await fetch(url, {
-            method: 'DELETE',
-            headers: { 'Authorization': `token ${state.token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                message: `build: Remove custom domain`,
-                sha: existingFileSha,
-                branch: repo.default_branch
-            })
-        });
-
-        if (!res.ok) {
-            const errorData = await res.json();
-            throw new Error(errorData.message || '取消绑定失败');
-        }
-
-        repo.customDomain = null;
-        try {
-            const CACHE_KEY = 'custom_domains_cache';
-            let cachedDomains = (await SimpleDB.get(CACHE_KEY)) || {};
-            delete cachedDomains[repo.full_name];
-            await SimpleDB.set(CACHE_KEY, cachedDomains);
-        } catch (e) {}
-
-        renderPublishManagerLists();
-
-    } catch (error) {
-        showToast(`操作失败: ${error.message}`, 'error');
-        console.error(error);
-    }
-}
 
 function validateAccountForm() {
     const name = el.accountNameInput.value.trim();
@@ -10322,30 +10413,21 @@ function validateAccountForm() {
 el.accountNameInput.addEventListener('input', validateAccountForm);
 el.accountTokenInput.addEventListener('input', validateAccountForm);
 
-    el.menuUsageGuide.onclick = () => {
-    closeSideNav();
-    showUsageGuideModal();
-};
-    el.closeUsageGuideBtn.onclick = hideUsageGuideModal;
     el.usageGuideModal.onclick = (e) => {
         if (e.target === el.usageGuideModal) {
             hideUsageGuideModal();
         }
     };
 
+    if (el.proxyQuickToggle) {
     el.proxyQuickToggle.addEventListener('click', () => {
         setProxyGlobalState(!state.proxyGlobalEnable, true);
     });
+    }
     el.proxyGlobalEnableToggle.addEventListener('change', (e) => {
         setProxyGlobalState(e.target.checked, true);
     });
-    el.newFolderBtn.onclick = function() {
-        if (!state.currentRepo) {
-            showCreateRepoModal();
-        } else {
-            showCreateFolderModal();
-        }
-    };
+    // 第一格(仓库图标) onclick 统一由 updatePaginationUI 按当前界面管理，此处不再覆盖。
 
     // ===== 登录页：官方授权 & 模式切换 & 已存账号快捷登录 =====
     const OAUTH_CLIENT_ID = 'Ov23li6NLp7oqOQW5oBG';
@@ -10637,12 +10719,6 @@ el.authBtn.addEventListener('click', async () => {
     }
 });
 
-    [el.sideNavToggleBtn, el.mainOverlay].forEach(element => {
-    element.addEventListener('click', () => {
-        el.sideNav.classList.toggle('open');
-        el.mainOverlay.classList.toggle('open');
-    });
-});
     el.createBranchCancel.onclick = function() {
         hideCreateBranchModal();
     };
@@ -10700,14 +10776,12 @@ el.authBtn.addEventListener('click', async () => {
         if (!el.mainMenuPopup.classList.contains('hidden') && !el.mainMenuPopup.contains(e.target) && !e.target.closest('#mainMenuBtn')) {
             hideMainMenuPopup();
         }
-        if (!el.customSortDropdown.classList.contains('hidden') && !el.customSortDropdown.contains(e.target) && !e.target.closest('#sortToggleBtn')) {
+        if (el.customSortDropdown && !el.customSortDropdown.classList.contains('hidden') && !el.customSortDropdown.contains(e.target) && !e.target.closest('#sortToggleBtn')) {
             hideSortDropdown();
         }
     });
 
-el.menuLogout.onclick = () => {
-    closeSideNav();
-
+function openLogoutConfirm() {
     const performLogout = () => {
         state.token = null;
         setActiveAccount(null);
@@ -10729,16 +10803,36 @@ el.menuLogout.onclick = () => {
         '确认退出',
         'btn-danger'
     );
-};
-    el.menuProxySettings.onclick = () => {
-    closeSideNav();
-    openProxySettingsModal();
-};
+}
+window.openLogoutConfirm = openLogoutConfirm;
+    const goToOwnRepos = () => {
+        state.repoListScrollPosition = 0;
+        history.pushState({ view: 'own_repos' }, '', window.location.pathname);
+        state.currentRepo = null;
+        state.currentPath = '';
+        state.currentView = 'own_repos';
+        el.currentRepo.textContent = '选择仓库';
+        state.repos = [...state.myRepos];
+        showRepoListView();
+        renderRepoList(state.repos);
+        fetchRepos(true, false);
+        updatePaginationUI();
+        updateHomeStarredButtonState();
+    };
+    window.goToOwnRepos = goToOwnRepos;
 
-el.menuBatchPublishSites.onclick = () => {
-    closeSideNav();
-    showPublishManagerModal();
-};
+    const goToStarredRepos = () => {
+        state.repoListScrollPosition = 0;
+        history.pushState({ view: 'starred_repos' }, '', window.location.pathname);
+        state.currentView = 'starred_repos';
+        el.currentRepo.textContent = '星标仓库';
+        showRepoListView();
+        fetchStarredRepos();
+        updatePaginationUI();
+        updateHomeStarredButtonState();
+    };
+    window.goToStarredRepos = goToStarredRepos;
+
     el.backBtn.onclick = goUp;
     el.newFileBtn.onclick = showCreateFileModal;
 
@@ -10753,6 +10847,7 @@ el.menuBatchPublishSites.onclick = () => {
 
     el.preUploadStartBtn.onclick = handleStartBatchUpload;
     el.fileUploadInput.addEventListener('change', handleFilesSelected);
+    if (el.searchToggleBtn) {
     el.searchToggleBtn.addEventListener('click', () => {
         el.searchInput.classList.toggle('hidden');
         if (!el.searchInput.classList.contains('hidden')) {
@@ -10766,6 +10861,7 @@ el.menuBatchPublishSites.onclick = () => {
             el.searchInput.style.display = 'none';
         }
     });
+    }
     if (el.searchInput) {
     el.searchInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
@@ -10788,9 +10884,12 @@ el.menuBatchPublishSites.onclick = () => {
         }
     });
 }
+    if (el.multiSelectToggleBtn) {
     el.multiSelectToggleBtn.onclick = () => {
         toggleMultiSelectMode(!state.isMultiSelectMode);
     };
+    }
+    if (el.sortToggleBtn) {
     el.sortToggleBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         if (el.customSortDropdown.classList.contains('hidden')) {
@@ -10799,6 +10898,8 @@ el.menuBatchPublishSites.onclick = () => {
             hideSortDropdown();
         }
     });
+    }
+    if (el.customSortDropdown) {
     el.customSortDropdown.addEventListener('click', (e) => {
         const item = e.target.closest('.dropdown-item');
         state.shouldAnimateList = true;
@@ -10818,6 +10919,7 @@ el.menuBatchPublishSites.onclick = () => {
         applyFiltersAndSort();
         renderFileList();
     });
+    }
     if (el.customSortDropdown) {
         Array.from(el.customSortDropdown.children).forEach(item => {
             if (item.dataset.value === state.sortBy) {
@@ -10839,7 +10941,11 @@ el.menuBatchPublishSites.onclick = () => {
         }
     });
 }
-    el.proxyCancelSettingsBtn.addEventListener('click', closeProxySettingsModal);
+    el.proxySettingsModal.addEventListener('click', (e) => {
+        if (e.target === el.proxySettingsModal) {
+            closeProxySettingsModal();
+        }
+    });
     el.proxySaveBtn.addEventListener('click', saveProxySettings);
     document.querySelectorAll('.proxy-preset-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -10877,13 +10983,11 @@ el.menuBatchPublishSites.onclick = () => {
     el.createBranchNameInput.oninput = function() {
         el.createBranchConfirm.disabled = !el.createBranchNameInput.value.trim();
     }
-    el.menuContextMenuSettings.onclick = () => {
-    closeSideNav();
-    openContextMenuSettingsModal();
-};
-    el.contextMenuSettingsCloseBtn.onclick = () => {
-        hideContextMenuSettingsModal();
-    };
+    el.contextMenuSettingsModal.addEventListener('click', (e) => {
+        if (e.target === el.contextMenuSettingsModal) {
+            hideContextMenuSettingsModal();
+        }
+    });
     el.contextMenuSettingsModal.querySelector('.context-menu-settings-tabs').addEventListener('click', e => {
         if (e.target.matches('.tab-btn')) {
             const container = e.target.parentElement;
@@ -11010,62 +11114,6 @@ el.menuBatchPublishSites.onclick = () => {
             saveContextMenuSettings();
         }
     });
-
-    el.closeCustomDomainModalBtn.onclick = hideCustomDomainModal;
-el.customDomainCancelBtn.onclick = hideCustomDomainModal;
-el.customDomainSaveBtn.onclick = handleSaveCustomDomain;
-el.customDomainInput.addEventListener('input', () => {
-    el.customDomainSaveBtn.disabled = el.customDomainInput.value.trim() === '';
-});
-el.publishManageList.addEventListener('click', (e) => {
-    const configureBtn = e.target.closest('.configure-domain-btn');
-    const copyLinkBtn = e.target.closest('.copy-site-link-btn');
-    const setAsMainSiteBtn = e.target.closest('.set-as-main-site-btn');
-    const removeBtn = e.target.closest('.remove-domain-btn');
-
-    if (removeBtn) {
-        const repoFullName = removeBtn.dataset.repoFullname;
-        if (repoFullName) {
-            const repo = state.repos.find(r => r.full_name === repoFullName);
-            if (repo) {
-                showRemoveCustomDomainConfirmation(repo);
-            }
-        }
-        return;
-    }
-
-    if (configureBtn) {
-        const repoFullName = configureBtn.dataset.repoFullname;
-        if (repoFullName) {
-            showCustomDomainModal(repoFullName);
-        }
-        return;
-    }
-
-    if (setAsMainSiteBtn) {
-        const repoFullName = setAsMainSiteBtn.dataset.repoFullname;
-        const repo = state.repos.find(r => r.full_name === repoFullName);
-        if (repo) {
-            showPublishBranchSelectorModal(repo, 'mainSite');
-        }
-        return;
-    }
-
-    if (copyLinkBtn) {
-        const repoFullName = copyLinkBtn.dataset.repoFullname;
-        if (repoFullName && state.user && state.user.login) {
-            const [owner, repoName] = repoFullName.split('/');
-            const isMainSiteRepo = repoName === `${state.user.login}.github.io`;
-            const siteUrl = isMainSiteRepo
-                ? `https://${owner}.github.io/`
-                : `https://${owner}.github.io/${repoName}/`;
-            navigator.clipboard.writeText(siteUrl).then(() => {
-                showToast(isMainSiteRepo ? '主站链接已复制' : '链接已复制');
-            });
-        }
-        return;
-    }
-});
 
         const viewStarredBtn = document.getElementById('viewStarredBtn');
 if (viewStarredBtn) {
@@ -11331,7 +11379,7 @@ function initFooterEvents() {
 
         const modal = document.createElement('div');
         modal.id = modalId;
-        modal.className = 'modal-overlay hidden';
+        modal.className = 'modal-overlay bottom-sheet hidden';
         modal.innerHTML = `
             <div class="modal-form-container">
                 <div class="hub-header">
@@ -11452,6 +11500,8 @@ function initFooterEvents() {
             if (e.target === modal) modal.querySelector('.hub-close-btn').click();
         };
     };
+
+    window.renderHub = renderHub;
 
     const handleCopyQQ = (qq) => {
         navigator.clipboard.writeText(qq).then(() => {
@@ -11668,17 +11718,42 @@ async function init() {
     } else {
         showAuth();
     }
-
-    el.closePublishManagerBtn.onclick = hidePublishManagerModal;
-    el.officialConfigTabBtn.onclick = () => {
-        state.publishManagerActiveTab = 'official';
-        renderPublishManagerLists();
-    };
-    el.customDomainTabBtn.onclick = () => {
-        state.publishManagerActiveTab = 'custom';
-        renderPublishManagerLists();
-    };
 }
+
+(function initSettingsPage() {
+    if (!el.settingsPage) return;
+
+    if (el.settingsSheetBackdrop) {
+        el.settingsSheetBackdrop.addEventListener('click', closeSettingsSheet);
+    }
+
+    const card = (id, action) => {
+        const node = document.getElementById(id);
+        if (node) {
+            node.addEventListener('click', () => {
+                action();
+            });
+        }
+    };
+
+    card('settingsAccountCard', () => showAccountManagerModal());
+    card('settingsCardAccounts', () => showAccountManagerModal());
+    card('settingsCardLogout', () => showSettingsSheetLogout());
+    card('settingsCardViewMode', () => showSettingsSheetViewMode());
+    card('settingsCardSort', () => showSettingsSheetSort());
+    if (el.settingsThemeToggle) {
+        el.settingsThemeToggle.addEventListener('change', () => {
+            const wantDark = el.settingsThemeToggle.checked;
+            themeManager.apply(wantDark ? 'dark' : 'light');
+            try { localStorage.setItem('app_theme', wantDark ? 'dark' : 'light'); } catch(e) {}
+        });
+    }
+    syncSettingsThemeUI();
+    card('settingsCardProxy', () => openProxySettingsModal());
+    card('settingsCardMenuConfig', () => openContextMenuSettingsModal());
+    card('settingsCardGuide', () => showUsageGuideModal());
+    card('settingsCardFeedback', () => showSettingsFeedback());
+})();
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -11770,6 +11845,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     await fetchAndDisplayReleases(historyState.repo, false);
                 }
+                break;
+
+            case 'publish_manager':
+                showPublishPage();
+                renderPublishManagerLists();
+                break;
+
+            case 'settings':
+                showSettingsPage();
                 break;
 
             case 'starred_repos':
@@ -12182,6 +12266,10 @@ var CodeEditor = (function() {
 
         pendingOpen = { file, repo, branch };
         if (typeof uiStateStack !== 'undefined') uiStateStack.push(hideEditor);
+
+        if (window.AndroidBridge) {
+            try { history.pushState({ view: 'editor' }, '', window.location.href); } catch (e) {}
+        }
 
         showLoading('正在加载文件...');
         loadContent(file, repo, branch);
