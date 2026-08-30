@@ -7441,7 +7441,13 @@ async function downloadFilesConcurrently(files, zipFolder, onProgress) {
                         const rawUrl = file.download_url ||
                                      `https://raw.githubusercontent.com/${state.currentRepo}/${state.currentBranch}/${file.path.split('/').map(encodeURIComponent).join('/')}`;
 
-                        const url = getProxiedUrl(rawUrl, true);
+                        let url = rawUrl;
+                        if (state.proxyGlobalEnable) {
+                            let fetchPrefix = (state.proxyPrefix || '').trim();
+                            if (!fetchPrefix) fetchPrefix = 'https://gh-proxy.org/';
+                            if (!fetchPrefix.endsWith('/')) fetchPrefix += '/';
+                            url = fetchPrefix + rawUrl;
+                        }
 
                         const res = await fetch(url);
 
@@ -7510,7 +7516,22 @@ window.resetDownloadState = function() {
 };
 
 async function triggerNativeDownload(blob, filename) {
-
+    if (window.AndroidBridge && typeof window.AndroidBridge.saveBlob === 'function') {
+        try {
+            const buf = await blob.arrayBuffer();
+            const bytes = new Uint8Array(buf);
+            let binary = '';
+            const CHUNK = 0x8000;
+            for (let i = 0; i < bytes.length; i += CHUNK) {
+                binary += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+            }
+            const base64 = btoa(binary);
+            window.AndroidBridge.saveBlob(base64, filename);
+            return;
+        } catch (e) {
+            console.error(e);
+        }
+    }
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -11891,26 +11912,40 @@ async function unzipFile(file) {
     );
 }
 
-const LibraryLoader = {
+ const LibraryLoader = {
     loaded: {},
-    load: function(url, globalName) {
-        if (this.loaded[url]) return Promise.resolve(window[globalName]);
-        return new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = url;
-            script.onload = () => {
-                this.loaded[url] = true;
-                resolve(window[globalName]);
-            };
-            script.onerror = reject;
-            document.head.appendChild(script);
-        });
+    load: function(lib, globalName) {
+        const candidates = typeof lib === 'string'
+            ? [lib]
+            : (Array.isArray(lib) ? lib : (lib && lib.urls ? lib.urls.slice() : []));
+        const loadedUrl = lib && lib._loadedKey;
+        if (this.loaded[loadedUrl || candidates[0]]) return Promise.resolve(window[globalName]);
+        const tryLoad = (i) => {
+            if (i >= candidates.length) return Promise.reject(new Error('library load failed'));
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = candidates[i];
+                script.onload = () => {
+                    this.loaded[loadedUrl || candidates[i]] = true;
+                    resolve(window[globalName]);
+                };
+                script.onerror = () => reject(new Error('fail ' + candidates[i]));
+                document.head.appendChild(script);
+            }).catch(() => tryLoad(i + 1));
+        };
+        return tryLoad(0);
     }
 };
 
 const LIBS = {
-    JSZIP: 'https://cdn.bootcdn.net/ajax/libs/jszip/3.10.1/jszip.min.js',
-    MARKED: 'https://cdn.bootcdn.net/ajax/libs/marked/9.1.2/marked.min.js'
+    JSZIP: {
+        _loadedKey: 'jszip',
+        urls: ['./vendor/jszip/jszip.min.js', 'https://cdn.bootcdn.net/ajax/libs/jszip/3.10.1/jszip.min.js']
+    },
+    MARKED: {
+        _loadedKey: 'marked',
+        urls: ['./vendor/marked/marked.min.js', 'https://cdn.bootcdn.net/ajax/libs/marked/9.1.2/marked.min.js']
+    }
 };
 
 var CodeEditor = (function() {

@@ -388,6 +388,10 @@ public class MainActivity extends Activity {
                     : 0;
             getWindow().getDecorView().setSystemUiVisibility(flags);
         }
+        if (Build.VERSION.SDK_INT >= 29) {
+            getWindow().setNavigationBarContrastEnforced(false);
+            getWindow().setStatusBarContrastEnforced(false);
+        }
     }
 
     // ============ 上传：文件选择 ============
@@ -545,6 +549,42 @@ public class MainActivity extends Activity {
 
     // ============ 下载 ============
 
+    @JavascriptInterface
+    public void saveBlob(final String base64, final String filename) {
+        if (base64 == null || base64.isEmpty()) {
+            toast("保存失败: 数据为空");
+            return;
+        }
+        new Thread(() -> {
+            String targetFilename = filename;
+            try {
+                File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                String clean = targetFilename == null ? "download.zip" : targetFilename.replaceAll("[\\\\/]", "_");
+                File target = new File(dir, clean);
+                int dot = clean.lastIndexOf('.');
+                String base = dot > 0 ? clean.substring(0, dot) : clean;
+                String ext = dot > 0 ? clean.substring(dot) : "";
+                int n = 1;
+                while (target.exists()) {
+                    target = new File(dir, base + " (" + n + ")" + ext);
+                    n++;
+                }
+                byte[] data = android.util.Base64.decode(base64, android.util.Base64.DEFAULT);
+                OutputStream os = new java.io.FileOutputStream(target);
+                try {
+                    os.write(data);
+                } finally {
+                    os.close();
+                }
+                final File saved = target;
+                runOnUiThread(() -> toast("已保存到下载: " + saved.getName()));
+            } catch (Exception e) {
+                final String msg = e.getMessage() == null ? "保存失败" : e.getMessage();
+                runOnUiThread(() -> toast("保存失败: " + msg));
+            }
+        }, "save-blob").start();
+    }
+
     private void startDownload(String url, String userAgent, String contentDisposition, String mimetype) {
         try {
             String fileName = resolveUniqueFileName(resolveFileName(contentDisposition, url, mimetype));
@@ -678,7 +718,8 @@ public class MainActivity extends Activity {
             }
             final String info = updateInfo;
             if (info != null) {
-                runOnUiThread(() -> promptUpdate(info));
+                runOnUiThread(() -> new Handler(Looper.getMainLooper())
+                        .postDelayed(() -> promptUpdate(info), 2000));
             }
         }, "update-check").start();
     }
