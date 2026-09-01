@@ -19,7 +19,7 @@ const baseURL = '/api/gh'
 
 export const http: AxiosInstance = axios.create({
   baseURL,
-  timeout: 15000,
+  timeout: 30000,
   headers: { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
 })
 
@@ -47,12 +47,22 @@ export async function httpGet<T>(url: string, config?: AxiosRequestConfig): Prom
   return res.data
 }
 
-export async function httpPost<T>(url: string, data?: unknown): Promise<T> {
-  const res = await http.post<T>(url, data)
+export async function httpPost<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
+  const res = await http.post<T>(url, data, config)
   return res.data
 }
 
-export async function httpDelete<T>(url: string): Promise<T> {
-  const res = await http.delete<T>(url)
+export async function httpPatch<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
+  const res = await http.patch<T>(url, data, config)
+  return res.data
+}
+
+export async function httpPut<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
+  const res = await http.put<T>(url, data, config)
+  return res.data
+}
+
+export async function httpDelete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
+  const res = await http.delete<T>(url, config)
   return res.data
 }

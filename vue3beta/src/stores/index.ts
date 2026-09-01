@@ -1,7 +1,7 @@
 // 全局状态 Store（基于 Vue reactive + localStorage，无额外依赖）
 import { reactive, watch, computed } from 'vue'
 import { storage } from '@/utils/storage'
-import type { Account, ListLayout, Settings } from '@/types'
+import type { Account, ListLayout, MenuCategory, Settings } from '@/types'
 
 export interface AppState {
   accounts: Account[]
@@ -12,8 +12,29 @@ export interface AppState {
 
 const settingsDefaults: Settings = {
   sortRule: 'updated',
-  downloadProxyPrefix: '',
+  contentProxyPrefix: 'https://gh-proxy.org/',
+  downloadProxyPrefix: 'https://down.ksx.qzz.io/',
+  proxyGlobalEnable: true,
   layout: 'single',
+  viewMode: 'list',
+  folderFirst: true,
+  menuVisibility: {
+    repo: {
+      togglePin: true, forkRepo: true, viewUserRepos: true, renameRepo: true,
+      createBranch: true, manageReleases: true, downloadRepoDirect: true,
+      copyMainSiteLink: true, copyProjectSiteLink: true, copyCustomDomainLink: true,
+      copyRepoGitHubLink: true, viewDetails: true, deleteRepo: true,
+    },
+    folder: {
+      multiSelect: true, copyPagesLink: true, copyGitHubLink: true,
+      rename: true, downloadFolder: true, delete: true,
+    },
+    file: {
+      goToDirectory: true, multiSelect: true, rename: true, download: true,
+      copyPagesLink: true, copyCustomDomainLink: true, copyGitHubLink: true,
+      copyLink: true, copyProxy: true, unzip: true, delete: true,
+    },
+  },
 }
 
 const state = reactive<AppState>({
@@ -81,6 +102,11 @@ export function useStore() {
     state.settings.layout = layout
   }
 
+  function updateMenuVisibility(category: MenuCategory, action: string, visible: boolean) {
+    if (!state.settings.menuVisibility[category]) return
+    state.settings.menuVisibility[category][action] = visible
+  }
+
   function toggleTheme() {
     state.theme = state.theme === 'light' ? 'dark' : 'light'
   }
@@ -94,6 +120,7 @@ export function useStore() {
     clearAccounts,
     updateSettings,
     setLayout,
+    updateMenuVisibility,
     toggleTheme,
   }
 }

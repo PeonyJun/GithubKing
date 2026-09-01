@@ -32,6 +32,7 @@ export interface GithubRepo {
   owner: GithubUser
   stargazers_count: number
   forks_count: number
+  watchers_count: number
   size: number
   has_pages: boolean
   homepage: string | null
@@ -62,6 +63,9 @@ export interface GithubRelease {
   body: string
   published_at: string
   html_url: string
+  draft?: boolean
+  prerelease?: boolean
+  assets?: GithubReleaseAsset[]
 }
 
 // 本地应用类型
@@ -78,6 +82,62 @@ export type ListLayout = 'single' | 'double' | 'triple'
 
 export interface Settings {
   sortRule: 'updated' | 'created' | 'pushed' | 'name'
+  contentProxyPrefix: string
   downloadProxyPrefix: string
+  proxyGlobalEnable: boolean
   layout: ListLayout
+  viewMode: 'list' | 'grid'
+  folderFirst: boolean
+  menuVisibility: Record<'repo' | 'folder' | 'file', Record<string, boolean>>
 }
+
+export interface GithubBranchRef {
+  ref: string
+  node_id: string
+  object: { sha: string; type: string; url: string }
+}
+
+export interface GithubReleaseAsset {
+  id: number
+  name: string
+  size: number
+  browser_download_url: string
+  content_type: string
+}
+
+export interface SearchRepoResult {
+  total_count: number
+  incomplete_results: boolean
+  items: GithubRepo[]
+}
+
+export interface GitTreeEntry {
+  path: string
+  mode: string
+  type: 'blob' | 'tree'
+  size?: number
+  sha: string | null
+  url?: string
+}
+
+export interface GithubTree {
+  sha: string
+  url: string
+  tree: GitTreeEntry[]
+  truncated: boolean
+}
+
+export interface PagesInfo {
+  status: string
+  cname: string | null
+  html_url: string
+  source: { branch: string; path: string }
+}
+
+export interface MenuDef {
+  action: string
+  text: string
+  danger?: boolean
+}
+
+export type MenuCategory = 'repo' | 'folder' | 'file'

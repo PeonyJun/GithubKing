@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "axios": "^1.7.9",
+    "jszip": "^3.10.1",
     "vant": "^4.9.15",
     "vue": "^3.4.38",
     "vue-router": "^4.4.5"

@@ -1,16 +1,21 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { showToast } from 'vant'
 import { useStore } from '@/stores'
-import type { ListLayout } from '@/types'
+import { MENU_DEFS } from '@/composables/useContextMenu'
+import type { ListLayout, MenuCategory } from '@/types'
 
 const router = useRouter()
 const store = useStore()
 
 const sortRule = ref<string>(store.state.settings.sortRule)
-const proxy = ref(store.state.settings.downloadProxyPrefix)
+const contentProxy = ref(store.state.settings.contentProxyPrefix)
+const downloadProxy = ref(store.state.settings.downloadProxyPrefix)
+const proxyEnable = ref(store.state.settings.proxyGlobalEnable)
 const layout = ref<ListLayout>(store.state.settings.layout)
+const viewMode = ref(store.state.settings.viewMode)
+const folderFirst = ref(store.state.settings.folderFirst)
 
 const sortOptions = [
   { value: 'updated', label: '最近更新', desc: '按 Push 时间排序' },
@@ -25,21 +30,48 @@ const layoutOptions: { value: ListLayout; label: string; icon: string }[] = [
   { value: 'triple', label: '三列', icon: 'grid-o' },
 ]
 
-function onSortChange(v: string | number) {
-  if (typeof v === 'number') v = String(v)
+// 菜单配置
+const menuTab = ref<MenuCategory>('repo')
+const menuCategories: { key: MenuCategory; label: string }[] = [
+  { key: 'repo', label: '仓库' },
+  { key: 'folder', label: '文件夹' },
+  { key: 'file', label: '文件' },
+]
+const menuVisibility = computed(
+  () => store.state.settings.menuVisibility[menuTab.value] ?? {},
+)
+
+function onSortChange(v: string) {
   store.updateSettings({ sortRule: v as any })
   showToast('已应用排序')
 }
 
+function onProxyToggle(v: boolean) {
+  store.updateSettings({ proxyGlobalEnable: v })
+}
 function onProxyBlur() {
-  store.updateSettings({ downloadProxyPrefix: proxy.value.trim() })
-  showToast('下载代理已保存')
+  store.updateSettings({
+    contentProxyPrefix: contentProxy.value.trim(),
+    downloadProxyPrefix: downloadProxy.value.trim(),
+  })
+  showToast('代理已保存')
+}
+function setProxyPreset(kind: 'content' | 'download', url: string) {
+  if (kind === 'content') contentProxy.value = url
+  else downloadProxy.value = url
+  store.updateSettings({
+    contentProxyPrefix: contentProxy.value.trim(),
+    downloadProxyPrefix: downloadProxy.value.trim(),
+  })
+  showToast('已应用代理')
 }
 
-function onLayoutChange(v: ListLayout | string | number) {
-  const val = String(v) as ListLayout
-  store.setLayout(val)
-  showToast('视图布局已切换')
+function onLayoutChange(v: string | number) {
+  store.setLayout(String(v) as ListLayout)
+  showToast('布局已切换')
+}
+function onViewModeChange(v: boolean) {
+  store.updateSettings({ viewMode: v ? 'grid' : 'list' })
 }
 </script>
 
@@ -48,8 +80,12 @@ function onLayoutChange(v: ListLayout | string | number) {
     <van-nav-bar title="设置" left-arrow @click-left="router.back()" />
 
     <!-- 列表排序 -->
-    <van-cell-group inset title="列表排序规则">
-      <van-radio-group class="sort-group" :model-value="sortRule" @update:model-value="onSortChange">
+    <van-cell-group inset title="仓库排序规则">
+      <van-radio-group
+        class="sort-group"
+        :model-value="sortRule"
+        @update:model-value="onSortChange"
+      >
         <van-cell
           v-for="s in sortOptions"
           :key="s.value"
@@ -65,28 +101,10 @@ function onLayoutChange(v: ListLayout | string | number) {
       </van-radio-group>
     </van-cell-group>
 
-    <!-- 下载代理 -->
-    <van-cell-group inset title="文件下载代理前缀" class="mt-12">
-      <van-field
-        v-model="proxy"
-        placeholder="例如 https://ghproxy.cn/"
-        label="代理前缀"
-        clearable
-        @blur="onProxyBlur"
-      />
-      <div class="proxy-hint">
-        留空则直连 GitHub。若无法访问 raw 文件，可填中转代理前缀。
-      </div>
-    </van-cell-group>
-
-    <!-- 布局视图 -->
+    <!-- 仓库视图布局 -->
     <van-cell-group inset title="仓库视图布局" class="mt-12">
       <div class="layout-picker">
-        <van-radio-group
-          :model-value="layout"
-          direction="horizontal"
-          @update:model-value="onLayoutChange"
-        >
+        <van-radio-group :model-value="layout" direction="horizontal" @update:model-value="onLayoutChange">
           <van-radio v-for="l in layoutOptions" :key="l.value" :name="l.value" class="layout-radio">
             <div class="layout-item">
               <van-icon :name="l.icon" />
@@ -97,9 +115,57 @@ function onLayoutChange(v: ListLayout | string | number) {
       </div>
     </van-cell-group>
 
-    <div class="settings-tip">
-      布局切换将在「仓库」列表生效（单列卡片 / 双列 / 三列）
-    </div>
+    <!-- 文件展示 -->
+    <van-cell-group inset title="文件列表" class="mt-12">
+      <van-cell title="网格视图" center>
+        <template #right-icon>
+          <van-switch :model-value="viewMode === 'grid'" @update:model-value="onViewModeChange" />
+        </template>
+      </van-cell>
+      <van-cell title="文件夹置顶" center>
+        <template #right-icon>
+          <van-switch v-model="folderFirst" @change="(v: any) => store.updateSettings({ folderFirst: !!v })" />
+        </template>
+      </van-cell>
+    </van-cell-group>
+
+    <!-- 网络代理 -->
+    <van-cell-group inset title="网络代理" class="mt-12">
+      <van-cell title="全局代理开关" center>
+        <template #right-icon>
+          <van-switch :model-value="proxyEnable" @update:model-value="onProxyToggle" />
+        </template>
+      </van-cell>
+      <van-field v-model="contentProxy" label="访问代理" placeholder="https://gh-proxy.org/" clearable />
+      <van-field v-model="downloadProxy" label="下载代理" placeholder="https://down.ksx.qzz.io/" clearable @blur="onProxyBlur" />
+      <div class="proxy-presets">
+        <van-tag plain type="primary" @click="setProxyPreset('content', 'https://gh-proxy.org/')">gh-proxy.org</van-tag>
+        <van-tag plain type="primary" @click="setProxyPreset('download', 'https://down.ksx.qzz.io/')">down.ksx.qzz.io</van-tag>
+      </div>
+    </van-cell-group>
+
+    <!-- 菜单项配置 -->
+    <van-cell-group inset title="长按菜单项配置" class="mt-12">
+      <van-tabs v-model:active="menuTab">
+        <van-tab v-for="c in menuCategories" :key="c.key" :title="c.label" :name="c.key">
+          <van-cell
+            v-for="def in MENU_DEFS[menuTab]"
+            :key="def.action"
+            :title="def.text"
+            center
+          >
+            <template #right-icon>
+              <van-switch
+                :model-value="menuVisibility[def.action] ?? true"
+                @update:model-value="(v: any) => store.updateMenuVisibility(menuTab, def.action, !!v)"
+              />
+            </template>
+          </van-cell>
+        </van-tab>
+      </van-tabs>
+    </van-cell-group>
+
+    <div class="settings-tip">代理默认：访问 gh-proxy.org / 下载 down.ksx.qzz.io</div>
   </div>
 </template>
 
@@ -107,15 +173,15 @@ function onLayoutChange(v: ListLayout | string | number) {
 .settings {
   min-height: 100vh;
   background: var(--app-bg);
+  padding-bottom: 40px;
 }
 .sort-group {
   padding: 4px 0;
 }
-.proxy-hint {
-  padding: 6px 16px 12px;
-  font-size: 12px;
-  color: var(--app-text-sub);
-  line-height: 1.6;
+.proxy-presets {
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px 12px;
 }
 .layout-picker {
   padding: 12px 16px;

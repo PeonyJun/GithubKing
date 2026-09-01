@@ -41,6 +41,18 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '仓库' },
   },
   {
+    path: '/repo/:owner/:name/overview',
+    name: 'RepoOverview',
+    component: () => import('@/views/RepoOverviewView.vue'),
+    meta: { title: '仓库详情' },
+  },
+  {
+    path: '/repo/:owner/:name/releases',
+    name: 'Releases',
+    component: () => import('@/views/ReleasesView.vue'),
+    meta: { title: 'Releases' },
+  },
+  {
     path: '/files/:owner/:name/:branch/:path(.*)*',
     name: 'Files',
     component: () => import('@/views/FilesView.vue'),
