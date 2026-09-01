@@ -67,8 +67,12 @@ public class MainActivity extends Activity {
     private static final int REQ_FOLDER = 0x1002;
     private static final long MAX_FOLDER_FILE_BYTES = 20L * 1024 * 1024;
 
-    private static final int COLOR_DARK = 0xFF04091A;
-    private static final int COLOR_LIGHT = 0xFFF0F2F5;
+    // 系统状态栏 / 导航栏(小白条)颜色，与前端顶部 header、底部 footer 保持一致
+    private static final int COLOR_DARK = 0xFF161B22;
+    private static final int COLOR_LIGHT = 0xFFFFFFFF;
+    // WebView 背景色，与前端 body(--gk-bg) 保持一致，避免下拉刷新露出色块
+    private static final int BODY_DARK = 0xFF0D1117;
+    private static final int BODY_LIGHT = 0xFFF0F2F5;
 
     private static final int REQ_UNKNOWN_SOURCE = 0x2001;
 
@@ -376,11 +380,12 @@ public class MainActivity extends Activity {
         boolean light = theme != null && theme.equals("light");
         isLight = light;
         int barColor = light ? COLOR_LIGHT : COLOR_DARK;
+        int webColor = light ? BODY_LIGHT : BODY_DARK;
         getWindow().setStatusBarColor(barColor);
         if (webView != null) {
-            webView.setBackgroundColor(barColor);
+            webView.setBackgroundColor(webColor);
         }
-        getWindow().getDecorView().setBackgroundColor(barColor);
+        getWindow().getDecorView().setBackgroundColor(webColor);
         if (Build.VERSION.SDK_INT >= 26) {
             getWindow().setNavigationBarColor(barColor);
             int flags = light

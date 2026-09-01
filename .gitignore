@@ -1,0 +1,20 @@
+# Signing keys & secrets
+*.jks
+android/local.properties
+android/signing.properties
+
+# Android build outputs
+android/.gradle/
+android/build/
+android/app/build/
+android/app/.externalNativeBuild/
+android/captures/
+*.apk
+*.aab
+
+# IDE
+.idea/
+*.iml
+
+# Node
+node_modules/

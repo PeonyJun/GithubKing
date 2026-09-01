@@ -135,18 +135,14 @@
 				</div>
 
 				<div id="publishPage" class="hidden">
-					<div class="gk-page-head">
-						<span class="gk-page-title">部署</span>
-					</div>
-					<div id="publishManageList" class="gk-stack gk-stack-lg">
-						<div class="gk-loading"><div class="spinner"></div></div>
-					</div>
+					<div id="publishManageList" class="gk-card-list"></div>
+				</div>
+
+				<div id="publishDetailPage" class="hidden">
+					<div id="publishDetailBody"></div>
 				</div>
 
 				<div id="settingsPage" class="hidden">
-					<div class="settings-page-header">
-						<span class="settings-page-title">设置</span>
-					</div>
 					<div class="settings-account-card" id="settingsAccountCard">
 						<div id="settingsAvatarContainer" title="点击更换头像">
 							<i id="settingsAvatarPlaceholder" class="fa fa-github"></i>
@@ -1437,6 +1433,8 @@ const state = {
     viewingReleasesForRepo: null,
 
     configuringDomainRepoFullName: null,
+    publishRows: [],
+    publishMeta: {},
 
     publicSearchPage: 1,
     publicSearchTotalResults: 0,
@@ -1580,6 +1578,8 @@ main: document.querySelector('main'),
      newFileBtn: document.getElementById('newFileBtn'),
 
     publishManageList: document.getElementById('publishManageList'),
+    publishDetailPage: document.getElementById('publishDetailPage'),
+    publishDetailBody: document.getElementById('publishDetailBody'),
     publishBranchSheet: document.getElementById('publishBranchSheet'),
     publishBranchRepoName: document.getElementById('publishBranchRepoName'),
     publishBranchList: document.getElementById('publishBranchList'),
@@ -3551,6 +3551,7 @@ function showRepoListView() {
     el.repoList.classList.remove('hidden');
     el.fileList.classList.add('hidden');
     if (el.publishPage) el.publishPage.classList.add('hidden');
+    if (el.publishDetailPage) el.publishDetailPage.classList.add('hidden');
     if (el.settingsPage) el.settingsPage.classList.add('hidden');
     el.pathNavContainer.classList.add('hidden');
     el.branchSwitcherContainer.classList.add('hidden');
@@ -5862,6 +5863,10 @@ async function runPublishByType(repoToProcess, branchToUse, publishType) {
             showToast('发布成功', 'success');
         }
         renderPublishManagerLists();
+        if (state.currentView === 'publish_detail') {
+            const fn = state.publishDetailFullname;
+            if (fn) { renderPublishDetailPageRefresh(fn); }
+        }
     } else if (publishType === 'mainSite') {
         el.mainLoader.classList.remove('hidden');
         const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -8028,6 +8033,13 @@ function getErrorMessage(error) {
 
 async function handleRefresh() {
     const view = state.currentView;
+
+    if (view === 'publish_manager') {
+        await fetchRepos(true, false);
+        renderPublishManagerLists();
+        return;
+    }
+
     const targetListEl = !el.repoList.classList.contains('hidden') ? el.repoList : el.fileList;
 
     if (targetListEl === el.fileList) {
@@ -8075,7 +8087,17 @@ function initPullToRefresh() {
     let targetListEl = null;
     let isDragging = false;
     let startX = 0;
-    let hasVibrated = false;
+
+    const resolveTargetList = () => {
+        return !el.repoList.classList.contains('hidden') ? el.repoList :
+               !el.fileList.classList.contains('hidden') ? el.fileList :
+               (el.publishPage && !el.publishPage.classList.contains('hidden')) ? el.publishManageList : null;
+    };
+
+    const getPoint = (e) => {
+        if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        return { x: e.clientX, y: e.clientY };
+    };
 
     const resetPullState = () => {
         ptrIndicator.classList.remove('visible', 'ready', 'refreshing');
@@ -8087,32 +8109,32 @@ function initPullToRefresh() {
         state.pullToRefresh.active = false;
         state.pullToRefresh.pullDistance = 0;
         isDragging = false;
-        hasVibrated = false;
     };
 
-    mainEl.addEventListener('touchstart', (e) => {
+    const onPullStart = (e) => {
+        if (state.pullToRefresh.pullDistance !== 0) return;
         if (mainEl.scrollTop === 0) {
-            state.pullToRefresh.startY = e.touches[0].clientY;
-            startX = e.touches[0].clientX;
+            const p = getPoint(e);
+            state.pullToRefresh.startY = p.y;
+            startX = p.x;
             state.pullToRefresh.active = true;
             isDragging = true;
-            hasVibrated = false;
 
-            targetListEl = !el.repoList.classList.contains('hidden') ? el.repoList :
-                           !el.fileList.classList.contains('hidden') ? el.fileList : null;
+            targetListEl = resolveTargetList();
 
             if(targetListEl) {
                 ptrIndicator.style.transition = 'none';
                 targetListEl.style.transition = 'none';
             }
         }
-    }, { passive: true });
+    };
 
-    mainEl.addEventListener('touchmove', (e) => {
+    const onPullMove = (e) => {
         if (!state.pullToRefresh.active || !isDragging || !targetListEl) return;
 
-        const currentY = e.touches[0].clientY;
-        const currentX = e.touches[0].clientX;
+        const p = getPoint(e);
+        const currentY = p.y;
+        const currentX = p.x;
 
         let deltaY = currentY - state.pullToRefresh.startY;
         let deltaX = currentX - startX;
@@ -8140,21 +8162,14 @@ function initPullToRefresh() {
             targetListEl.style.transform = `translateY(${dampedDistance}px)`;
 
             if (dampedDistance > state.pullToRefresh.threshold) {
-                if (!ptrIndicator.classList.contains('ready')) {
-                    ptrIndicator.classList.add('ready');
-                    if (!hasVibrated && navigator.vibrate) {
-                        navigator.vibrate(15);
-                        hasVibrated = true;
-                    }
-                }
+                ptrIndicator.classList.add('ready');
             } else {
                 ptrIndicator.classList.remove('ready');
-                hasVibrated = false;
             }
         }
-    }, { passive: false });
+    };
 
-    mainEl.addEventListener('touchend', async () => {
+    const onPullEnd = async () => {
         if (!state.pullToRefresh.active || !targetListEl) return;
 
         if (state.isRefreshing) {
@@ -8207,7 +8222,29 @@ function initPullToRefresh() {
         }
         state.pullToRefresh.active = false;
         isDragging = false;
-    });
+    };
+
+    const onPullCancel = () => {
+        if (isDragging) {
+            if (state.pullToRefresh.active) {
+                resetPullState();
+                state.pullToRefresh.active = false;
+                isDragging = false;
+            }
+        }
+    };
+
+    // 触屏
+    mainEl.addEventListener('touchstart', onPullStart, { passive: true });
+    mainEl.addEventListener('touchmove', onPullMove, { passive: false });
+    mainEl.addEventListener('touchend', onPullEnd);
+    mainEl.addEventListener('touchcancel', onPullCancel);
+
+    // 鼠标/触摸板（桌面预览 iframe 无 touch 事件，用 pointer/mouse 兜底）
+    mainEl.addEventListener('mousedown', onPullStart);
+    mainEl.addEventListener('mousemove', onPullMove);
+    mainEl.addEventListener('mouseup', onPullEnd);
+    mainEl.addEventListener('mouseleave', onPullCancel);
 }
 
 async function publishProjectSite(repo, branchName) {
@@ -8286,6 +8323,10 @@ async function unpublishSite(repo) {
     const fragment = document.createDocumentFragment();
 
     state.publishRows = [];
+    state.publishMeta = {};
+
+    let enterIndex = 0; 
+    const shouldEnterAnimate = state.shouldAnimateList;
 
     function sectionTitle(text) {
         const h = document.createElement('div');
@@ -8296,92 +8337,64 @@ async function unpublishSite(repo) {
 
     function row(repo, status, url) {
         const item = document.createElement('div');
-        item.className = 'gk-row';
+        item.className = 'gk-card-item gk-card-' + status;
+        if (shouldEnterAnimate) {
+            item.classList.add('file-item-enter');
+            item.style.animationDelay = `${(enterIndex++) * 30}ms`;
+        }
         item.dataset.fullname = repo.full_name;
+        state.publishMeta[repo.full_name] = { status, url };
 
-        const left = document.createElement('div');
-        left.className = 'gk-row-main';
+        const top = document.createElement('div');
+        top.className = 'gk-card-top';
+
+        const icon = document.createElement('div');
+        icon.className = 'gk-avatar';
+        if (status === 'main') icon.innerHTML = '<i class="fa fa-crown"></i>';
+        else if (status === 'published') icon.innerHTML = '<i class="fa fa-globe"></i>';
+        else icon.innerHTML = '<i class="fa fa-code-branch"></i>';
+
+        const body = document.createElement('div');
+        body.className = 'gk-card-body';
+
+        const line = document.createElement('div');
+        line.className = 'gk-card-line';
         const name = document.createElement('div');
-        name.className = 'gk-row-name';
+        name.className = 'gk-card-name';
         name.textContent = repo.name;
-        name.title = repo.name;
-        const sub = document.createElement('div');
-        sub.className = 'gk-row-sub';
-        left.append(name, sub);
+        name.title = repo.full_name;
+        const badge = document.createElement('span');
+        badge.className = 'gk-badge gk-badge-' + status;
+        if (status === 'main') badge.textContent = '主站';
+        else if (status === 'published') badge.textContent = '已发布';
+        else badge.textContent = '可发布';
+        line.append(name, badge);
 
-        const right = document.createElement('div');
-        right.className = 'gk-row-actions';
+        body.appendChild(line);
 
         if (url) {
-            const u = document.createElement('span');
-            u.className = 'gk-row-url' + (status === 'main' ? ' main' : '');
-            u.textContent = url;
-            u.title = url;
-            u.addEventListener('click', (e) => {
-                e.stopPropagation();
-                navigator.clipboard.writeText(url).then(() => showToast('链接已复制'));
-            });
-            sub.appendChild(u);
-        }
-
-        if (status === 'main') {
-            const clone = document.createElement('button');
-            clone.className = 'gk-btn gk-btn-ghost gk-btn-sm';
-            clone.textContent = '取消主站';
-            clone.addEventListener('click', (e) => {
-                e.stopPropagation();
-                showUnpublishMainSiteModal(repo);
-            });
-            right.appendChild(clone);
-        } else if (status === 'published') {
-            const domainBtn = document.createElement('button');
-            domainBtn.className = 'gk-btn gk-btn-ghost gk-btn-sm';
-            domainBtn.textContent = repo.customDomain ? '解绑域名' : '绑定域名';
-            domainBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (repo.customDomain) showRemoveCustomDomainConfirmation(repo);
-                else showCustomDomainModal(repo.full_name);
-            });
-            right.appendChild(domainBtn);
-            const unpub = document.createElement('button');
-            unpub.className = 'gk-btn gk-btn-ghost gk-btn-sm danger';
-            unpub.textContent = '下线';
-            unpub.addEventListener('click', (e) => {
-                e.stopPropagation();
-                showDeleteModal(null, false, '确认下线', `确定要下线 "${repo.name}" 吗？`, async () => {
-                    const res = await unpublishSite(repo);
-                    if (!res.success) showToast(res.message, 'error');
-                    if (res.success) {
-                        const r = state.repos.find(x => x.id === repo.id);
-                        if (r) r.has_pages = false;
-                        renderPublishManagerLists();
-                    }
-                }, '确认下线', 'btn-danger', undefined, '已下线');
-            });
-            right.appendChild(unpub);
+            const urlEl = document.createElement('div');
+            urlEl.className = 'gk-card-url';
+            urlEl.innerHTML = '<i class="fa fa-link"></i><span>' + (status === 'main' ? repo.owner.login + '.github.io' : url) + '</span>';
+            body.appendChild(urlEl);
         } else {
-            const isMainRepo = mainSiteRepo && repo.id === mainSiteRepo.id;
-            const publish = document.createElement('button');
-            publish.className = 'gk-btn gk-btn-primary gk-btn-sm';
-            publish.textContent = isMainRepo ? '发布主站' : '发布';
-            publish.addEventListener('click', (e) => {
-                e.stopPropagation();
-                showPublishBranchSelectorModal(repo, isMainRepo ? 'mainSite' : 'projectSite');
-            });
-            right.appendChild(publish);
-            if (!mainSiteRepo) {
-                const asMain = document.createElement('button');
-                asMain.className = 'gk-btn gk-btn-ghost gk-btn-sm';
-                asMain.textContent = '设为主站';
-                asMain.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    showPublishBranchSelectorModal(repo, 'mainSite');
-                });
-                right.appendChild(asMain);
-            }
+            const sub = document.createElement('div');
+            sub.className = 'gk-card-sub';
+            sub.textContent = repo.private ? '私有仓库' : (repo.description || '公开仓库');
+            body.appendChild(sub);
         }
 
-        item.append(left, right);
+        const chevron = document.createElement('div');
+        chevron.className = 'gk-card-chevron';
+        chevron.innerHTML = '<i class="fa fa-chevron-right"></i>';
+
+        item.append(icon, body, chevron);
+
+        item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showPublishDetailPage(repo.full_name);
+        });
+
         return item;
     }
 
@@ -8422,6 +8435,200 @@ async function unpublishSite(repo) {
     }
 
     listEl.appendChild(fragment);
+    if (shouldEnterAnimate) state.shouldAnimateList = false;
+ }
+
+ // ============ 部署详情页 ============
+
+ function showPublishDetailPage(fullname) {
+     const repos = Array.isArray(state.repos) ? state.repos : [];
+     const repo = repos.find(r => r.full_name === fullname);
+     if (!repo) { showToast('仓库不存在'); return; }
+
+     let mainSiteRepo = null;
+     if (state.user && state.user.login) {
+         const mainSiteName = `${state.user.login}.github.io`;
+         mainSiteRepo = repos.find(r => r.name === mainSiteName);
+     }
+     const isMain = mainSiteRepo && repo.id === mainSiteRepo.id;
+     const meta = state.publishMeta[fullname] || {};
+     const status = meta.status || (isMain ? 'main' : (repo.has_pages ? 'published' : 'unpublished'));
+     const url = siteUrl(repo);
+
+     state.publishDetailFullname = fullname;
+     el.repoList.classList.add('hidden');
+     el.fileList.classList.add('hidden');
+     el.pathNavContainer.classList.add('hidden');
+     el.branchSwitcherContainer.classList.add('hidden');
+     if (el.toolbar) el.toolbar.classList.add('hidden');
+     if (el.publishPage) el.publishPage.classList.add('hidden');
+     if (el.settingsPage) el.settingsPage.classList.add('hidden');
+     if (el.publishDetailPage) el.publishDetailPage.classList.remove('hidden');
+     el.currentRepo.textContent = repo.name;
+
+     const sc = document.getElementById('globalSearchContainer');
+     const sctb = document.getElementById('globalSearchToggleBtn');
+     if (sc && !sc.classList.contains('hidden')) {
+         sc.classList.add('hidden');
+         if (sctb) sctb.classList.remove('active');
+     }
+
+     renderPublishDetailBody(repo, status, url);
+     state.currentView = 'publish_detail';
+     el.main.classList.remove('has-toolbar');
+     history.pushState({ view: 'publish_detail', fullname }, '', window.location.pathname);
+     state.publishReturnFlashFullname = null;
+     updatePaginationUI();
+ }
+
+ function renderPublishDetailBody(repo, status, url) {
+     const body = el.publishDetailBody;
+     body.innerHTML = '';
+     const wrap = document.createElement('div');
+     wrap.className = 'gk-detail';
+
+     const head = document.createElement('div');
+     head.className = 'gk-detail-head';
+     const back = document.createElement('button');
+     back.type = 'button';
+     back.className = 'gk-detail-back';
+     back.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
+     back.title = '返回部署';
+     back.addEventListener('click', hidePublishDetailPage);
+     const headTitle = document.createElement('span');
+     headTitle.className = 'gk-detail-head-title';
+     headTitle.textContent = '部署详情';
+     head.append(back, headTitle);
+     wrap.appendChild(head);
+
+     const stDesc = status === 'main'
+         ? '此为你的主站，访问你的个人主页。'
+         : status === 'published'
+             ? '网站已上线，可通过下方地址访问。'
+             : '尚未部署，设置后可生成网站。';
+
+     const stCard = document.createElement('div');
+     stCard.className = 'gk-detail-status gk-detail-status-' + status;
+     const stIcon = document.createElement('div');
+     stIcon.className = 'gk-detail-status-icon';
+     stIcon.innerHTML = '<i class="fa ' + (status === 'main' ? 'fa-crown' : status === 'published' ? 'fa-globe' : 'fa-clock') + '"></i>';
+     const stText = document.createElement('div');
+     stText.className = 'gk-detail-status-text';
+     const stLabel = document.createElement('div');
+     stLabel.className = 'gk-detail-status-label';
+     stLabel.textContent = status === 'main' ? '主站' : status === 'published' ? '已发布' : '未发布';
+     const stDescEl = document.createElement('div');
+     stDescEl.className = 'gk-detail-status-desc';
+     stDescEl.textContent = stDesc;
+     stText.append(stLabel, stDescEl);
+     stCard.append(stIcon, stText);
+     wrap.appendChild(stCard);
+
+     const urlCard = document.createElement('div');
+     urlCard.className = 'gk-detail-card';
+     const urlTitle = document.createElement('div');
+     urlTitle.className = 'gk-detail-card-title';
+     urlTitle.innerHTML = '<i class="fa fa-link"></i> 站点地址';
+     urlCard.appendChild(urlTitle);
+     const urlRow = document.createElement('div');
+     urlRow.className = 'gk-detail-url-row';
+     const dispUrl = status === 'main' ? repo.owner.login + '.github.io' : url;
+     const urlText = document.createElement('span');
+     urlText.className = 'gk-detail-url-text';
+     urlText.textContent = dispUrl;
+     urlText.title = dispUrl;
+     urlRow.appendChild(urlText);
+     const copyBtn = document.createElement('button');
+     copyBtn.className = 'gk-detail-copy';
+     copyBtn.textContent = status === 'main' || status === 'published' ? '复制' : '待发布';
+     if (status === 'main' || status === 'published') {
+         copyBtn.addEventListener('click', () => {
+             navigator.clipboard.writeText(status === 'main' ? 'https://' + repo.owner.login + '.github.io/' : url)
+                 .then(() => showToast('链接已复制'));
+         });
+     } else {
+         copyBtn.disabled = true;
+     }
+     urlRow.appendChild(copyBtn);
+     urlCard.appendChild(urlRow);
+     wrap.appendChild(urlCard);
+
+     const actionsCard = document.createElement('div');
+     actionsCard.className = 'gk-detail-actions';
+     const actTitle = document.createElement('div');
+     actTitle.className = 'gk-detail-card-title';
+     actTitle.innerHTML = '<i class="fa fa-play-circle"></i> 操作';
+     actionsCard.appendChild(actTitle);
+
+     function actionBtn(text, cls, onclick) {
+         const b = document.createElement('button');
+         b.className = 'gk-detail-btn ' + cls;
+         b.textContent = text;
+         b.addEventListener('click', onclick);
+         actionsCard.appendChild(b);
+     }
+
+     if (status === 'main') {
+         const desc = document.createElement('div');
+         desc.className = 'gk-btn-state-desc';
+         desc.textContent = '「取消主站」后需重新发布主站内容。';
+         actionsCard.appendChild(desc);
+         if (repo.has_pages) actionBtn('取消主站', 'ghost-danger', () => showUnpublishMainSiteModal(repo));
+     } else if (status === 'published') {
+         const desc = document.createElement('div');
+         desc.className = 'gk-btn-state-desc';
+         desc.textContent = '已发布项目可绑定自定义域名或下线网站。';
+         actionsCard.appendChild(desc);
+         actionBtn(repo.customDomain ? '解绑域名' : '绑定域名', 'ghost', () => {
+             if (repo.customDomain) showRemoveCustomDomainConfirmation(repo);
+             else showCustomDomainModal(repo.full_name);
+         });
+         actionBtn('下线', 'ghost-danger', () => {
+             showDeleteModal(null, false, '确认下线', `确定要下线 "${repo.name}" 吗？`, async () => {
+                 const res = await unpublishSite(repo);
+                 if (!res.success) showToast(res.message, 'error');
+                 if (res.success) { const r = state.repos.find(x => x.id === repo.id); if (r) r.has_pages = false; hidePublishDetailPage(); renderPublishManagerLists(); }
+             }, '确认下线', 'btn-danger', undefined, '已下线');
+         });
+     } else {
+         const desc = document.createElement('div');
+         desc.className = 'gk-btn-state-desc';
+         desc.textContent = '选择分支发布，可一键生成为静态网站。';
+         actionsCard.appendChild(desc);
+         actionBtn('发布网站', 'primary', () => showPublishBranchSelectorModal(repo, 'projectSite'));
+         if (!isMainSiteAssigned()) actionBtn('设为主站', 'ghost', () => showPublishBranchSelectorModal(repo, 'mainSite'));
+     }
+
+     wrap.appendChild(actionsCard);
+     body.appendChild(wrap);
+ }
+
+  function isMainSiteAssigned() {
+      if (!state.user || !state.user.login) return false;
+      const repos = Array.isArray(state.repos) ? state.repos : [];
+      return repos.some(r => r.name === `${state.user.login}.github.io`);
+  }
+
+  function renderPublishDetailPageRefresh(fullname) {
+      const repos = Array.isArray(state.repos) ? state.repos : [];
+      const repo = repos.find(r => r.full_name === fullname);
+      if (!repo) return;
+      let mainSiteRepo = null;
+      if (state.user && state.user.login) {
+          const mainSiteName = `${state.user.login}.github.io`;
+          mainSiteRepo = repos.find(r => r.name === mainSiteName);
+      }
+      const isMain = mainSiteRepo && repo.id === mainSiteRepo.id;
+      const status = isMain ? 'main' : (repo.has_pages ? 'published' : 'unpublished');
+      renderPublishDetailBody(repo, status, siteUrl(repo));
+  }
+
+  function hidePublishDetailPage() {
+     if (el.publishDetailPage) el.publishDetailPage.classList.add('hidden');
+     const fullname = state.publishDetailFullname || null;
+     state.publishDetailFullname = null;
+     state.publishReturnFlashFullname = fullname;
+     history.back();
  }
 
 async function showCustomDomainModal(repoFullName) {
@@ -8652,9 +8859,10 @@ function hideUsageGuideModal() {
      history.pushState({ view: 'publish_manager' }, '', window.location.pathname);
  }
 
- function showPublishPage() {
+  function showPublishPage() {
      state.currentView = 'publish_manager';
      state.isSearchResultsView = false;
+     state.shouldAnimateList = true;
      el.repoList.classList.add('hidden');
      el.fileList.classList.add('hidden');
      el.pathNavContainer.classList.add('hidden');
@@ -8662,6 +8870,7 @@ function hideUsageGuideModal() {
      if (el.toolbar) el.toolbar.classList.add('hidden');
      if (el.publishPage) el.publishPage.classList.remove('hidden');
      if (el.settingsPage) el.settingsPage.classList.add('hidden');
+     if (el.publishDetailPage) el.publishDetailPage.classList.add('hidden');
      el.currentRepo.textContent = '部署';
 
      const globalSearchContainer = document.getElementById('globalSearchContainer');
@@ -8725,6 +8934,8 @@ function hideUsageGuideModal() {
       if (el.toolbar) el.toolbar.classList.add('hidden');
       if (el.publishPage) el.publishPage.classList.add('hidden');
       if (el.settingsPage) el.settingsPage.classList.remove('hidden');
+      if (el.publishDetailPage) el.publishDetailPage.classList.add('hidden');
+      el.currentRepo.textContent = '设置';
 
       const sc = document.getElementById('globalSearchContainer');
       const sctb = document.getElementById('globalSearchToggleBtn');
@@ -9106,6 +9317,7 @@ function updatePaginationUI() {
     if (!isHomeListView && bnMine) bnMine.classList.add('hidden');
 
     footer.style.display = '';
+    if (el.main) el.main.style.paddingBottom = '60px';
     switch (state.currentView) {
 
         case 'public_search_results':
@@ -9205,6 +9417,13 @@ function updatePaginationUI() {
              backBtn.title = '返回上级';
              backBtn.onclick = goUp;
              break;
+
+        case 'publish_detail':
+            footer.style.display = 'none';
+            if (el.main) el.main.style.paddingBottom = '0';
+            backBtn.classList.add('hidden');
+            newFolderBtn.classList.add('hidden');
+            return;
 
         case 'starred_repos':
         case 'other_user_repos':
@@ -11850,6 +12069,26 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'publish_manager':
                 showPublishPage();
                 renderPublishManagerLists();
+                break;
+
+            case 'publish_detail':
+                state.publishDetailFullname = null;
+                state.currentView = 'publish_manager';
+                showPublishPage();
+                renderPublishManagerLists();
+                {
+                    const fn = state.publishReturnFlashFullname;
+                    state.publishReturnFlashFullname = null;
+                    if (fn && el.publishManageList) {
+                        window.setTimeout(() => {
+                            const card = el.publishManageList.querySelector(`[data-fullname="${CSS.escape(fn)}"]`);
+                            if (card) {
+                                card.classList.add('flash');
+                                window.setTimeout(() => { if (card) card.classList.remove('flash'); }, 600);
+                            }
+                        }, 30);
+                    }
+                }
                 break;
 
             case 'settings':
