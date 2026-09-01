@@ -12,7 +12,11 @@ import type {
   GitTreeEntry,
   MenuCategory,
   PagesInfo,
+  CodeSearchItem,
+  IssueSearchItem,
+  UserSearchItem,
   SearchRepoResult,
+  SearchResult,
 } from '@/types'
 
 export const GH = {
@@ -215,8 +219,22 @@ export const GH = {
   },
 
   // -------- Pages / 自定义域名 --------
+  async getPages(fullName: string): Promise<PagesInfo> {
+    return httpGet<PagesInfo>(`/repos/${fullName}/pages`)
+  },
+
   async enablePages(fullName: string, branch: string): Promise<void> {
     await httpPost<void>(`/repos/${fullName}/pages`, { source: { branch, path: '/' } })
+  },
+
+  async updatePages(
+    fullName: string,
+    branch: string,
+    buildType?: 'workflow' | 'legacy',
+  ): Promise<void> {
+    const body: Record<string, unknown> = { source: { branch, path: '/' } }
+    if (buildType) body.build_type = buildType
+    await httpPut<void>(`/repos/${fullName}/pages`, body)
   },
 
   async disablePages(fullName: string): Promise<void> {
@@ -246,13 +264,61 @@ export const GH = {
   },
 
   async removeCNAME(owner: string, repo: string, sha: string): Promise<void> {
-    await httpDelete<void>(`/repos/${owner}/${repo}/contents/CNAME`)
+    const params = new URLSearchParams({ message: 'chore: Remove custom domain' })
+    if (sha) params.set('sha', sha)
+    await httpDelete<void>(`/repos/${owner}/${repo}/contents/CNAME?${params.toString()}`)
   },
 
   // -------- 搜索 --------
-  async searchPublicRepos(q: string, page = 1, perPage = 20): Promise<SearchRepoResult> {
-    return httpGet<SearchRepoResult>(
-      `/search/repositories?q=${encodeURIComponent(q)}&page=${page}&per_page=${perPage}`,
-    )
+  async searchPublicRepos(
+    q: string,
+    page = 1,
+    perPage = 20,
+    sort?: 'stars' | 'forks' | 'updated',
+    order?: 'asc' | 'desc',
+  ): Promise<SearchRepoResult> {
+    const params = new URLSearchParams({ q, page: String(page), per_page: String(perPage) })
+    if (sort) params.set('sort', sort)
+    if (order) params.set('order', order)
+    return httpGet<SearchRepoResult>(`/search/repositories?${params.toString()}`)
+  },
+
+  async searchCode(
+    q: string,
+    page = 1,
+    perPage = 25,
+    sort?: 'indexed',
+    order?: 'asc' | 'desc',
+  ): Promise<SearchResult<CodeSearchItem>> {
+    const params = new URLSearchParams({ q, page: String(page), per_page: String(perPage) })
+    if (sort) params.set('sort', sort)
+    if (order) params.set('order', order)
+    return httpGet<SearchResult<CodeSearchItem>>(`/search/code?${params.toString()}`)
+  },
+
+  async searchUsers(
+    q: string,
+    page = 1,
+    perPage = 30,
+    sort?: 'followers' | 'repositories' | 'joined',
+    order?: 'asc' | 'desc',
+  ): Promise<SearchResult<UserSearchItem>> {
+    const params = new URLSearchParams({ q, page: String(page), per_page: String(perPage) })
+    if (sort) params.set('sort', sort)
+    if (order) params.set('order', order)
+    return httpGet<SearchResult<UserSearchItem>>(`/search/users?${params.toString()}`)
+  },
+
+  async searchIssues(
+    q: string,
+    page = 1,
+    perPage = 30,
+    sort?: 'comments' | 'reactions' | 'created' | 'updated',
+    order?: 'asc' | 'desc',
+  ): Promise<SearchResult<IssueSearchItem>> {
+    const params = new URLSearchParams({ q, page: String(page), per_page: String(perPage) })
+    if (sort) params.set('sort', sort)
+    if (order) params.set('order', order)
+    return httpGet<SearchResult<IssueSearchItem>>(`/search/issues?${params.toString()}`)
   },
 }

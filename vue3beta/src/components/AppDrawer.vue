@@ -14,6 +14,8 @@ const emit = defineEmits<{
   (e: 'version'): void
   (e: 'login'): void
   (e: 'logout'): void
+  (e: 'activity'): void
+  (e: 'starred'): void
 }>()
 
 const store = useStore()
@@ -59,6 +61,15 @@ function toggleTheme() {
         <div class="drawer-user">
           <div class="drawer-name">{{ activeAccount?.name || activeAccount?.login || '未登录' }}</div>
           <div class="drawer-login">@{{ activeAccount?.login || '—' }}</div>
+          <div class="drawer-quick" @click="$emit('starred')">
+            <van-icon name="star-o" />
+            <span>收藏</span>
+          </div>
+        </div>
+        <div class="drawer-bell" @click="$emit('activity')">
+          <van-badge dot>
+            <van-icon name="bell" size="20" />
+          </van-badge>
         </div>
       </div>
 
@@ -138,6 +149,11 @@ function toggleTheme() {
   gap: 12px;
   padding: 12px 16px 20px;
 }
+.drawer-bell {
+  margin-left: auto;
+  color: var(--app-text-sub);
+  padding: 6px;
+}
 .drawer-user {
   min-width: 0;
 }
@@ -153,6 +169,19 @@ function toggleTheme() {
   font-size: 13px;
   color: var(--app-text-sub);
   margin-top: 2px;
+}
+.drawer-quick {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: #1989fa;
+}
+.drawer-bell {
+  margin-left: auto;
+  color: var(--app-text-sub);
+  padding: 6px;
 }
 .cell-avatar {
   margin-right: 12px;

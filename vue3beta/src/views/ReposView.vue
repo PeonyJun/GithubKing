@@ -62,12 +62,8 @@ const showBranches = ref(false)
 const branchesList = ref<GithubBranch[]>([])
 const pendingBranchesRepo = ref<GithubRepo | null>(null)
 
-// 搜索
+// 搜索（本地名称过滤 + @用户/链接跳转；公开搜索在独立"搜索"tab）
 const searchQuery = ref('')
-const searching = ref(false)
-const searchMode = ref(false) // 全局搜索态（公共仓库）
-const searchTotal = ref(0)
-const searchPage = ref(1)
 
 const login = computed(() => store.activeAccount.value?.login ?? '')
 const pinnedIds = ref<number[]>(loadPinned())
@@ -91,15 +87,19 @@ const sortLabel: Record<string, string> = {
 }
 
 const displayList = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase()
+  const filtered = q
+    ? list.value.filter((r) => r.name.toLowerCase().includes(q))
+    : list.value
   if (resolvedMode.value === 'own') {
-    const sorted = [...list.value].sort(
+    const sorted = [...filtered].sort(
       (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
     )
     const pinned = sorted.filter((r) => pinnedIds.value.includes(r.id))
     const rest = sorted.filter((r) => !pinnedIds.value.includes(r.id))
     return [...pinned, ...rest]
   }
-  return list.value
+  return filtered
 })
 
 async function fetchPage(per: number, p: number): Promise<GithubRepo[]> {
@@ -130,15 +130,10 @@ async function load(refresh = false) {
 }
 
 function onRefresh() {
-  if (searchMode.value) {
-    const q = (searchQuery.value.trim().startsWith('#') ? searchQuery.value.trim().slice(1) : searchQuery.value.trim())
-    fetchPublicSearch(q, 1)
-  } else {
-    load(true)
-  }
+  load(true)
 }
 function onLoad() {
-  if (!refreshing.value) onLoadMore()
+  if (!refreshing.value) load()
 }
 
 function openRepo(repo: GithubRepo) {
@@ -149,10 +144,11 @@ function openRepo(repo: GithubRepo) {
   }
 }
 
-// ---- 全局搜索 ----
+// ---- 搜索（本地过滤 + @用户/链接跳转） ----
 function onSearch() {
   const q = searchQuery.value.trim()
   if (!q) return
+
   if (/^@[a-zA-Z0-9_-]+$/.test(q)) {
     router.push({ name: 'Repos', query: { mode: 'other', user: q.slice(1) } })
     return
@@ -167,48 +163,11 @@ function onSearch() {
     }
     return
   }
-  const fileQ = q.startsWith('#') ? q.slice(1) : q
-  searchMode.value = true
-  searchPage.value = 1
-  list.value = []
-  fetchPublicSearch(fileQ, 1)
+  // 其余：本地名称过滤（displayList 自动应用）
 }
 
-async function fetchPublicSearch(q: string, page: number) {
-  searching.value = true
-  try {
-    const res = await GH.searchPublicRepos(q, page, 20)
-    searchTotal.value = res.total_count
-    list.value = page === 1 ? res.items : list.value.concat(res.items)
-    finished.value = list.value.length >= res.total_count || res.items.length < 20
-    searchPage.value = page
-  } catch {
-    error.value = true
-    showToast('搜索失败（可能触达限流）')
-  } finally {
-    searching.value = false
-    loading.value = false
-    refreshing.value = false
-  }
-}
-
-function onLoadMore() {
-  if (searchMode.value && !finished.value) {
-    fetchPublicSearch(
-      (searchQuery.value.trim().startsWith('#') ? searchQuery.value.trim().slice(1) : searchQuery.value.trim()),
-      searchPage.value + 1,
-    )
-  } else {
-    load()
-  }
-}
-
-function exitSearch() {
-  searchMode.value = false
-  list.value = []
-  page.value = 1
-  finished.value = false
-  load()
+function clearSearch() {
+  searchQuery.value = ''
 }
 
 // ---- 长按菜单 ----
@@ -376,22 +335,22 @@ async function doDeleteRepo(repo: GithubRepo) {
   <div class="page">
     <div class="list-head">
       <span class="list-title">
-        {{ searchMode ? '搜索结果' : resolvedMode === 'starred' ? '星标仓库' : resolvedMode === 'other' ? `${resolvedUser} 的仓库` : '我的仓库' }}
+        {{ resolvedMode === 'starred' ? '收藏' : resolvedMode === 'other' ? `${resolvedUser} 的仓库` : '我的仓库' }}
       </span>
-      <van-tag v-if="resolvedMode === 'own' && !searchMode" plain type="primary">
+      <van-tag v-if="resolvedMode === 'own'" plain type="primary">
         {{ sortLabel[store.state.settings.sortRule] }}
       </van-tag>
-      <van-tag v-if="searchMode" plain type="primary">@用户 / 仓库搜索</van-tag>
-      <van-button v-if="searchMode" size="mini" plain type="default" @click="exitSearch">退出</van-button>
     </div>
 
     <van-search
       v-model="searchQuery"
-      placeholder="搜索 @用户 / #文件 / 仓库名或链接"
+      placeholder="本地搜索名称 / @用户 / GitHub 链接"
       show-action
+      clearable
       @search="onSearch"
     >
       <template #action>
+        <van-icon v-if="searchQuery" name="cross" @click="clearSearch" />
         <div @click="onSearch">搜索</div>
       </template>
     </van-search>

@@ -30,6 +30,7 @@ import {
   DropdownItem,
   Divider,
   SwipeCell,
+  Badge,
 } from 'vant'
 import 'vant/lib/index.css'
 import './assets/main.css'
@@ -72,6 +73,7 @@ const components = [
   DropdownItem,
   Divider,
   SwipeCell,
+  Badge,
 ]
 components.forEach((c) => app.use(c))
 

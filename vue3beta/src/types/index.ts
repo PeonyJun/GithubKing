@@ -111,6 +111,50 @@ export interface SearchRepoResult {
   items: GithubRepo[]
 }
 
+export interface CodeMatch {
+  text: string
+  indices: number[]
+}
+
+export interface CodeSearchItem {
+  name: string
+  path: string
+  sha: string
+  url: string
+  git_url: string
+  html_url: string
+  repository: GithubRepo
+  text_matches?: { fragment: string }[]
+}
+
+export interface UserSearchItem {
+  id: number
+  login: string
+  avatar_url: string
+  html_url: string
+  followers?: number
+  public_repos?: number
+  type: string
+}
+
+export interface IssueSearchItem {
+  id: number
+  title: string
+  html_url: string
+  state: string
+  user: { login: string; avatar_url: string }
+  comments: number
+  created_at: string
+  updated_at: string
+  repository_url: string
+}
+
+export interface SearchResult<T> {
+  total_count: number
+  incomplete_results: boolean
+  items: T[]
+}
+
 export interface GitTreeEntry {
   path: string
   mode: string

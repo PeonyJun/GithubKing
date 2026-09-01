@@ -15,16 +15,16 @@ const routes: RouteRecordRaw[] = [
         meta: { tab: true, title: '仓库' },
       },
       {
-        path: 'starred',
-        name: 'Starred',
-        component: () => import('@/views/StarredView.vue'),
-        meta: { tab: true, title: '收藏' },
+        path: 'search',
+        name: 'Search',
+        component: () => import('@/views/SearchView.vue'),
+        meta: { tab: true, title: '搜索' },
       },
       {
-        path: 'activity',
-        name: 'Activity',
-        component: () => import('@/views/ActivityView.vue'),
-        meta: { tab: true, title: '动态' },
+        path: 'deploy',
+        name: 'Deploy',
+        component: () => import('@/views/DeployView.vue'),
+        meta: { tab: true, title: '部署' },
       },
       {
         path: 'profile',
@@ -33,6 +33,18 @@ const routes: RouteRecordRaw[] = [
         meta: { tab: true, title: '我的' },
       },
     ],
+  },
+  {
+    path: '/activity',
+    name: 'Activity',
+    component: () => import('@/views/ActivityView.vue'),
+    meta: { title: '动态' },
+  },
+  {
+    path: '/starred',
+    name: 'Starred',
+    component: () => import('@/views/StarredView.vue'),
+    meta: { title: '收藏' },
   },
   {
     path: '/repo/:owner/:name',

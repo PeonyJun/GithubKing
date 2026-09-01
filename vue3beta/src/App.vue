@@ -55,6 +55,14 @@ function goVersion() {
   drawerShow.value = false
   router.push('/version')
 }
+function goActivity() {
+  drawerShow.value = false
+  router.push('/activity')
+}
+function goStarred() {
+  drawerShow.value = false
+  router.push('/starred')
+}
 function goLogin() {
   drawerShow.value = false
   router.push('/login')
@@ -87,6 +95,8 @@ function onLogout() {
     @version="goVersion"
     @login="goLogin"
     @logout="onLogout"
+    @activity="goActivity"
+    @starred="goStarred"
   />
 </template>
 

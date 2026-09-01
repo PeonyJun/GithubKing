@@ -7,8 +7,8 @@ const router = useRouter()
 
 const tabs = [
   { name: 'Repos', path: '/repos', icon: 'apps-o', title: '仓库' },
-  { name: 'Starred', path: '/starred', icon: 'star-o', title: '收藏' },
-  { name: 'Activity', path: '/activity', icon: 'newspaper-o', title: '动态' },
+  { name: 'Search', path: '/search', icon: 'search', title: '搜索' },
+  { name: 'Deploy', path: '/deploy', icon: 'service-o', title: '部署' },
   { name: 'Profile', path: '/profile', icon: 'user-o', title: '我的' },
 ]
 
