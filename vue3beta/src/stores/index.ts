@@ -1,6 +1,7 @@
 // 全局状态 Store（基于 Vue reactive + localStorage，无额外依赖）
 import { reactive, watch, computed } from 'vue'
 import { storage } from '@/utils/storage'
+import { setToken } from '@/api/client'
 import type { Account, ListLayout, MenuCategory, Settings } from '@/types'
 
 export interface AppState {
@@ -71,8 +72,18 @@ export function useStore() {
     state.accounts.find((a) => a.id === state.activeAccountId) ?? null,
   )
 
+  function syncActiveToken() {
+    const acc = state.accounts.find((a) => a.id === state.activeAccountId)
+    setToken(acc?.token ?? '')
+  }
+
+  function initAuth() {
+    syncActiveToken()
+  }
+
   function setActiveAccount(id: string | null) {
     state.activeAccountId = id
+    syncActiveToken()
   }
 
   function upsertAccount(acc: Account) {
@@ -80,6 +91,7 @@ export function useStore() {
     if (i >= 0) state.accounts[i] = acc
     else state.accounts.push(acc)
     state.activeAccountId = acc.id
+    syncActiveToken()
   }
 
   function removeAccount(id: string) {
@@ -87,11 +99,13 @@ export function useStore() {
     if (state.activeAccountId === id) {
       state.activeAccountId = state.accounts[0]?.id ?? null
     }
+    syncActiveToken()
   }
 
   function clearAccounts() {
     state.accounts = []
     state.activeAccountId = null
+    syncActiveToken()
   }
 
   function updateSettings(partial: Partial<Settings>) {
@@ -118,6 +132,7 @@ export function useStore() {
     upsertAccount,
     removeAccount,
     clearAccounts,
+    initAuth,
     updateSettings,
     setLayout,
     updateMenuVisibility,

@@ -75,9 +75,10 @@ const components = [
 ]
 components.forEach((c) => app.use(c))
 
-// 初始化主题
+// 初始化主题 + 恢复已登录账号的 token（刷新后 API 请求仍带鉴权）
 const store = useStore()
 document.documentElement.setAttribute('data-theme', store.state.theme)
+store.initAuth()
 
 app.use(router)
 app.mount('#app')
