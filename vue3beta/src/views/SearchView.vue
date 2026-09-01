@@ -19,6 +19,7 @@ import type {
   UserSearchItem,
   IssueSearchItem,
 } from '@/types'
+import TopBarMenu from '@/components/TopBarMenu.vue'
 
 const store = useStore()
 const router = useRouter()
@@ -121,8 +122,15 @@ function resetAndLoad() {
 }
 
 async function doSearch(p = 1) {
+  const kw = keyword.value.trim()
+  if (!kw) {
+    showToast('请输入搜索关键词')
+    searched.value = false
+    loading.value = false
+    refreshing.value = false
+    return
+  }
   const q = createSearchQuery(category.value, keyword.value, filter.value)
-  if (!q.trim()) return
   searched.value = true
   loading.value = true
   error.value = false
@@ -160,7 +168,7 @@ async function doSearch(p = 1) {
     }
   } catch (e) {
     error.value = true
-    showToast('搜索失败（可能触达限流）')
+    showToast('搜索失败，请稍后重试')
   } finally {
     loading.value = false
     refreshing.value = false
@@ -168,6 +176,11 @@ async function doSearch(p = 1) {
 }
 
 function onSearch() {
+  if (!keyword.value.trim()) {
+    showToast('请输入搜索关键词')
+    searched.value = false
+    return
+  }
   resetAndLoad()
 }
 
@@ -181,6 +194,11 @@ function onLoad() {
 
 function applyFilter() {
   filterShow.value = false
+  if (!keyword.value.trim()) {
+    showToast('请输入搜索关键词')
+    searched.value = false
+    return
+  }
   resetAndLoad()
 }
 
@@ -217,6 +235,7 @@ const currentItems = computed(() => {
 
 <template>
   <div class="page">
+    <TopBarMenu title="搜索" />
     <div class="search-head">
       <van-search
         v-model="keyword"
@@ -241,7 +260,7 @@ const currentItems = computed(() => {
     </div>
 
     <!-- 类别切换 -->
-    <van-tabs v-model:active="category" shrink class="cat-tabs" @change="onSearch">
+    <van-tabs v-model:active="category" shrink class="cat-tabs" @change="resetAndLoad">
       <van-tab v-for="t in tabOpts" :key="t.name" :name="t.name" :title="t.label" />
     </van-tabs>
 

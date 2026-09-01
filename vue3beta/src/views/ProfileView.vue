@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { GH } from '@/api/github'
 import { useStore } from '@/stores'
+import TopBarMenu from '@/components/TopBarMenu.vue'
 import type { GithubUser } from '@/types'
 
 const router = useRouter()
@@ -30,6 +31,7 @@ load()
 
 <template>
   <div class="page">
+    <TopBarMenu title="我的" />
     <div class="profile-card">
       <van-image class="big-avatar" round width="72" height="72" :src="user?.avatar_url || activeAccount?.avatar" />
       <div class="p-name">{{ user?.name || activeAccount?.name }}</div>

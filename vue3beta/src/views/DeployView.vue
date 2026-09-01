@@ -6,6 +6,7 @@ import { GH } from '@/api/github'
 import { useStore } from '@/stores'
 import { getProxiedUrl } from '@/utils/proxy'
 import { formatTime } from '@/utils/format'
+import TopBarMenu from '@/components/TopBarMenu.vue'
 import type { GithubBranch, GithubRepo, PagesInfo } from '@/types'
 
 const store = useStore()
@@ -181,10 +182,11 @@ function openSite() {
 
 <template>
   <div class="page">
-    <div class="list-head">
-      <span class="list-title">部署</span>
-      <span class="list-sub">我的仓库 Pages</span>
-    </div>
+    <TopBarMenu title="部署">
+      <template #right>
+        <span class="list-sub">我的仓库 Pages</span>
+      </template>
+    </TopBarMenu>
 
     <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
       <van-list
@@ -201,16 +203,25 @@ function openSite() {
             :key="repo.id"
             center
             clickable
-            :title="repo.name"
-            :label="formatTime(repo.updated_at) + (repo.description ? ' · ' + repo.description : '')"
             @click="openPanel(repo)"
           >
             <template #icon>
               <van-image round width="40" height="40" :src="getProxiedUrl(repo.owner.avatar_url, store.state.settings)" class="repo-avatar" />
             </template>
+            <template #title>
+              <div class="cell-title">
+                <span class="repo-name ellipsis">{{ repo.full_name }}</span>
+              </div>
+              <div v-if="repo.description" class="cell-desc ellipsis">{{ repo.description }}</div>
+              <div class="cell-meta">
+                <van-tag v-if="repo.has_pages" type="success" plain>已启用</van-tag>
+                <van-tag v-else plain type="default">未启用</van-tag>
+                <span v-if="repo.language">· {{ repo.language }}</span>
+                <span>· {{ formatTime(repo.updated_at) }}</span>
+              </div>
+            </template>
             <template #right-icon>
-              <van-tag v-if="repo.has_pages" type="success" plain>已启用</van-tag>
-              <van-tag v-else plain type="default">未启用</van-tag>
+              <van-icon name="arrow" />
             </template>
           </van-cell>
         </van-cell-group>
@@ -297,6 +308,30 @@ function openSite() {
 }
 .repo-avatar {
   margin-right: 12px;
+}
+.cell-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--app-text);
+}
+.repo-name {
+  max-width: 70%;
+}
+.cell-desc {
+  font-size: 13px;
+  color: var(--app-text-sub);
+  margin-top: 4px;
+}
+.cell-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--app-text-sub);
+  margin-top: 6px;
 }
 .panel-title {
   display: flex;

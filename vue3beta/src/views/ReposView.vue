@@ -15,6 +15,7 @@ import { formatTime } from '@/utils/format'
 import PromptDialog from '@/components/dialog/PromptDialog.vue'
 import RepoSettingsDialog from '@/components/dialog/RepoSettingsDialog.vue'
 import BranchesDialog from '@/components/dialog/BranchesDialog.vue'
+import TopBarMenu from '@/components/TopBarMenu.vue'
 import type { GithubBranch, GithubRepo } from '@/types'
 
 const props = defineProps<{
@@ -333,14 +334,15 @@ async function doDeleteRepo(repo: GithubRepo) {
 
 <template>
   <div class="page">
-    <div class="list-head">
-      <span class="list-title">
-        {{ resolvedMode === 'starred' ? '收藏' : resolvedMode === 'other' ? `${resolvedUser} 的仓库` : '我的仓库' }}
-      </span>
-      <van-tag v-if="resolvedMode === 'own'" plain type="primary">
-        {{ sortLabel[store.state.settings.sortRule] }}
-      </van-tag>
-    </div>
+    <TopBarMenu
+      :title="resolvedMode === 'starred' ? '收藏' : resolvedMode === 'other' ? `${resolvedUser} 的仓库` : '我的仓库'"
+    >
+      <template #right>
+        <van-tag v-if="resolvedMode === 'own'" plain type="primary">
+          {{ sortLabel[store.state.settings.sortRule] }}
+        </van-tag>
+      </template>
+    </TopBarMenu>
 
     <van-search
       v-model="searchQuery"
