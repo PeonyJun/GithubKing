@@ -1,0 +1,109 @@
+:root,
+:root[data-theme='light'] {
+  --app-bg: #f7f8fa;
+  --app-bg-el: #ffffff;
+  --app-text: #323233;
+  --app-text-sub: #969799;
+  --app-card-bg: #ffffff;
+  --app-divider: #ebedf0;
+  --app-accent: #1989fa;
+  --gh-avatar-bg: #e6e8eb;
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --app-bg: #15181f;
+  --app-bg-el: #1c2029;
+  --app-text: #e5e7eb;
+  --app-text-sub: #8b909c;
+  --app-card-bg: #1c2029;
+  --app-divider: #2c3240;
+  --app-accent: #4c9aff;
+  --gh-avatar-bg: #2c3240;
+  color-scheme: dark;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#app {
+  max-width: 520px;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  background: var(--app-bg);
+}
+
+.page {
+  min-height: 100vh;
+  padding: 12px;
+  padding-bottom: calc(66px + env(safe-area-inset-bottom));
+  background: var(--app-bg);
+}
+
+/* Vant 主题变量随 data-theme 联动 */
+:root[data-theme='dark'] {
+  --van-background: #15181f;
+  --van-background-2: #1c2029;
+  --van-background-3: #1c2029;
+  --van-text-color: #e5e7eb;
+  --van-text-color-2: #8b909c;
+  --van-text-color-3: #6b717d;
+  --van-border-color: #2c3240;
+  --van-popup-background: #1c2029;
+  --van-cell-background: #1c2029;
+  --van-cell-background-light: #1c2029;
+  --van-dropdown-menu-background: #1c2029;
+  --van-dropdown-item-background: #1c2029;
+  --van-tabbar-background: #1c2029;
+  --van-tabbar-item-text-color: #8b909c;
+  --van-sidebar-background: #15181f;
+}
+
+/* 通用工具类 */
+.flex {
+  display: flex;
+  align-items: center;
+}
+.flex-1 {
+  flex: 1;
+  min-width: 0;
+}
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--gh-avatar-bg);
+  flex-shrink: 0;
+  object-fit: cover;
+}
+.gap-8 {
+  gap: 8px;
+}
+.gap-12 {
+  gap: 12px;
+}
+.mt-8 {
+  margin-top: 8px;
+}
+.mt-12 {
+  margin-top: 12px;
+}

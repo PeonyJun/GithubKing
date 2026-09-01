@@ -108,4 +108,15 @@ Entries discovered by the Agent during task execution should follow this format:
   - **`updatePaginationUI` 里 `isHomeListView` 决定底部 tab 显隐**：新增的子视图(如 `publish_detail`)不在该集合时，报错/详情等非首页视图会把 bnStar/bnDeploy/bnMine 隐藏。底部 tab `bnDeploy.onclick` 需在详情视图下也能返回列表（`if(isPublishDetail){hidePublishDetailPage();return}`）。
   - **在现有`switch … case`分组中新增 `case` 时，切勿插到多 case 分组的中间**：`case 'starred_repos': case 'own_repos': …` 这类连续 case 是**fall-through**到 `default` 的；若把新子视图的 `case`（含 `return`/隐藏 footer 逻辑）插进这个连续 case 列表里，前面所有主 tab 会一起 fall-through 进新 case 的代码（如 `footer.style.display='none'`），导致所有页面底栏/导航消失（回归）。新增独立子视图 case 应放在"连续 case 分组 + `default`"之前或之后单独成块。
   - **部署列表 `renderPublishManagerLists` 与仓库列表动画**：`.gk-card-item` 部署卡片原本无入场动效；要加"载入动效"就复用 `.file-item-enter`+`itemFadeInUp` 动画，用 `state.shouldAnimateList` 门控（`showPublishPage()` 置 true，render 末尾置 false），并给每个卡片 `animationDelay = enterIndex*30ms` 做交错。仓库列表 `renderRepoList` 本就应用 `.file-item-enter`，机制完好在代码层经 jsdom 验证生效；若用户反映"没动效"，多为 `shouldAnimateList` 为 false 的导航路径，非 CSS/机制损坏。
-  - **下拉刷新 `initPullToRefresh` 的 `targetListEl` 只认 `repoList`/`fileList`**，部署页(`publishManageList`)无目标 → 部署页本来就拉不动。要让所有列表页都能下拉刷新：`touchstart` 里把 `!el.publishPage.classList.contains('hidden')? el.publishManageList : null` 加进目标链；`handleRefresh` 需在 `publish_manager` 视图下 `fetchRepos(true,false)` + `renderPublishManagerLists()` 后 return。
+   - **下拉刷新 `initPullToRefresh` 的 `targetListEl` 只认 `repoList`/`fileList`**，部署页(`publishManageList`)无目标 → 部署页本来就拉不动。要让所有列表页都能下拉刷新：`touchstart` 里把 `!el.publishPage.classList.contains('hidden')? el.publishManageList : null` 加进目标链；`handleRefresh` 需在 `publish_manager` 视图下 `fetchRepos(true,false)` + `renderPublishManagerLists()` 后 return。
+
+[Project Knowledge Summary]
+- Date: 2026-09-01
+- Context: Discovered by Agent while building the Vue3 重写版 (vue3beta)
+- Category: Build Methods
+- Instructions:
+  - vue3beta 工程位于 /workspace/vue3beta，技术栈 Vue3.4 + Vite5 + TS + Vant4，全部组件经 main.ts 显式 `app.use()` 全量引入。校验/构建：`npm install` → `npm run type-check`(vue-tsc) → `npm run build`(产出 dist)。
+  - 开发预览：`npm run dev`，Vite 监听 0.0.0.0:5173，`server.proxy` 把 `/api/gh` 转发到 api.github.com 规避 CORS。allowedHosts 已含 `.monkeycode-ai.online`。
+  - 全局状态在 src/stores/index.ts（reactive + localStorage，未用 pinia）；`useStore().activeAccount` 是 computed ref，在 `<script setup>` 模板里要解构成顶层 computed（`computed(() => store.activeAccount.value)`）才能自动解包，直接 `store.activeAccount?.x` 因嵌套 ref 不解包会导致 TS/渲染报错。
+  - 侧滑抽屉用 `van-popup position="left"` 实现（Vant 无 Drawer 手势组件），左边缘手指右滑唤醒的 touch 手势写在 src/App.vue 全局 window 监听；长按弹菜单用原生 touchstart/touchend 计时 + `van-action-sheet`。
+  - Vant 没有名称为 `Input`/`Avatar` 的具名导出组件（那是心智误记，勿 import），对应用 `van-field` 和 `van-image round`。
